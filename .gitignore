@@ -1,0 +1,7 @@
+.godot/
+
+# Generated exports; retain the current Linux release for direct download.
+builds/*
+!builds/release/
+builds/release/*
+!builds/release/GridBattle-Alpha-0.0.2-linux.tar.gz
