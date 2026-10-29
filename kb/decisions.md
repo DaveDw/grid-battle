@@ -16,3 +16,4 @@ Log of accepted, rejected and revised proposals. Claude writes here; newest at t
 - **Accepted:** the Banner Marshal idle (body steady, flag ripples every frame) and the Pathfinder attack (rifle level and forward) are the reference quality for the rollout. Standard: kb/briefs/codex-02-unit-frames.md.
 - **Accepted (human + Claude):** units get 8-frame idle loops, 2-frame attacks and 4 single-frame move poses. Idles must feel alive and themed, not just breathing. The import tool flags loops whose top-of-art travel is under 4%.
 - **Accepted:** the Pathfinder attack is to be redrawn with the rifle level and pointing forward.
+- 2026-10-29: README intro: Gemma's gemma-readme-intro.md accepted with fact fixes (Long Tomorrow origin, no strip between sides).

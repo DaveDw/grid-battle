@@ -15,6 +15,14 @@
 
 </div>
 
+> *The sectors don't belong to the stars. They belong to whoever holds the ground, and four powers want it.*
+>
+> *The **Terran Partition Authority** enforces Old-Earth order in steel, fortifying every tile it takes. The **Ascendancy League** runs the frontier like a laboratory, where every battle is an experiment and every conquest a data point. The **Manyworlds Resistance** gathers refugees from a hundred worlds, bringing strange biology and terrain that fights back. **The Long Tomorrow** are lost colonists returned from the interval: decayed, patient, and carrying powers no one sent them out with.*
+>
+> *Every battlefield is a split verdict. One half is yours, the other is theirs, and the line between them moves. You take ground tile by tile, and you lose it the same way.*
+>
+> ***Pick your leader and claim your first sector.***
+
 ---
 
 ## Contents
