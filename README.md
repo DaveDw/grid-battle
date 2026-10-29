@@ -6,7 +6,7 @@
 
 *Four factions · eight leaders · 24 units · 38 cards · one shared grid, and the line down the middle is for sale.*
 
-![Version](https://img.shields.io/badge/version-Alpha%20Test%20Snapshot%20v0.0.3-orange)
+![Version](https://img.shields.io/badge/version-Alpha%20Test%20Snapshot%20v0.0.5-orange)
 ![Engine](https://img.shields.io/badge/engine-Godot%204.7-478cbf?logo=godotengine&logoColor=white)
 ![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS-555)
 ![Status](https://img.shields.io/badge/status-alpha-red)
@@ -322,7 +322,9 @@ When you play alone in Conquest, your leader borrows the squad's first unique pr
 
 ## Download and install
 
-Alpha builds are shared directly with testers. The repository also keeps one Linux build at `builds/release/GridBattle-Alpha-0.0.2-linux.tar.gz`. Builds for the current version, **v0.0.3**, can be made from source; see [Building from source](#building-from-source).
+Download the latest build from **[Releases](https://github.com/DaveDw/grid-battle/releases/latest)**.
+
+**Updates are built in.** From v0.0.5 on, the Windows and Linux builds check for a newer release when you reach the title screen. If there is one, an **Update to vX** button appears in the top-right corner: it downloads the new build, replaces the game and restarts. On macOS the button opens the release page instead.
 
 | Platform | Package | How to run |
 | --- | --- | --- |
@@ -370,10 +372,12 @@ On Windows you can also double-click `Play Grid Battle.bat`; edit the Godot path
 **Exporting.** `export_presets.cfg` defines three presets: *Windows Alpha*, *Linux Alpha* and *macOS Alpha*.
 
 ```bash
-godot --headless --path . --export-release "Linux Alpha" builds/linux/GridBattle-Alpha-0.0.3.x86_64
+godot --headless --path . --export-release "Linux Alpha" builds/linux/GridBattle-Alpha-0.0.5.x86_64
 ```
 
 Or run `bash tools/build_release.sh` (Git Bash on Windows), which exports all three and packs the archives into `builds/release/`. Set the Godot path (`G`) and version (`V`) at the top of the script first.
+
+**Publishing a release.** `bash tools/publish_release.sh <version> "notes"` creates the GitHub release `v<version>` and uploads the raw Windows and Linux builds (which the in-game updater downloads) plus the zip and tar.gz packages. It uses `GITHUB_TOKEN`, or the GitHub login Git Credential Manager already stores.
 
 ---
 
@@ -448,6 +452,7 @@ They coordinate through the knowledge base in [`kb/`](kb/):
 - [x] Controller and touch support
 - [x] Music and synthesized sound
 - [x] Pixel fonts and card art; all 24 idle animations redone
+- [x] Self-updating builds (GitHub Releases)
 - [ ] Balance pass on every number (all current values are first-pass)
 - [ ] Director Zero's kit: still under test
 - [ ] Unit bios and more faction-specific events

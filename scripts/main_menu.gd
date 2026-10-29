@@ -3,10 +3,13 @@ extends Control
 ## Credits, Quit. The eight leaders stand along the bottom.
 
 const SETTINGS_PANEL := preload("res://scripts/settings_panel.gd")
+const UPDATER := preload("res://scripts/updater.gd")
 
 var _buttons: VBoxContainer
 var _t := 0.0
 var _title: Label
+var _update_btn: Button
+var _update_note: Label
 
 func _ready() -> void:
 	add_child(preload("res://scripts/menu_background.gd").make("grid", Color(0.3, 0.5, 0.9), randi() % 20, Vector2(980, 0), 340.0))
@@ -64,6 +67,7 @@ func _ready() -> void:
 	hint.add_theme_color_override("font_color", Color(0.45, 0.5, 0.6))
 	hint.position = Vector2(24, 690)
 	add_child(hint)
+	_add_updater()
 
 func _button(text: String, cb: Callable) -> Button:
 	var b := Button.new()
@@ -73,6 +77,43 @@ func _button(text: String, cb: Callable) -> Button:
 	b.pressed.connect(cb)
 	_buttons.add_child(b)
 	return b
+
+## Top right: an "Update to vX" button when GitHub has a newer release, with a
+## status line under it. Exported builds only (see updater.gd).
+func _add_updater() -> void:
+	UPDATER.cleanup()
+	if not UPDATER.should_check():
+		return
+	_update_btn = Button.new()
+	_update_btn.size = Vector2(320, 42)
+	_update_btn.position = Vector2(1280 - 24 - 320, 24)
+	_update_btn.visible = false
+	add_child(_update_btn)
+	_update_note = Label.new()
+	_update_note.add_theme_font_size_override("font_size", 13)
+	_update_note.add_theme_color_override("font_color", Color(0.55, 0.65, 0.8))
+	_update_note.size = Vector2(320, 20)
+	_update_note.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_update_note.position = Vector2(1280 - 24 - 320, 72)
+	add_child(_update_note)
+	var u := UPDATER.new()
+	add_child(u)
+	u.status.connect(func(t: String): _update_note.text = t)
+	u.available.connect(func(v: String):
+		_update_btn.text = ("Update to %s" if UPDATER.can_self_update() else "Get %s") % v
+		_update_note.text = "Restarts the game when done" if UPDATER.can_self_update() else "Opens the download page"
+		_update_btn.visible = true)
+	u.progress.connect(func(f: float): _update_btn.text = "Downloading update… %d%%" % int(f * 100.0))
+	u.failed.connect(func(t: String):
+		_update_note.text = t
+		if _update_btn.visible:
+			_update_btn.disabled = false
+			_update_btn.text = "Retry update")
+	_update_btn.pressed.connect(func():
+		if UPDATER.can_self_update():
+			_update_btn.disabled = true
+		u.update())
+	u.check()
 
 ## The eight leaders, facing in from both sides, breathing slowly.
 func _add_leader_lineup() -> void:

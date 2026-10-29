@@ -56,3 +56,7 @@ They live in the sandbox (`%LOCALAPPDATA%/Temp/gbs6`): kit and s1-s12, all passi
 - 2026-10-29: draft card tag uses short faction names (Terran / Ascendancy / Manyworlds / Long Tomorrow) so 'faction · target' fits; card text keeps 'HP/s' together (word joiner after '/') in draft, deck view and run end.
 
 - 2026-10-29: Draft cards step the name font down (16 to 8) until it fits beside the cost; "Artillery Barrage" no longer hides its 28. README draft screenshot recaptured.
+- 2026-10-29: Alpha 0.0.4 snapshot built (all three platforms) in builds/release.
+- 2026-10-29: Fullscreen by default: DEFAULT_SETTINGS fullscreen=true and project window/size/mode=3, so a first launch fills the screen with no windowed flash. Checked with no settings.cfg (tools/rigs/check/winmode.tscn): mode 3, 3840x2160. Not in the 0.0.4 builds.
+- 2026-10-29: Self-updater (scripts/updater.gd + title-screen button, top right): checks GitHub latest release, downloads the -windows.exe / -linux.x86_64 asset, swaps the exe (Windows renames the running one to .old) and restarts; macOS opens the release page. Tested end to end with a local fake release (0.0.4 -> 0.0.9). Needs a public repo and releases published with tools/publish_release.sh.
+- 2026-10-29: Alpha 0.0.5 built (updater + fullscreen default); first GitHub release.

@@ -6,7 +6,7 @@ extends Node
 const SAVE_DIR := "user://saves/"
 const SLOTS := 3
 const SETTINGS_PATH := "user://settings.cfg"
-const VERSION := "Alpha Test Snapshot v0.0.3"
+const VERSION := "Alpha Test Snapshot v0.0.5"
 
 ## Fonts (user's pick, 2026-10-29). Silkscreen is the project default for general UI
 ## text (project.godot gui/theme/custom_font). Press Start 2P: everything on cards,
@@ -196,7 +196,7 @@ const LEADERS := [
 
 const DEFAULT_SETTINGS := {
 	"master_volume": 0.8, "music_volume": 0.7, "sfx_volume": 0.8,
-	"fullscreen": false, "vsync": true, "screen_shake": true, "show_damage_numbers": true,
+	"fullscreen": true, "vsync": true, "screen_shake": true, "show_damage_numbers": true,
 }
 
 var settings := DEFAULT_SETTINGS.duplicate()

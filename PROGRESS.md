@@ -113,3 +113,14 @@
 ## Alpha Test Snapshot v0.0.3 (2026-10-28)
 - [x] Version bumped to 0.0.3 (game.gd, export presets, READMEs). Builds in builds/windows, builds/linux, builds/macos; archives in builds/release. art_backup/ now excluded from exports.
 - Includes the redone idles imported so far (14 by Codex) plus the Red Giant and Cinder Scout placeholders.
+
+## Alpha Test Snapshot v0.0.4 (2026-10-29)
+- [x] Version 0.0.4 (game.gd, export presets, build READMEs, README badge). Builds in builds/windows, builds/linux, builds/macos; archives in builds/release (older snapshots kept; build_release.sh now only replaces its own version's files).
+- Includes everything since 0.0.3: all 24 idles, pixel fonts, card art on every card, draft rewards (own faction + beaten faction), draft card name fitting, layout fixes, Conquest default of 1 unit, window no longer shrinks on settings change.
+- Windows build smoke-tested headless: starts clean, no script errors.
+
+## Alpha Test Snapshot v0.0.5 (2026-10-29)
+- [x] Self-updater: title screen checks GitHub's latest release; "Update to vX" downloads the Windows/Linux build, swaps the executable and restarts (macOS opens the release page). scripts/updater.gd; tested end to end with a local fake release.
+- [x] Fullscreen by default (setting + project window mode), so first launches fill the screen.
+- [x] tools/publish_release.sh publishes builds as GitHub releases; the repo is now public so games can see them.
+- Windows build smoke-tested headless: starts clean.
