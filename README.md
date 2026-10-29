@@ -451,7 +451,6 @@ They coordinate through the knowledge base in [`kb/`](kb/):
 
 ## Known issues
 
-- Long card names can crowd out the cost on the draft screen (for example, *Artillery Barrage*).
 - Some units with purple art may show a faint magenta fringe left over from the background key.
 - Balance is untuned. Some squads, especially the ●●● leaders, can feel much stronger or weaker than others.
 - Saves from much older alphas are migrated automatically, but may start at sector 1.

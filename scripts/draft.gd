@@ -119,7 +119,13 @@ func _card_button(id: String, cb: Callable, count := 0, locked := false) -> Butt
 	name_l.text = ("%d× " % count if count > 1 else "") + c["name"]
 	name_l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_l.add_theme_font_override("font", Game.FONT_CARD)
-	name_l.add_theme_font_size_override("font_size", 16 if count == 0 else 8)
+	# step the name down until it fits beside the cost ("Artillery Barrage" ran into it)
+	var name_px := 16 if count == 0 else 8
+	var room := b.custom_minimum_size.x - 32 - 4 - (36 if count > 0 else 0) \
+		- Game.FONT_CARD.get_string_size("%d" % int(Game.card_cost(id)), HORIZONTAL_ALIGNMENT_LEFT, -1, name_px).x - 8
+	while name_px > 8 and Game.FONT_CARD.get_string_size(name_l.text, HORIZONTAL_ALIGNMENT_LEFT, -1, name_px).x > room:
+		name_px -= 2
+	name_l.add_theme_font_size_override("font_size", name_px)
 	if count > 0:   # small cards (drop-a-card grid): icon beside the name; big cards get it below
 		top.add_child(Game.card_icon(id, 32))
 	top.add_child(name_l)

@@ -54,3 +54,5 @@ They live in the sandbox (`%LOCALAPPDATA%/Temp/gbs6`): kit and s1-s12, all passi
 - 2026-10-29: sector map text overflow fixed: choice boxes 340x150, names in Jersey 10 (wrap), descriptions 12px; planet names under the map in Jersey 16; SECTOR / CLAIM TO WIN headings widened; 'you face...' line 13px and wraps. Tested with the longest modifiers in a throwaway slot (99, deleted).
 - 2026-10-29: draft offer = 1 card from your faction + 1 from the faction just beaten; extra slots (modifiers/events) random from both, no duplicates (Game.win_battle). Tested over 200 simulated wins.
 - 2026-10-29: draft card tag uses short faction names (Terran / Ascendancy / Manyworlds / Long Tomorrow) so 'faction · target' fits; card text keeps 'HP/s' together (word joiner after '/') in draft, deck view and run end.
+
+- 2026-10-29: Draft cards step the name font down (16 to 8) until it fits beside the cost; "Artillery Barrage" no longer hides its 28. README draft screenshot recaptured.
