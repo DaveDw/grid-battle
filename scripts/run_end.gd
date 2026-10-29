@@ -20,6 +20,8 @@ func _label(pos: Vector2, size: int, col: Color, text: String) -> Label:
 	l.size = Vector2(1280, size + 12)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD
+	if size >= 24:
+		l.add_theme_font_override("font", Game.FONT_HEAD)
 	l.add_theme_font_size_override("font_size", size)
 	l.add_theme_color_override("font_color", col)
 	l.text = text
@@ -74,6 +76,7 @@ func _big_button(title: String, text: String) -> Button:
 	b.add_child(v)
 	var t := Label.new()
 	t.text = title
+	t.add_theme_font_override("font", Game.FONT_HEAD)
 	t.add_theme_font_size_override("font_size", 28)
 	v.add_child(t)
 	var d := Label.new()
@@ -101,19 +104,24 @@ func _build_summary() -> void:
 		var top := HBoxContainer.new()
 		v.add_child(top)
 		var n := Label.new()
+		top.add_child(Game.card_icon(r["reward"], 64))
 		n.text = c["name"]
 		n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		n.add_theme_font_size_override("font_size", 24)
+		n.add_theme_font_override("font", Game.FONT_CARD)
+		n.add_theme_font_size_override("font_size", 16)
 		top.add_child(n)
 		var cost := Label.new()
 		cost.text = "%d" % int(c["cost"])
-		cost.add_theme_font_size_override("font_size", 24)
+		cost.add_theme_font_override("font", Game.FONT_CARD)
+		cost.add_theme_font_size_override("font_size", 16)
 		cost.add_theme_color_override("font_color", Color(0.45, 0.8, 1.0))
 		top.add_child(cost)
 		var t := Label.new()
-		t.text = c["text"]
+		t.text = c["text"].replace("/", "/" + char(0x2060))   # word joiner: never break "HP/s" after the slash
 		t.autowrap_mode = TextServer.AUTOWRAP_WORD
-		t.add_theme_font_size_override("font_size", 16)
+		t.add_theme_font_override("font", Game.FONT_CARD)
+		t.add_theme_font_size_override("font_size", 10)
+		t.add_theme_constant_override("line_spacing", 4)
 		t.add_theme_color_override("font_color", Color(0.78, 0.83, 0.92))
 		v.add_child(t)
 	else:

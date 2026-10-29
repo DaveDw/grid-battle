@@ -1,0 +1,224 @@
+{
+  "reef_bulwark": {
+    "source": "assets\\sprites\\manyworlds\\reef_bulwark.png",
+    "base_offset": [
+      124,
+      2
+    ],
+    "master_sha256": "fc36bf95c9ee0b35e68676a57249183645a5fbf5d4929d3885c58c7f8d9b1f6d",
+    "strip_size": [
+      4704,
+      373
+    ],
+    "frame_1_exact_clean_base": true,
+    "frame_8_exact": true,
+    "old_idle_pixels_used": false,
+    "frames": [
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 0,
+        "shield_rigid_mismatches": 0,
+        "shell_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 19,
+        "shield_rigid_mismatches": 0,
+        "shell_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 34,
+        "shield_rigid_mismatches": 0,
+        "shell_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 47,
+        "shield_rigid_mismatches": 0,
+        "shell_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 47,
+        "shield_rigid_mismatches": 0,
+        "shell_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 19,
+        "shield_rigid_mismatches": 0,
+        "shell_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 19,
+        "shield_rigid_mismatches": 0,
+        "shell_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 0,
+        "shield_rigid_mismatches": 0,
+        "shell_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      }
+    ],
+    "godot_run": false,
+    "published": true
+  },
+  "reed_runner": {
+    "source": "assets\\sprites\\manyworlds\\reed_runner.png",
+    "base_offset": [
+      148,
+      2
+    ],
+    "master_sha256": "b489151c2052bf815e9938944fc0eaf509e8f53c71fa7f98339b09473f598cb8",
+    "strip_size": [
+      4640,
+      305
+    ],
+    "frame_1_exact_clean_base": true,
+    "frame_8_exact": true,
+    "old_idle_pixels_used": false,
+    "frames": [
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 0,
+        "rifle_and_hands_rigid_mismatches": 0,
+        "scarf_rigid_mismatches": 0,
+        "pouches_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 1,
+        "rifle_and_hands_rigid_mismatches": 0,
+        "scarf_rigid_mismatches": 0,
+        "pouches_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 5,
+        "rifle_and_hands_rigid_mismatches": 0,
+        "scarf_rigid_mismatches": 0,
+        "pouches_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 6,
+        "rifle_and_hands_rigid_mismatches": 0,
+        "scarf_rigid_mismatches": 0,
+        "pouches_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 6,
+        "rifle_and_hands_rigid_mismatches": 0,
+        "scarf_rigid_mismatches": 0,
+        "pouches_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 5,
+        "rifle_and_hands_rigid_mismatches": 0,
+        "scarf_rigid_mismatches": 0,
+        "pouches_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 1,
+        "rifle_and_hands_rigid_mismatches": 0,
+        "scarf_rigid_mismatches": 0,
+        "pouches_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "rigid_body_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_region_mismatches": 0,
+        "rigid_body_clipped_pixels": 0,
+        "special_transform_mismatches": 0,
+        "visible_seam_pixels": 0,
+        "rifle_and_hands_rigid_mismatches": 0,
+        "scarf_rigid_mismatches": 0,
+        "pouches_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      }
+    ],
+    "godot_run": false,
+    "published": true
+  }
+}

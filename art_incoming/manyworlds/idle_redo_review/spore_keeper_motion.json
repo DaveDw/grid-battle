@@ -1,0 +1,138 @@
+[
+  {
+    "frame": 1,
+    "body_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_dxy": [
+      0,
+      0
+    ],
+    "launcher_glow": 0,
+    "puff_age": null
+  },
+  {
+    "frame": 2,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_dxy": [
+      0,
+      -1
+    ],
+    "launcher_glow": 0.15,
+    "puff_age": null
+  },
+  {
+    "frame": 3,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_dxy": [
+      0,
+      -2
+    ],
+    "launcher_glow": 0.55,
+    "puff_age": 0
+  },
+  {
+    "frame": 4,
+    "body_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_dxy": [
+      0,
+      -3
+    ],
+    "launcher_glow": 0.85,
+    "puff_age": 1
+  },
+  {
+    "frame": 5,
+    "body_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_dxy": [
+      0,
+      -3
+    ],
+    "launcher_glow": 0.65,
+    "puff_age": 2
+  },
+  {
+    "frame": 6,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_dxy": [
+      0,
+      -2
+    ],
+    "launcher_glow": 0.3,
+    "puff_age": 3
+  },
+  {
+    "frame": 7,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_dxy": [
+      0,
+      -1
+    ],
+    "launcher_glow": 0.1,
+    "puff_age": null
+  },
+  {
+    "frame": 8,
+    "body_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_dxy": [
+      0,
+      0
+    ],
+    "launcher_glow": 0,
+    "puff_age": null
+  }
+]

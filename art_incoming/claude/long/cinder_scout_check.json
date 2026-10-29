@@ -1,0 +1,149 @@
+{
+  "frame1": {
+    "seam_pixels": 0
+  },
+  "frame2": {
+    "seam_pixels": 149
+  },
+  "frame3": {
+    "seam_pixels": 149
+  },
+  "frame4": {
+    "seam_pixels": 247
+  },
+  "frame5": {
+    "seam_pixels": 178
+  },
+  "frame6": {
+    "seam_pixels": 149
+  },
+  "frame7": {
+    "seam_pixels": 116
+  },
+  "frame8": {
+    "seam_pixels": 0
+  },
+  "frame_1_is_master": true,
+  "master": {
+    "cleaned_pixels": 0,
+    "frame_size": [
+      594,
+      324
+    ],
+    "source": "res://assets/sprites/long/cinder_scout_idle.png"
+  },
+  "motion": {
+    "body": {
+      "dx": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "dy": [
+        0,
+        1,
+        1,
+        2,
+        2,
+        1,
+        1,
+        0
+      ],
+      "max_shift_px": 2,
+      "rot": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "flame": {
+      "dx": [
+        0.0,
+        1.0,
+        0.0,
+        -1.0,
+        0.0,
+        1.0,
+        -1.0,
+        0.0
+      ],
+      "dy": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        2.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "max_shift_px": 2,
+      "rot": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "knife": {
+      "dx": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "dy": [
+        0.0,
+        1.0,
+        1.0,
+        2.0,
+        2.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "max_shift_px": 2,
+      "rot": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "problems": [],
+  "published": true,
+  "stray_blobs": [
+    {
+      "px": 34,
+      "rect": [
+        397,
+        69,
+        403,
+        77
+      ]
+    }
+  ]
+}

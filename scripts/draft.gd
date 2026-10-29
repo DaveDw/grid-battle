@@ -55,6 +55,8 @@ func _label(pos: Vector2, size: int, col: Color) -> Label:
 	l.position = pos
 	l.size = Vector2(1280, size + 12)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if size >= 24:
+		l.add_theme_font_override("font", Game.FONT_HEAD)
 	l.add_theme_font_size_override("font_size", size)
 	l.add_theme_color_override("font_color", col)
 	add_child(l)
@@ -116,29 +118,37 @@ func _card_button(id: String, cb: Callable, count := 0, locked := false) -> Butt
 	var name_l := Label.new()
 	name_l.text = ("%d× " % count if count > 1 else "") + c["name"]
 	name_l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	name_l.add_theme_font_size_override("font_size", 22 if count == 0 else 16)
+	name_l.add_theme_font_override("font", Game.FONT_CARD)
+	name_l.add_theme_font_size_override("font_size", 16 if count == 0 else 8)
+	if count > 0:   # small cards (drop-a-card grid): icon beside the name; big cards get it below
+		top.add_child(Game.card_icon(id, 32))
 	top.add_child(name_l)
 	var cost := Label.new()
 	cost.text = "%d" % int(Game.card_cost(id))
-	cost.add_theme_font_size_override("font_size", 22 if count == 0 else 16)
+	cost.add_theme_font_override("font", Game.FONT_CARD)
+	cost.add_theme_font_size_override("font_size", 16 if count == 0 else 8)
 	cost.add_theme_color_override("font_color", Color(0.45, 0.8, 1.0))
 	top.add_child(cost)
 	var fac := Game.card_faction(id)
 	var tag := Label.new()
 	var fac_name: String = Game.FACTIONS[fac]["name"] if fac != "" else ""
+	# short faction name ("Terran", "Long Tomorrow") so the tag fits the card
+	fac_name = fac_name.trim_prefix("The ") if fac_name.begins_with("The ") else fac_name.split(" ")[0]
 	if count > 0:
-		fac_name = fac_name.split(" ")[0] if not fac_name.begins_with("The ") else fac_name.split(" ")[1]
 		tag.text = "LOCKED · leader card" if locked else fac_name
 	else:
 		tag.text = "%s  ·  %s" % [fac_name, {"unit": "selected unit", "tile": "aimed at a tile", "none": "no target"}[c["target"]]]
 	tag.clip_text = true
-	tag.add_theme_font_size_override("font_size", 12)
+	tag.add_theme_font_override("font", Game.FONT_CARD)
+	tag.add_theme_font_size_override("font_size", 8)
 	tag.add_theme_color_override("font_color", Game.FACTIONS[fac]["color"] if fac != "" else Color(0.7, 0.7, 0.8))
 	v.add_child(tag)
 	var t := Label.new()
-	t.text = c["text"]
+	t.text = c["text"].replace("/", "/" + char(0x2060))   # word joiner: never break "HP/s" after the slash
 	t.autowrap_mode = TextServer.AUTOWRAP_WORD
-	t.add_theme_font_size_override("font_size", 16 if count == 0 else 12)
+	t.add_theme_font_override("font", Game.FONT_CARD)
+	t.add_theme_font_size_override("font_size", 10 if count == 0 else 8)
+	t.add_theme_constant_override("line_spacing", 4)
 	t.add_theme_color_override("font_color", Color(0.78, 0.83, 0.92))
 	v.add_child(t)
 	if count == 0 and fac != "":
@@ -171,11 +181,15 @@ func _card_art(b: Button, id: String, col: Color) -> void:
 	b.add_child(art)
 	b.move_child(art, 0)   # behind the text
 	var pic := TextureRect.new()
-	pic.texture = Game.sprite_texture(Game.card_art_unit(id))
+	var card_pic := Game.card_art(id)
+	pic.texture = card_pic if card_pic else Game.sprite_texture(Game.card_art_unit(id))
 	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	# the card's own icon shows at its native 128 px (4x) so the pixels stay square;
+	# cards without one yet fall back to a faded unit sprite
+	pic.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED if card_pic else TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	pic.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	pic.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	pic.modulate = Color(1, 1, 1, 0.55)
+	pic.modulate = Color.WHITE if card_pic else Color(1, 1, 1, 0.55)
 	pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	art.add_child(pic)
 	var kind := Label.new()

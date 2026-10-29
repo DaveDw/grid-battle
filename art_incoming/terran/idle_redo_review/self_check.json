@@ -1,0 +1,218 @@
+{
+  "banner_marshal": {
+    "master_sha256": "f88e2c686b83677103ef1b17ffec86e6581c34ca97ca6416ca51a6fc942d1cf9",
+    "frame_1_exact": true,
+    "frame_8_exact_loop_close": true,
+    "feet_identical": true,
+    "feet_lock_region_y": [
+      348,
+      383
+    ],
+    "native_cell_size": [
+      384,
+      384
+    ],
+    "frames": [
+      {
+        "frame": 1,
+        "unexpected_pixel_changes": {
+          "pole": 0,
+          "tassel": 0,
+          "sword_and_grip": 0,
+          "flag_grip": 0,
+          "rigid_body_visible": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 0
+      },
+      {
+        "frame": 2,
+        "unexpected_pixel_changes": {
+          "pole": 0,
+          "tassel": 0,
+          "sword_and_grip": 0,
+          "flag_grip": 0,
+          "rigid_body_visible": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 52
+      },
+      {
+        "frame": 3,
+        "unexpected_pixel_changes": {
+          "pole": 0,
+          "tassel": 0,
+          "sword_and_grip": 0,
+          "flag_grip": 0,
+          "rigid_body_visible": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 52
+      },
+      {
+        "frame": 4,
+        "unexpected_pixel_changes": {
+          "pole": 0,
+          "tassel": 0,
+          "sword_and_grip": 0,
+          "flag_grip": 0,
+          "rigid_body_visible": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 103
+      },
+      {
+        "frame": 5,
+        "unexpected_pixel_changes": {
+          "pole": 0,
+          "tassel": 0,
+          "sword_and_grip": 0,
+          "flag_grip": 0,
+          "rigid_body_visible": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 103
+      },
+      {
+        "frame": 6,
+        "unexpected_pixel_changes": {
+          "pole": 0,
+          "tassel": 0,
+          "sword_and_grip": 0,
+          "flag_grip": 0,
+          "rigid_body_visible": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 52
+      },
+      {
+        "frame": 7,
+        "unexpected_pixel_changes": {
+          "pole": 0,
+          "tassel": 0,
+          "sword_and_grip": 0,
+          "flag_grip": 0,
+          "rigid_body_visible": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 52
+      },
+      {
+        "frame": 8,
+        "unexpected_pixel_changes": {
+          "pole": 0,
+          "tassel": 0,
+          "sword_and_grip": 0,
+          "flag_grip": 0,
+          "rigid_body_visible": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 0
+      }
+    ]
+  },
+  "pathfinder": {
+    "master_sha256": "35a9071c2f47c139150c628f1574d50cbfcc6b5dcad2f4bd615e6d37e1a7caed",
+    "frame_1_exact": true,
+    "frame_8_exact_loop_close": true,
+    "feet_identical": true,
+    "feet_lock_region_y": [
+      326,
+      383
+    ],
+    "native_cell_size": [
+      384,
+      384
+    ],
+    "frames": [
+      {
+        "frame": 1,
+        "unexpected_pixel_changes": {
+          "torso_rifle_scarf": 0,
+          "head_except_eyes_screen": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 0
+      },
+      {
+        "frame": 2,
+        "unexpected_pixel_changes": {
+          "torso_rifle_scarf": 0,
+          "head_except_eyes_screen": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 0
+      },
+      {
+        "frame": 3,
+        "unexpected_pixel_changes": {
+          "torso_rifle_scarf": 0,
+          "head_except_eyes_screen": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 0
+      },
+      {
+        "frame": 4,
+        "unexpected_pixel_changes": {
+          "torso_rifle_scarf": 0,
+          "head_except_eyes_screen": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 23
+      },
+      {
+        "frame": 5,
+        "unexpected_pixel_changes": {
+          "torso_rifle_scarf": 0,
+          "head_except_eyes_screen": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 23
+      },
+      {
+        "frame": 6,
+        "unexpected_pixel_changes": {
+          "torso_rifle_scarf": 0,
+          "head_except_eyes_screen": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 23
+      },
+      {
+        "frame": 7,
+        "unexpected_pixel_changes": {
+          "torso_rifle_scarf": 0,
+          "head_except_eyes_screen": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 0
+      },
+      {
+        "frame": 8,
+        "unexpected_pixel_changes": {
+          "torso_rifle_scarf": 0,
+          "head_except_eyes_screen": 0,
+          "stationary_legs_visible": 0,
+          "feet_region": 0
+        },
+        "permitted_seam_pixels": 0
+      }
+    ]
+  }
+}

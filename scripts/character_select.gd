@@ -15,26 +15,79 @@ var _deck_leader := ""
 var _ng_pick: OptionButton
 var _squad_sprites: Array = []
 var _bg: Control                # backdrop, tinted to the browsed leader's faction
+var _mode_pick: OptionButton    # Conquest / Evolution
+var _size_pick: OptionButton    # Conquest: units controlled (1-3)
+var _lackey_pick: OptionButton  # Conquest with 2: heavy or light
+var _sub: Label
 
 func _ready() -> void:
 	_bg = preload("res://scripts/menu_background.gd").make("grid", Color(0.3, 0.5, 0.9))
 	add_child(_bg)
 	var title := Label.new()
 	title.text = "CHOOSE YOUR LEADER"
+	title.add_theme_font_override("font", Game.FONT_HEAD)
 	title.add_theme_font_size_override("font_size", 38)
 	title.position = Vector2(40, 22)
 	add_child(title)
-	var sub := Label.new()
-	sub.text = "Each leader brings a heavy and a light. Your squad fights as three."
-	sub.add_theme_color_override("font_color", Color(0.55, 0.7, 0.9))
-	sub.add_theme_font_size_override("font_size", 15)
-	sub.position = Vector2(42, 72)
-	add_child(sub)
+	_sub = Label.new()
+	_sub.add_theme_color_override("font_color", Color(0.55, 0.7, 0.9))
+	_sub.add_theme_font_size_override("font_size", 13)
+	_sub.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_sub.position = Vector2(42, 68)
+	_sub.size = Vector2(610, 38)
+	add_child(_sub)
 	_build_grid()
 	_build_detail()
+	_build_mode_picks()
 	_build_footer()
 	_choose(0, false)
 	_cards[0].grab_focus()
+
+# --- game mode ---------------------------------------------------------------
+
+func _build_mode_picks() -> void:
+	_mode_pick = _pick(Vector2(670, 34), 190, "MODE")
+	for m in ["conquest", "evolution"]:
+		_mode_pick.add_item(Game.MODES[m]["name"])
+		_mode_pick.set_item_metadata(_mode_pick.item_count - 1, m)
+	_size_pick = _pick(Vector2(876, 34), 170, "UNITS YOU CONTROL")
+	for n in [1, 2, 3]:
+		_size_pick.add_item("%d unit%s" % [n, "" if n == 1 else "s"], n)
+	_size_pick.select(0)   # Conquest starts at 1 unit (user default, 2026-10-29)
+	_lackey_pick = _pick(Vector2(1062, 34), 188, "LACKEY")
+	_lackey_pick.add_item("Heavy", 0)
+	_lackey_pick.add_item("Light", 1)
+	for p in [_mode_pick, _size_pick, _lackey_pick]:
+		p.item_selected.connect(func(_i): _mode_changed())
+	_mode_changed()
+
+func _pick(pos: Vector2, w: float, caption: String) -> OptionButton:
+	var cap := _label(self, pos - Vector2(0, 20), 12, Color(0.45, 0.75, 1.0))
+	cap.text = caption
+	var p := OptionButton.new()
+	p.position = pos
+	p.custom_minimum_size = Vector2(w, 40)
+	p.set_meta("caption", cap)
+	add_child(p)
+	return p
+
+func _mode() -> String:
+	return _mode_pick.get_item_metadata(_mode_pick.selected)
+
+func _squad_size() -> int:
+	return _size_pick.get_selected_id() if _mode() == "conquest" else 3
+
+func _lackey() -> String:
+	return "light" if _lackey_pick.get_selected_id() == 1 else "heavy"
+
+func _mode_changed() -> void:
+	var conquest := _mode() == "conquest"
+	_size_pick.visible = conquest
+	_lackey_pick.visible = conquest and _squad_size() == 2
+	for p in [_size_pick, _lackey_pick]:
+		p.get_meta("caption").visible = p.visible
+	_sub.text = Game.MODES[_mode()]["text"]
+	_preview(_shown)
 
 # --- leader cards ------------------------------------------------------------
 
@@ -100,7 +153,8 @@ func _build_detail() -> void:
 	panel.add_child(root)
 	_big = FighterSprite.new()
 	_big.height = 270.0
-	_big.max_width = 210.0
+	_big.max_width = 196.0
+	_big.max_height = 285.0
 	_big.feet_y = 0.0
 	_big.position = Vector2(105, 295)
 	root.add_child(_big)
@@ -114,9 +168,14 @@ func _build_detail() -> void:
 	blurb.size = Vector2(320, 90)
 	_detail["blurb"] = blurb
 	_detail["deck_head"] = _label(root, Vector2(220, 222), 13, Color(0.45, 0.75, 1.0))
-	_detail["deck"] = _label(root, Vector2(220, 242), 14, Color(0.8, 0.85, 0.95))
+	var icons := HBoxContainer.new()   # one icon per card in the deck, with its count
+	icons.position = Vector2(220, 242)
+	icons.add_theme_constant_override("separation", 10)
+	root.add_child(icons)
+	_detail["deck_icons"] = icons
+	_detail["deck"] = _label(root, Vector2(220, 280), 12, Color(0.8, 0.85, 0.95))
 	_detail["deck"].autowrap_mode = TextServer.AUTOWRAP_WORD
-	_detail["deck"].size = Vector2(330, 72)
+	_detail["deck"].size = Vector2(330, 36)
 	_label(root, Vector2(0, 318), 14, Color(0.45, 0.75, 1.0)).text = "SQUAD"
 	for k in 3:
 		var slot := Control.new()
@@ -126,17 +185,19 @@ func _build_detail() -> void:
 		bg.size = Vector2(172, 150)
 		slot.add_child(bg)
 		var s := FighterSprite.new()
-		s.height = 96.0
+		s.height = 88.0
 		s.max_width = 150.0
+		s.max_height = 94.0
 		s.feet_y = 0.0
-		s.position = Vector2(86, 108)
+		s.position = Vector2(86, 98)
 		slot.add_child(s)
-		var n := _label(slot, Vector2(6, 112), 14, Color.WHITE)
+		var n := _label(slot, Vector2(6, 100), 14, Color.WHITE)
 		n.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		n.size = Vector2(160, 20)
-		var r := _label(slot, Vector2(6, 130), 12, Color(0.6, 0.7, 0.85))
+		var r := _label(slot, Vector2(6, 120), 10, Color(0.6, 0.7, 0.85))   # two lines fit inside the 150 px box
 		r.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		r.size = Vector2(160, 18)
+		r.size = Vector2(160, 34)
+		r.autowrap_mode = TextServer.AUTOWRAP_WORD
 		_squad_sprites.append({"sprite": s, "name": n, "role": r})
 
 func _label(parent: Node, pos: Vector2, fs: int, col: Color) -> Label:
@@ -220,11 +281,22 @@ func _preview(i: int) -> void:
 	_show_deck()
 	_set_sprite(_big, l["leader"])
 	var k := 0
+	var fielded: Array = Game.squad_roles(_squad_size(), _lackey()) if _mode_pick else ["leader", "heavy", "light"]
 	for role in ["leader", "heavy", "light"]:
 		var e: Dictionary = _squad_sprites[k]
 		_set_sprite(e["sprite"], l[role])
 		e["name"].text = Game.UNITS[l[role]]["name"]
 		e["role"].text = "%s  ·  %d HP" % [role.to_upper(), Game.ROLES[role]["hp"]]
+		var on: bool = role in fielded
+		e["sprite"].modulate = Color.WHITE if on else Color(0.4, 0.42, 0.5, 0.45)
+		e["name"].modulate = e["sprite"].modulate if not on else Color.WHITE
+		if not on:
+			e["role"].text = "STAYS BEHIND"
+		elif fielded.size() == 1:
+			# alone, the leader takes its squad's fire and passive
+			var kit := Game.solo_kit(l["id"])
+			var alt: String = Game.PRIMARY_NAMES.get(kit["alt"], "Shot").replace(" (hold)", "") if kit["alt"] != "standard" else "Heavy Shot"
+			e["role"].text = "+ %s%s" % [alt, ("  + " + Game.PASSIVE_NAMES[kit["passive"]]) if kit["passive"] != "" else ""]
 		k += 1
 
 ## The starting deck for the selected leader (sculpted on NG+), counted per card.
@@ -239,6 +311,19 @@ func _show_deck() -> void:
 	for c in counts:
 		lines.append("%d× %s%s" % [counts[c], Game.CARDS[c]["name"], " ★" if c == lc else ""])
 	_detail["deck"].text = "   ·   ".join(lines)
+	var icons: HBoxContainer = _detail["deck_icons"]
+	for n in icons.get_children():
+		n.queue_free()
+	for c in counts:
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 2)
+		row.add_child(Game.card_icon(c, 32))
+		var n := Label.new()
+		n.text = "×%d" % counts[c]
+		n.add_theme_font_override("font", Game.FONT_NUM)
+		n.add_theme_font_size_override("font_size", 8)
+		row.add_child(n)
+		icons.add_child(row)
 	_detail["deck_head"].text = "STARTING DECK" + ("  ·  SCULPTED" if deck != Game.starter_deck(id) else "")
 
 func _ng() -> int:
@@ -253,20 +338,20 @@ func _build_footer() -> void:
 	var back := Button.new()
 	back.text = "Back"
 	back.position = Vector2(40, 650)
-	back.custom_minimum_size = Vector2(140, 44)
+	back.custom_minimum_size = Vector2(120, 44)
 	back.pressed.connect(_back)
 	add_child(back)
 	var rnd := Button.new()
 	rnd.text = "Random Leader"
-	rnd.position = Vector2(196, 650)
-	rnd.custom_minimum_size = Vector2(180, 44)
+	rnd.position = Vector2(172, 650)
+	rnd.custom_minimum_size = Vector2(216, 44)
 	rnd.pressed.connect(func():
 		_choose(_cards[randi() % _cards.size()].get_meta("leader")))
 	add_child(rnd)
 	var view := Button.new()
 	view.text = "Deck"
-	view.position = Vector2(392, 650)
-	view.custom_minimum_size = Vector2(140, 44)
+	view.position = Vector2(400, 650)
+	view.custom_minimum_size = Vector2(132, 44)
 	view.pressed.connect(func():
 		var d := DeckSculpt.new()
 		d.leader_id = _deck_leader
@@ -316,7 +401,7 @@ func _build_footer() -> void:
 func _on_begin() -> void:
 	var id: String = Game.LEADERS[_selected]["id"]
 	var start: Array = _deck if _ng() >= 1 and Game.valid_start_deck(id, _deck) else []
-	Game.new_run(id, _slot_pick.get_selected_id(), _ng(), start)
+	Game.new_run(id, _slot_pick.get_selected_id(), _ng(), start, _mode(), _squad_size(), _lackey())
 	Game.go(Game.resume_scene())
 
 func _unhandled_input(event: InputEvent) -> void:

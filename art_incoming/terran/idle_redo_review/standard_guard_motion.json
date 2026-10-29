@@ -1,0 +1,106 @@
+[
+  {
+    "frame": 1,
+    "whole_upper_body_dxy": [
+      0,
+      0
+    ],
+    "shield_or_rifle_dxy": [
+      0,
+      0
+    ],
+    "visor_light_center_source_x": null,
+    "cyan_rifle_flash": 0
+  },
+  {
+    "frame": 2,
+    "whole_upper_body_dxy": [
+      0,
+      1
+    ],
+    "shield_or_rifle_dxy": [
+      0,
+      1
+    ],
+    "visor_light_center_source_x": null,
+    "cyan_rifle_flash": 0.95
+  },
+  {
+    "frame": 3,
+    "whole_upper_body_dxy": [
+      0,
+      1
+    ],
+    "shield_or_rifle_dxy": [
+      0,
+      1
+    ],
+    "visor_light_center_source_x": 260,
+    "cyan_rifle_flash": 0
+  },
+  {
+    "frame": 4,
+    "whole_upper_body_dxy": [
+      0,
+      2
+    ],
+    "shield_or_rifle_dxy": [
+      0,
+      2
+    ],
+    "visor_light_center_source_x": 272,
+    "cyan_rifle_flash": 0
+  },
+  {
+    "frame": 5,
+    "whole_upper_body_dxy": [
+      0,
+      2
+    ],
+    "shield_or_rifle_dxy": [
+      0,
+      2
+    ],
+    "visor_light_center_source_x": 284,
+    "cyan_rifle_flash": 0
+  },
+  {
+    "frame": 6,
+    "whole_upper_body_dxy": [
+      0,
+      1
+    ],
+    "shield_or_rifle_dxy": [
+      0,
+      1
+    ],
+    "visor_light_center_source_x": 296,
+    "cyan_rifle_flash": 0.95
+  },
+  {
+    "frame": 7,
+    "whole_upper_body_dxy": [
+      0,
+      1
+    ],
+    "shield_or_rifle_dxy": [
+      0,
+      1
+    ],
+    "visor_light_center_source_x": null,
+    "cyan_rifle_flash": 0
+  },
+  {
+    "frame": 8,
+    "whole_upper_body_dxy": [
+      0,
+      0
+    ],
+    "shield_or_rifle_dxy": [
+      0,
+      0
+    ],
+    "visor_light_center_source_x": null,
+    "cyan_rifle_flash": 0
+  }
+]

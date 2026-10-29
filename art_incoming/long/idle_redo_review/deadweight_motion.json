@@ -1,0 +1,154 @@
+[
+  {
+    "frame": 1,
+    "body_and_held_part_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_inner_rotation_degrees": 0,
+    "light_pulse": 0,
+    "pack_light": "base",
+    "afterimage_dxy": [
+      0,
+      0
+    ],
+    "afterimage_opacity": 0
+  },
+  {
+    "frame": 2,
+    "body_and_held_part_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_inner_rotation_degrees": 0,
+    "light_pulse": 0,
+    "pack_light": "base",
+    "afterimage_dxy": [
+      0,
+      0
+    ],
+    "afterimage_opacity": 0
+  },
+  {
+    "frame": 3,
+    "body_and_held_part_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_inner_rotation_degrees": 60,
+    "light_pulse": 0.45,
+    "pack_light": "dim",
+    "afterimage_dxy": [
+      0,
+      0
+    ],
+    "afterimage_opacity": 0
+  },
+  {
+    "frame": 4,
+    "body_and_held_part_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_inner_rotation_degrees": 140,
+    "light_pulse": 1,
+    "pack_light": "dim",
+    "afterimage_dxy": [
+      0,
+      0
+    ],
+    "afterimage_opacity": 0
+  },
+  {
+    "frame": 5,
+    "body_and_held_part_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_inner_rotation_degrees": 220,
+    "light_pulse": 0.65,
+    "pack_light": "bright",
+    "afterimage_dxy": [
+      0,
+      0
+    ],
+    "afterimage_opacity": 0
+  },
+  {
+    "frame": 6,
+    "body_and_held_part_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_inner_rotation_degrees": 300,
+    "light_pulse": 0.2,
+    "pack_light": "bright",
+    "afterimage_dxy": [
+      0,
+      0
+    ],
+    "afterimage_opacity": 0
+  },
+  {
+    "frame": 7,
+    "body_and_held_part_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_inner_rotation_degrees": 0,
+    "light_pulse": 0,
+    "pack_light": "base",
+    "afterimage_dxy": [
+      0,
+      0
+    ],
+    "afterimage_opacity": 0
+  },
+  {
+    "frame": 8,
+    "body_and_held_part_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "orb_inner_rotation_degrees": 0,
+    "light_pulse": 0,
+    "pack_light": "base",
+    "afterimage_dxy": [
+      0,
+      0
+    ],
+    "afterimage_opacity": 0
+  }
+]

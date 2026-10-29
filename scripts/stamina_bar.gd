@@ -102,7 +102,7 @@ func _draw() -> void:
 	var font := ThemeDB.fallback_font
 	var off := Vector2(sin(_shake * 80.0) * 6.0 * (_shake / 0.3), 0.0)
 	draw_string(font, off + Vector2(0, 12), "STAMINA", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(0.7, 1.0, 0.85))
-	draw_string(font, off + Vector2(size.x - 40, 12), "%d/%d" % [int(value), SEGMENTS], HORIZONTAL_ALIGNMENT_RIGHT, 40, 13, Color(0.7, 1.0, 0.85))
+	draw_string(Game.FONT_NUM, off + Vector2(size.x - 40, 12), "%d/%d" % [int(value), SEGMENTS], HORIZONTAL_ALIGNMENT_RIGHT, 40, 8, Color(0.7, 1.0, 0.85))
 	for i in SEGMENTS:
 		var r := _seg_rect(i)
 		r.position += off

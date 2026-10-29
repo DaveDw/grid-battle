@@ -1,0 +1,282 @@
+[
+  {
+    "frame": 1,
+    "head_and_bowl_dxy": [
+      0,
+      0
+    ],
+    "orb_dxy": [
+      0,
+      0
+    ],
+    "orb_pulse": 0,
+    "orb_exposure": 1,
+    "water_dxy": [
+      0,
+      0
+    ],
+    "tip_degrees": {
+      "upper_right": 0,
+      "left_middle": 0,
+      "left_lower": 0,
+      "right_middle": 0,
+      "right_lower": 0,
+      "right_bottom": 0,
+      "bottom_middle": 0,
+      "crest": 0,
+      "face_left": 0,
+      "face_right": 0,
+      "face_front_left": 0,
+      "face_front_right": 0
+    },
+    "long_shafts_and_stand_dxy": [
+      0,
+      0
+    ]
+  },
+  {
+    "frame": 2,
+    "head_and_bowl_dxy": [
+      0,
+      1
+    ],
+    "orb_dxy": [
+      0,
+      -1
+    ],
+    "orb_pulse": 0.15,
+    "orb_exposure": 0.72,
+    "water_dxy": [
+      0,
+      0
+    ],
+    "tip_degrees": {
+      "upper_right": 0,
+      "left_middle": 0,
+      "left_lower": 0,
+      "right_middle": 0,
+      "right_lower": 0,
+      "right_bottom": 0,
+      "bottom_middle": 0,
+      "crest": 0,
+      "face_left": 0,
+      "face_right": 0,
+      "face_front_left": 0,
+      "face_front_right": 0
+    },
+    "long_shafts_and_stand_dxy": [
+      0,
+      0
+    ]
+  },
+  {
+    "frame": 3,
+    "head_and_bowl_dxy": [
+      0,
+      1
+    ],
+    "orb_dxy": [
+      0,
+      -2
+    ],
+    "orb_pulse": 0.45,
+    "orb_exposure": 0.9,
+    "water_dxy": [
+      0,
+      -1
+    ],
+    "tip_degrees": {
+      "upper_right": -4,
+      "left_middle": 4,
+      "left_lower": -4,
+      "right_middle": 4,
+      "right_lower": -4,
+      "right_bottom": 4,
+      "bottom_middle": -4,
+      "crest": 4,
+      "face_left": 4,
+      "face_right": -4,
+      "face_front_left": 4,
+      "face_front_right": -4
+    },
+    "long_shafts_and_stand_dxy": [
+      0,
+      0
+    ]
+  },
+  {
+    "frame": 4,
+    "head_and_bowl_dxy": [
+      0,
+      2
+    ],
+    "orb_dxy": [
+      0,
+      -3
+    ],
+    "orb_pulse": 0.85,
+    "orb_exposure": 1.2,
+    "water_dxy": [
+      0,
+      -1
+    ],
+    "tip_degrees": {
+      "upper_right": -4,
+      "left_middle": 4,
+      "left_lower": -4,
+      "right_middle": 4,
+      "right_lower": -4,
+      "right_bottom": 4,
+      "bottom_middle": -4,
+      "crest": 4,
+      "face_left": 4,
+      "face_right": -4,
+      "face_front_left": 4,
+      "face_front_right": -4
+    },
+    "long_shafts_and_stand_dxy": [
+      0,
+      0
+    ]
+  },
+  {
+    "frame": 5,
+    "head_and_bowl_dxy": [
+      0,
+      2
+    ],
+    "orb_dxy": [
+      0,
+      -3
+    ],
+    "orb_pulse": 1,
+    "orb_exposure": 1.35,
+    "water_dxy": [
+      0,
+      -1
+    ],
+    "tip_degrees": {
+      "upper_right": -4,
+      "left_middle": 4,
+      "left_lower": -4,
+      "right_middle": 4,
+      "right_lower": -4,
+      "right_bottom": 4,
+      "bottom_middle": -4,
+      "crest": 4,
+      "face_left": 4,
+      "face_right": -4,
+      "face_front_left": 4,
+      "face_front_right": -4
+    },
+    "long_shafts_and_stand_dxy": [
+      0,
+      0
+    ]
+  },
+  {
+    "frame": 6,
+    "head_and_bowl_dxy": [
+      0,
+      1
+    ],
+    "orb_dxy": [
+      0,
+      -2
+    ],
+    "orb_pulse": 0.55,
+    "orb_exposure": 1.1,
+    "water_dxy": [
+      0,
+      -1
+    ],
+    "tip_degrees": {
+      "upper_right": -4,
+      "left_middle": 4,
+      "left_lower": -4,
+      "right_middle": 4,
+      "right_lower": -4,
+      "right_bottom": 4,
+      "bottom_middle": -4,
+      "crest": 4,
+      "face_left": 4,
+      "face_right": -4,
+      "face_front_left": 4,
+      "face_front_right": -4
+    },
+    "long_shafts_and_stand_dxy": [
+      0,
+      0
+    ]
+  },
+  {
+    "frame": 7,
+    "head_and_bowl_dxy": [
+      0,
+      1
+    ],
+    "orb_dxy": [
+      0,
+      -1
+    ],
+    "orb_pulse": 0.2,
+    "orb_exposure": 0.94,
+    "water_dxy": [
+      0,
+      0
+    ],
+    "tip_degrees": {
+      "upper_right": 0,
+      "left_middle": 0,
+      "left_lower": 0,
+      "right_middle": 0,
+      "right_lower": 0,
+      "right_bottom": 0,
+      "bottom_middle": 0,
+      "crest": 0,
+      "face_left": 0,
+      "face_right": 0,
+      "face_front_left": 0,
+      "face_front_right": 0
+    },
+    "long_shafts_and_stand_dxy": [
+      0,
+      0
+    ]
+  },
+  {
+    "frame": 8,
+    "head_and_bowl_dxy": [
+      0,
+      0
+    ],
+    "orb_dxy": [
+      0,
+      0
+    ],
+    "orb_pulse": 0,
+    "orb_exposure": 1,
+    "water_dxy": [
+      0,
+      0
+    ],
+    "tip_degrees": {
+      "upper_right": 0,
+      "left_middle": 0,
+      "left_lower": 0,
+      "right_middle": 0,
+      "right_lower": 0,
+      "right_bottom": 0,
+      "bottom_middle": 0,
+      "crest": 0,
+      "face_left": 0,
+      "face_right": 0,
+      "face_front_left": 0,
+      "face_front_right": 0
+    },
+    "long_shafts_and_stand_dxy": [
+      0,
+      0
+    ]
+  }
+]

@@ -1,0 +1,130 @@
+[
+  {
+    "frame": 1,
+    "sphere_and_arms_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "chest_bright_mix": 0,
+    "side_pupil_extra_dxy": [
+      0,
+      0
+    ]
+  },
+  {
+    "frame": 2,
+    "sphere_and_arms_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "chest_bright_mix": 0,
+    "side_pupil_extra_dxy": [
+      0,
+      0
+    ]
+  },
+  {
+    "frame": 3,
+    "sphere_and_arms_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "chest_bright_mix": 0.35,
+    "side_pupil_extra_dxy": [
+      1,
+      0
+    ]
+  },
+  {
+    "frame": 4,
+    "sphere_and_arms_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "chest_bright_mix": 0.85,
+    "side_pupil_extra_dxy": [
+      2,
+      0
+    ]
+  },
+  {
+    "frame": 5,
+    "sphere_and_arms_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "chest_bright_mix": 1,
+    "side_pupil_extra_dxy": [
+      1,
+      0
+    ]
+  },
+  {
+    "frame": 6,
+    "sphere_and_arms_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "chest_bright_mix": 0.45,
+    "side_pupil_extra_dxy": [
+      -1,
+      0
+    ]
+  },
+  {
+    "frame": 7,
+    "sphere_and_arms_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "chest_bright_mix": 0,
+    "side_pupil_extra_dxy": [
+      0,
+      0
+    ]
+  },
+  {
+    "frame": 8,
+    "sphere_and_arms_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "chest_bright_mix": 0,
+    "side_pupil_extra_dxy": [
+      0,
+      0
+    ]
+  }
+]

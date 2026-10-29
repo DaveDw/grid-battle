@@ -11,6 +11,10 @@ const LINES := [
 	["", 20],
 	["Programming", 16], ["Hermes Agent (Qwen3.8 Coding, local)", 22], ["Claude (Anthropic)", 22],
 	["", 20],
+	["Card art", 16], ["Claude (Anthropic)", 22],
+	["", 20],
+	["Fonts (SIL Open Font License)", 16], ["Press Start 2P · Silkscreen · Jersey 10", 22],
+	["", 20],
 	["Engine", 16], ["Godot Engine 4.7", 26],
 	["", 20],
 	["Inspired by", 16], ["grid battlers and deck-building roguelikes", 22],
@@ -28,7 +32,15 @@ func _ready() -> void:
 	_scroll.custom_minimum_size = Vector2(1280, 0)
 	_scroll.add_theme_constant_override("separation", 6)
 	add_child(_scroll)
-	for l in LINES:
+	var lines: Array = LINES.duplicate()
+	# music credits go after the Engine block
+	var at := lines.find(["Godot Engine 4.7", 26]) + 1
+	var music: Array = [["", 20], ["Music", 16], ["Original score generated in code", 22]]
+	for c in Music.CREDITS:
+		music.append([c, 18])
+	for i in music.size():
+		lines.insert(at + i, music[i])
+	for l in lines:
 		var lab := Label.new()
 		lab.text = l[0]
 		lab.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

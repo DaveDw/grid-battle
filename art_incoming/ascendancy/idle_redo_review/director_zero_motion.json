@@ -1,0 +1,114 @@
+[
+  {
+    "frame": 1,
+    "blade_and_halo_dxy": [
+      0,
+      0
+    ],
+    "both_hands_dxy": [
+      0,
+      0
+    ],
+    "halo_source_multiplier": 1,
+    "halo_bright_mix": 0,
+    "red_eye_off": false
+  },
+  {
+    "frame": 2,
+    "blade_and_halo_dxy": [
+      0,
+      -1
+    ],
+    "both_hands_dxy": [
+      0,
+      0
+    ],
+    "halo_source_multiplier": 0.55,
+    "halo_bright_mix": 0,
+    "red_eye_off": false
+  },
+  {
+    "frame": 3,
+    "blade_and_halo_dxy": [
+      0,
+      -3
+    ],
+    "both_hands_dxy": [
+      0,
+      -1
+    ],
+    "halo_source_multiplier": 0.76,
+    "halo_bright_mix": 0.15,
+    "red_eye_off": false
+  },
+  {
+    "frame": 4,
+    "blade_and_halo_dxy": [
+      0,
+      -4
+    ],
+    "both_hands_dxy": [
+      0,
+      -3
+    ],
+    "halo_source_multiplier": 1,
+    "halo_bright_mix": 0.8,
+    "red_eye_off": false
+  },
+  {
+    "frame": 5,
+    "blade_and_halo_dxy": [
+      0,
+      -4
+    ],
+    "both_hands_dxy": [
+      0,
+      -4
+    ],
+    "halo_source_multiplier": 1,
+    "halo_bright_mix": 0.95,
+    "red_eye_off": true
+  },
+  {
+    "frame": 6,
+    "blade_and_halo_dxy": [
+      0,
+      -3
+    ],
+    "both_hands_dxy": [
+      0,
+      -4
+    ],
+    "halo_source_multiplier": 0.84,
+    "halo_bright_mix": 0.2,
+    "red_eye_off": false
+  },
+  {
+    "frame": 7,
+    "blade_and_halo_dxy": [
+      0,
+      -1
+    ],
+    "both_hands_dxy": [
+      0,
+      -3
+    ],
+    "halo_source_multiplier": 0.94,
+    "halo_bright_mix": 0,
+    "red_eye_off": false
+  },
+  {
+    "frame": 8,
+    "blade_and_halo_dxy": [
+      0,
+      0
+    ],
+    "both_hands_dxy": [
+      0,
+      -1
+    ],
+    "halo_source_multiplier": 1,
+    "halo_bright_mix": 0,
+    "red_eye_off": false
+  }
+]

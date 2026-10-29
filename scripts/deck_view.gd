@@ -6,7 +6,7 @@ extends Control
 
 signal closed
 
-const CARD_W := 270.0
+const CARD_W := 300.0
 const CARD_H := 84.0
 
 var groups: Array = []          # [[title, [card ids]], ...]
@@ -37,6 +37,7 @@ func _ready() -> void:
 	panel.add_child(v)
 	var head := Label.new()
 	head.text = title
+	head.add_theme_font_override("font", Game.FONT_HEAD)
 	head.add_theme_font_size_override("font_size", 28)
 	v.add_child(head)
 	var scroll := ScrollContainer.new()
@@ -87,24 +88,34 @@ func _card(id: String, count: int) -> Control:
 	var c: Dictionary = Game.CARDS[id]
 	var box := PanelContainer.new()
 	box.custom_minimum_size = Vector2(CARD_W, CARD_H)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	box.add_child(row)
+	row.add_child(Game.card_icon(id, 64))   # the card's art at 2x
 	var v := VBoxContainer.new()
-	box.add_child(v)
+	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(v)
 	var top := HBoxContainer.new()
 	v.add_child(top)
 	var n := Label.new()
 	n.text = ("%d× " % count if count > 1 else "") + c["name"]
 	n.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	n.add_theme_font_size_override("font_size", 16)
+	n.add_theme_font_override("font", Game.FONT_CARD)
+	n.add_theme_font_size_override("font_size", 10)
 	top.add_child(n)
 	var cost := Label.new()
 	cost.text = "%d" % int(Game.card_cost(id))
+	cost.add_theme_font_override("font", Game.FONT_CARD)
+	cost.add_theme_font_size_override("font_size", 10)
 	cost.add_theme_color_override("font_color", Color(0.45, 0.8, 1.0))
 	top.add_child(cost)
 	var t := Label.new()
-	t.text = c["text"]
+	t.text = c["text"].replace("/", "/" + char(0x2060))   # word joiner: never break "HP/s" after the slash
 	t.autowrap_mode = TextServer.AUTOWRAP_WORD
-	t.custom_minimum_size = Vector2(CARD_W - 40, 0)
-	t.add_theme_font_size_override("font_size", 13)
+	t.custom_minimum_size = Vector2(CARD_W - 110, 0)
+	t.add_theme_font_override("font", Game.FONT_CARD)
+	t.add_theme_font_size_override("font_size", 8)
+	t.add_theme_constant_override("line_spacing", 4)
 	t.add_theme_color_override("font_color", Color(0.7, 0.76, 0.88))
 	v.add_child(t)
 	return box

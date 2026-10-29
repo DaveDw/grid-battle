@@ -11,6 +11,7 @@ func _ready() -> void:
 	add_child(preload("res://scripts/menu_background.gd").make("space", Color(0.25, 0.75, 0.8), 7, Vector2(1120, 160), 220.0))
 	var title := Label.new()
 	title.text = "LOAD RUN"
+	title.add_theme_font_override("font", Game.FONT_HEAD)
 	title.add_theme_font_size_override("font_size", 44)
 	title.position = Vector2(90, 50)
 	add_child(title)
@@ -47,6 +48,7 @@ func _refresh() -> void:
 		var info := VBoxContainer.new()
 		info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var head := Label.new()
+		head.add_theme_font_override("font", Game.FONT_HEAD)
 		head.add_theme_font_size_override("font_size", 24)
 		var body := Label.new()
 		body.add_theme_color_override("font_color", Color(0.6, 0.7, 0.85))

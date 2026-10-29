@@ -1,0 +1,122 @@
+[
+  {
+    "frame": 1,
+    "whole_body_dxy": [
+      0,
+      0
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": null,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0,
+    "tablet_data_scroll_px": null
+  },
+  {
+    "frame": 2,
+    "whole_body_dxy": [
+      0,
+      1
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": null,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0,
+    "tablet_data_scroll_px": 2
+  },
+  {
+    "frame": 3,
+    "whole_body_dxy": [
+      0,
+      1
+    ],
+    "head_extra_dxy": [
+      0,
+      1
+    ],
+    "glasses_glint_center_source_x": 312,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0,
+    "tablet_data_scroll_px": 4
+  },
+  {
+    "frame": 4,
+    "whole_body_dxy": [
+      0,
+      2
+    ],
+    "head_extra_dxy": [
+      0,
+      1
+    ],
+    "glasses_glint_center_source_x": 317,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0,
+    "tablet_data_scroll_px": 6
+  },
+  {
+    "frame": 5,
+    "whole_body_dxy": [
+      0,
+      2
+    ],
+    "head_extra_dxy": [
+      0,
+      1
+    ],
+    "glasses_glint_center_source_x": 334,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0,
+    "tablet_data_scroll_px": 8
+  },
+  {
+    "frame": 6,
+    "whole_body_dxy": [
+      0,
+      1
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": null,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0,
+    "tablet_data_scroll_px": 10
+  },
+  {
+    "frame": 7,
+    "whole_body_dxy": [
+      0,
+      1
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": null,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0,
+    "tablet_data_scroll_px": 12
+  },
+  {
+    "frame": 8,
+    "whole_body_dxy": [
+      0,
+      0
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": null,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0,
+    "tablet_data_scroll_px": null
+  }
+]

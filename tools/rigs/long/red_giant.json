@@ -1,0 +1,20 @@
+{
+  "note": "Breath on the upper body, rock arm and fist (rigid). Beat: lava cracks brighten orange to yellow-white on frames 3-5, embers rise and fade. Built from the clean base sprite (the old idle had frozen ember squares). The rock arm takes only rock and lava pixels, so the red thigh behind it stays fixed; the fist outline stops short of the knee pad.",
+  "master": "base",
+  "base_offset": [236, 2],
+  "feet_y": 362,
+  "parts": [
+    {"name": "rock_arm", "follow": "body", "rect": [236, 132, 380, 299]},
+    {"name": "rock_edge", "follow": "body", "select": ["grey", "orange", "yellow"],
+     "poly": [[236,132],[412,132],[418,210],[404,264],[384,300],[296,303],[246,294],[236,252]]},
+    {"name": "tabard_tips", "follow": "body", "rect": [432, 268, 484, 290], "select": ["bright", "grey"]},
+    {"name": "fist", "follow": "body",
+     "poly": [[521,202],[592,202],[592,302],[545,302],[540,255],[521,250]]},
+    {"name": "body", "dy": "breath", "rects": [[0, 0, 834, 202], [432, 200, 484, 270]]}
+  ],
+  "effects": [
+    {"type": "tint", "shape": {"rect": [236, 32, 388, 310], "select": "orange"}, "color": [255, 200, 60], "amount": [0, 0, 0.25, 0.5, 0.35, 0.1, 0, 0]},
+    {"type": "tint", "shape": {"rect": [236, 32, 388, 310], "select": "yellow"}, "color": [255, 250, 210], "amount": [0, 0, 0.3, 0.65, 0.45, 0.1, 0, 0]},
+    {"type": "particles", "rect": [270, 80, 370, 250], "count": 8, "frames": [3, 8], "life": 3, "rise": 6, "drift": 2, "size": 3, "color": [255, 170, 60], "seed": 7}
+  ]
+}

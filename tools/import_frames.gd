@@ -160,7 +160,12 @@ const IDLE_CELLS := 8
 ## Also records "body_h": the character's standing height in pixels. Cells can be much
 ## taller or wider than the character (a launched shell, a raised flag, a sword thrust),
 ## so FighterSprite scales by the body, not the cell, to keep units their usual size.
+## Units holding something above their head (a flag) would be measured to its tip and
+## drawn too small, so their body height is set by hand: top of the head to the feet.
+const BODY_H_OVERRIDES := {"terran/banner_marshal": 258}   # measured on the idle frame
+
 func _save_meta(unit: String, sheet, cell: Vector2i, body_h: int) -> void:
+	body_h = BODY_H_OVERRIDES.get(unit, body_h)
 	var meta := {"body_h": body_h}
 	var pts: Array = []
 	if sheet:

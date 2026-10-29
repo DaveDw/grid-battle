@@ -1,0 +1,19 @@
+{
+  "note": "Breath on the upper body with the knife and flame hand locked to it. The flame flickers (it may change freely) and embers rise; the helmet glass glints. Built from the clean base sprite (the old idle had frozen ember squares). Below the belt the knife part takes only blade, glove and outline pixels, so the orange thigh behind it stays fixed.",
+  "master": "base",
+  "base_offset": [168, 2],
+  "feet_y": 290,
+  "parts": [
+    {"name": "flame", "rect": [380, 30, 440, 126], "follow": "body", "rigid": false,
+     "dx": [0, 1, 0, -1, 0, 1, -1, 0], "dy": [0, -1, -1, -1, 0, -1, 0, 0]},
+    {"name": "knife", "follow": "body", "select": ["grey", "bright", "dark"],
+     "poly": [[171,160],[240,160],[250,172],[308,208],[306,222],[285,222],[230,195],[171,190]]},
+    {"name": "body", "dy": "breath", "rects": [[0, 0, 594, 161]],
+     "polys": [[[350,30],[440,30],[440,180],[350,180]]]}
+  ],
+  "effects": [
+    {"type": "tint", "shape": {"rect": [380, 30, 440, 175], "select": "yellow"}, "color": [255, 255, 220], "amount": [0, 0.4, 0, 0.6, 0.2, 0.5, 0, 0.3]},
+    {"type": "particles", "rect": [390, 40, 430, 90], "count": 7, "frames": [2, 8], "life": 3, "rise": 5, "drift": 2, "size": 2, "color": [255, 190, 80], "seed": 3},
+    {"type": "glint", "part": "body", "at": [354, 34], "size": 4, "amount": [0, 0, 0, 0.9, 0.5, 0, 0, 0]}
+  ]
+}

@@ -1,0 +1,27 @@
+terran/banner_marshal redone
+terran/pathfinder redone
+terran/siege_rig redone
+terran/claim_lord redone
+terran/breacher redone
+terran/standard_guard redone
+ascendancy/synapse_brute redone
+ascendancy/field_scholar redone
+ascendancy/director_zero redone
+ascendancy/protocol_warden redone
+ascendancy/protocol_warden fixed
+ascendancy/courtesy_android redone
+manyworlds/tide_speaker redone
+manyworlds/reef_bulwark redone
+manyworlds/reed_runner redone
+manyworlds/spore_keeper redone
+manyworlds/glasswing redone
+long/mission_mother redone
+long/red_giant redone
+long/cinder_scout redone
+long/captain_everafter redone
+long/deadweight redone
+long/parallax redone
+ascendancy/chief_visionary redone
+manyworlds/prism_elder redone
+long/deadweight fixed: backpack fitting lighting restored
+long/parallax fixed: completed cropped astrolabe arc

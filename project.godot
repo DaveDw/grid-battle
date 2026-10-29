@@ -16,6 +16,7 @@ config/icon="res://icon.svg"
 
 Game="*res://scripts/game.gd"
 Sfx="*res://scripts/sfx.gd"
+Music="*res://scripts/music.gd"
 
 [display]
 
@@ -85,3 +86,7 @@ card_3={
 [rendering]
 
 textures/vram_compression/import_etc2_astc=true
+
+[gui]
+
+theme/custom_font="res://assets/fonts/font_ui.tres"

@@ -1,0 +1,232 @@
+{
+  "director_zero": {
+    "source": "assets\\sprites\\ascendancy\\director_zero_idle.png",
+    "master_sha256": "b799cf446c05d73c2d438013532c7266aa7ee5b5b258119bdc534244a7d10712",
+    "strip_size": [
+      4272,
+      379
+    ],
+    "frame_1_exact": true,
+    "frame_8_exact": false,
+    "loop_hand_return_px": 1,
+    "frames": [
+      {
+        "blade_clipped_pixels": 0,
+        "blade_rigid_mismatches": 0,
+        "halo_clipped_pixels": 0,
+        "halo_rigid_mismatches": 0,
+        "left_hand_clipped_pixels": 0,
+        "left_hand_rigid_mismatches": 0,
+        "right_hand_clipped_pixels": 0,
+        "right_hand_rigid_mismatches": 0,
+        "alpha_shape_mismatches": 0
+      },
+      {
+        "blade_clipped_pixels": 0,
+        "blade_rigid_mismatches": 0,
+        "halo_clipped_pixels": 0,
+        "halo_rigid_mismatches": 0,
+        "left_hand_clipped_pixels": 0,
+        "left_hand_rigid_mismatches": 0,
+        "right_hand_clipped_pixels": 0,
+        "right_hand_rigid_mismatches": 0,
+        "alpha_shape_mismatches": 0
+      },
+      {
+        "blade_clipped_pixels": 0,
+        "blade_rigid_mismatches": 0,
+        "halo_clipped_pixels": 0,
+        "halo_rigid_mismatches": 0,
+        "left_hand_clipped_pixels": 0,
+        "left_hand_rigid_mismatches": 0,
+        "right_hand_clipped_pixels": 0,
+        "right_hand_rigid_mismatches": 0,
+        "alpha_shape_mismatches": 0
+      },
+      {
+        "blade_clipped_pixels": 0,
+        "blade_rigid_mismatches": 0,
+        "halo_clipped_pixels": 0,
+        "halo_rigid_mismatches": 0,
+        "left_hand_clipped_pixels": 0,
+        "left_hand_rigid_mismatches": 0,
+        "right_hand_clipped_pixels": 0,
+        "right_hand_rigid_mismatches": 0,
+        "alpha_shape_mismatches": 0
+      },
+      {
+        "blade_clipped_pixels": 0,
+        "blade_rigid_mismatches": 0,
+        "halo_clipped_pixels": 0,
+        "halo_rigid_mismatches": 0,
+        "left_hand_clipped_pixels": 0,
+        "left_hand_rigid_mismatches": 0,
+        "right_hand_clipped_pixels": 0,
+        "right_hand_rigid_mismatches": 0,
+        "alpha_shape_mismatches": 0
+      },
+      {
+        "blade_clipped_pixels": 0,
+        "blade_rigid_mismatches": 0,
+        "halo_clipped_pixels": 0,
+        "halo_rigid_mismatches": 0,
+        "left_hand_clipped_pixels": 0,
+        "left_hand_rigid_mismatches": 0,
+        "right_hand_clipped_pixels": 0,
+        "right_hand_rigid_mismatches": 0,
+        "alpha_shape_mismatches": 0
+      },
+      {
+        "blade_clipped_pixels": 0,
+        "blade_rigid_mismatches": 0,
+        "halo_clipped_pixels": 0,
+        "halo_rigid_mismatches": 0,
+        "left_hand_clipped_pixels": 0,
+        "left_hand_rigid_mismatches": 0,
+        "right_hand_clipped_pixels": 0,
+        "right_hand_rigid_mismatches": 0,
+        "alpha_shape_mismatches": 0
+      },
+      {
+        "blade_clipped_pixels": 0,
+        "blade_rigid_mismatches": 0,
+        "halo_clipped_pixels": 0,
+        "halo_rigid_mismatches": 0,
+        "left_hand_clipped_pixels": 0,
+        "left_hand_rigid_mismatches": 0,
+        "right_hand_clipped_pixels": 0,
+        "right_hand_rigid_mismatches": 0,
+        "alpha_shape_mismatches": 0
+      }
+    ],
+    "godot_run": false,
+    "published": true
+  },
+  "protocol_warden": {
+    "source": "assets\\sprites\\ascendancy\\protocol_warden_idle.png",
+    "master_sha256": "efe9f2e0ae3ff6eaa76555dabe4ca13fe83907b756ed1eb31315b59946b2a85d",
+    "strip_size": [
+      5520,
+      368
+    ],
+    "frame_1_exact": true,
+    "frame_8_exact": true,
+    "loop_hand_return_px": 0,
+    "frames": [
+      {
+        "body_rigid_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "entire_foot_region_mismatches": 0,
+        "body_clipped_pixels": 0,
+        "visible_seam_pixels": 0,
+        "pupil_rigid_mismatches": 0,
+        "sphere_rigid_mismatches": 0,
+        "left_arm_rigid_mismatches": 0,
+        "left_claw_rigid_mismatches": 0,
+        "right_arm_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "entire_foot_region_mismatches": 0,
+        "body_clipped_pixels": 0,
+        "visible_seam_pixels": 0,
+        "pupil_rigid_mismatches": 0,
+        "sphere_rigid_mismatches": 0,
+        "left_arm_rigid_mismatches": 0,
+        "left_claw_rigid_mismatches": 0,
+        "right_arm_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "entire_foot_region_mismatches": 0,
+        "body_clipped_pixels": 0,
+        "visible_seam_pixels": 150,
+        "pupil_rigid_mismatches": 0,
+        "sphere_rigid_mismatches": 0,
+        "left_arm_rigid_mismatches": 0,
+        "left_claw_rigid_mismatches": 0,
+        "right_arm_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "entire_foot_region_mismatches": 0,
+        "body_clipped_pixels": 0,
+        "visible_seam_pixels": 150,
+        "pupil_rigid_mismatches": 0,
+        "sphere_rigid_mismatches": 0,
+        "left_arm_rigid_mismatches": 0,
+        "left_claw_rigid_mismatches": 0,
+        "right_arm_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "entire_foot_region_mismatches": 0,
+        "body_clipped_pixels": 0,
+        "visible_seam_pixels": 150,
+        "pupil_rigid_mismatches": 0,
+        "sphere_rigid_mismatches": 0,
+        "left_arm_rigid_mismatches": 0,
+        "left_claw_rigid_mismatches": 0,
+        "right_arm_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "entire_foot_region_mismatches": 0,
+        "body_clipped_pixels": 0,
+        "visible_seam_pixels": 0,
+        "pupil_rigid_mismatches": 0,
+        "sphere_rigid_mismatches": 0,
+        "left_arm_rigid_mismatches": 0,
+        "left_claw_rigid_mismatches": 0,
+        "right_arm_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "entire_foot_region_mismatches": 0,
+        "body_clipped_pixels": 0,
+        "visible_seam_pixels": 0,
+        "pupil_rigid_mismatches": 0,
+        "sphere_rigid_mismatches": 0,
+        "left_arm_rigid_mismatches": 0,
+        "left_claw_rigid_mismatches": 0,
+        "right_arm_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "entire_foot_region_mismatches": 0,
+        "body_clipped_pixels": 0,
+        "visible_seam_pixels": 0,
+        "pupil_rigid_mismatches": 0,
+        "sphere_rigid_mismatches": 0,
+        "left_arm_rigid_mismatches": 0,
+        "left_claw_rigid_mismatches": 0,
+        "right_arm_rigid_mismatches": 0,
+        "unexplained_pixel_mismatches": 0
+      }
+    ],
+    "godot_run": false,
+    "published": true
+  }
+}

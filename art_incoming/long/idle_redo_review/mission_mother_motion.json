@@ -1,0 +1,234 @@
+[
+  {
+    "frame": 1,
+    "body_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {
+      "left_drone_assembly": {
+        "dxy": [
+          0,
+          0
+        ],
+        "cross_dimmed": false
+      },
+      "right_drone": {
+        "dxy": [
+          0,
+          0
+        ],
+        "cross_dimmed": false
+      }
+    },
+    "lava_glow": 0,
+    "ember_age": null
+  },
+  {
+    "frame": 2,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {
+      "left_drone_assembly": {
+        "dxy": [
+          0,
+          -1
+        ],
+        "cross_dimmed": false
+      },
+      "right_drone": {
+        "dxy": [
+          0,
+          1
+        ],
+        "cross_dimmed": false
+      }
+    },
+    "lava_glow": 0,
+    "ember_age": null
+  },
+  {
+    "frame": 3,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {
+      "left_drone_assembly": {
+        "dxy": [
+          0,
+          -2
+        ],
+        "cross_dimmed": true
+      },
+      "right_drone": {
+        "dxy": [
+          0,
+          2
+        ],
+        "cross_dimmed": false
+      }
+    },
+    "lava_glow": 0,
+    "ember_age": null
+  },
+  {
+    "frame": 4,
+    "body_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {
+      "left_drone_assembly": {
+        "dxy": [
+          0,
+          -3
+        ],
+        "cross_dimmed": true
+      },
+      "right_drone": {
+        "dxy": [
+          0,
+          3
+        ],
+        "cross_dimmed": false
+      }
+    },
+    "lava_glow": 0,
+    "ember_age": null
+  },
+  {
+    "frame": 5,
+    "body_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {
+      "left_drone_assembly": {
+        "dxy": [
+          0,
+          -3
+        ],
+        "cross_dimmed": false
+      },
+      "right_drone": {
+        "dxy": [
+          0,
+          3
+        ],
+        "cross_dimmed": true
+      }
+    },
+    "lava_glow": 0,
+    "ember_age": null
+  },
+  {
+    "frame": 6,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {
+      "left_drone_assembly": {
+        "dxy": [
+          0,
+          -2
+        ],
+        "cross_dimmed": false
+      },
+      "right_drone": {
+        "dxy": [
+          0,
+          2
+        ],
+        "cross_dimmed": true
+      }
+    },
+    "lava_glow": 0,
+    "ember_age": null
+  },
+  {
+    "frame": 7,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {
+      "left_drone_assembly": {
+        "dxy": [
+          0,
+          -1
+        ],
+        "cross_dimmed": false
+      },
+      "right_drone": {
+        "dxy": [
+          0,
+          1
+        ],
+        "cross_dimmed": false
+      }
+    },
+    "lava_glow": 0,
+    "ember_age": null
+  },
+  {
+    "frame": 8,
+    "body_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {
+      "left_drone_assembly": {
+        "dxy": [
+          0,
+          0
+        ],
+        "cross_dimmed": false
+      },
+      "right_drone": {
+        "dxy": [
+          0,
+          0
+        ],
+        "cross_dimmed": false
+      }
+    },
+    "lava_glow": 0,
+    "ember_age": null
+  }
+]

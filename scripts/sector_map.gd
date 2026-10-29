@@ -33,7 +33,9 @@ func _ready() -> void:
 	_map.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_map.draw.connect(_draw_map)
 	add_child(_map)
-	var faces := _label(Vector2(0, 412), 15, Color(0.7, 0.78, 0.9))
+	var faces := _label(Vector2(40, 404), 13, Color(0.7, 0.78, 0.9))
+	faces.size = Vector2(1200, 40)   # wraps to two lines when the faction names are long
+	faces.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var names := []
 	for f in Game.run["order"]:
 		names.append(Game.FACTIONS[f]["name"])
@@ -48,7 +50,7 @@ func _ready() -> void:
 	for i in col.size():
 		var m: Dictionary = Game.SECTOR_MODS[col[i]["mod"]]
 		var b := Button.new()
-		b.custom_minimum_size = Vector2(300, 130)
+		b.custom_minimum_size = Vector2(340, 150)
 		b.focus_entered.connect(func():
 			_focus = i
 			_map.queue_redraw())
@@ -58,7 +60,7 @@ func _ready() -> void:
 		pic.texture = _planet(int(Game.run["sector"]) - 1, i)
 		pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		pic.position = Vector2(12, 25)
+		pic.position = Vector2(12, 35)
 		pic.size = Vector2(80, 80)
 		pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		b.add_child(pic)
@@ -71,12 +73,14 @@ func _ready() -> void:
 		b.add_child(v)
 		var n := Label.new()
 		n.text = m["name"]
-		n.add_theme_font_size_override("font_size", 22)
+		n.add_theme_font_override("font", Game.FONT_HEAD)   # narrow header font so long names fit
+		n.add_theme_font_size_override("font_size", 24)
+		n.autowrap_mode = TextServer.AUTOWRAP_WORD
 		v.add_child(n)
 		var t := Label.new()
 		t.text = m["text"]
 		t.autowrap_mode = TextServer.AUTOWRAP_WORD
-		t.add_theme_font_size_override("font_size", 15)
+		t.add_theme_font_size_override("font_size", 12)
 		t.add_theme_color_override("font_color", Color(0.75, 0.82, 0.92))
 		v.add_child(t)
 		row.add_child(b)
@@ -114,6 +118,8 @@ func _label(pos: Vector2, size: int, col: Color) -> Label:
 	l.position = pos
 	l.size = Vector2(1280, size + 12)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if size >= 24:
+		l.add_theme_font_override("font", Game.FONT_HEAD)
 	l.add_theme_font_size_override("font_size", size)
 	l.add_theme_color_override("font_color", col)
 	add_child(l)
@@ -152,10 +158,10 @@ func _draw_map() -> void:
 					var c := Color(mine, 0.9) if on_path else (Color(1, 1, 1, 0.35) if from_claimed else Color(1, 1, 1, 0.08))
 					_map.draw_line(_node_pos(k, j, col.size(), first), _node_pos(k + 1, j2, nxt.size(), first), c, 3.0 if on_path else 1.5)
 		var label := "SECTOR %d" % (k + 1)
-		_map.draw_string(font, Vector2(_node_pos(k, 0, 1, first).x - 50, MAP_Y - 140), label, HORIZONTAL_ALIGNMENT_CENTER, 100, 13,
+		_map.draw_string(font, Vector2(_node_pos(k, 0, 1, first).x - 70, MAP_Y - 140), label, HORIZONTAL_ALIGNMENT_CENTER, 140, 13,
 			Color(0.9, 0.9, 1.0, 0.9) if k == cur else Color(0.6, 0.65, 0.8, 0.6))
 		if k == goal and not Game.run.get("infinite", false):
-			_map.draw_string(font, Vector2(_node_pos(k, 0, 1, first).x - 60, MAP_Y - 122), "★ CLAIM TO WIN", HORIZONTAL_ALIGNMENT_CENTER, 120, 13, Color(1.0, 0.85, 0.4))
+			_map.draw_string(font, Vector2(_node_pos(k, 0, 1, first).x - 90, MAP_Y - 122), "★ CLAIM TO WIN", HORIZONTAL_ALIGNMENT_CENTER, 180, 13, Color(1.0, 0.85, 0.4))
 		for j in col.size():
 			var p := _node_pos(k, j, col.size(), first)
 			var m: String = col[j]["mod"]
@@ -178,7 +184,7 @@ func _draw_map() -> void:
 				_draw_planet(tex, p, size, Color.WHITE)
 			else:
 				_draw_planet(tex, p, 32.0, Color(0.7, 0.72, 0.85, 0.7))
-			_map.draw_string(font, p + Vector2(-70, 44), Game.SECTOR_MODS[m]["name"], HORIZONTAL_ALIGNMENT_CENTER, 140, 12,
+			_map.draw_string(Game.FONT_HEAD, p + Vector2(-70, 46), Game.SECTOR_MODS[m]["name"], HORIZONTAL_ALIGNMENT_CENTER, 140, 16,
 				Color(0.85, 0.9, 1.0, 0.95 if k == cur else 0.5))
 
 var _planets := {}

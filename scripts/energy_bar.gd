@@ -99,7 +99,7 @@ func _draw() -> void:
 	var status := "RECHARGING" if is_recharging() else ("" if value >= MAX else "recharge in %.1fs" % maxf(_delay, 0.0))
 	draw_string(font, off + Vector2(0, 12), "ENERGY", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, BAR_HI)
 	draw_string(font, off + Vector2(70, 12), status, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(0.6, 0.75, 0.9, 0.8))
-	draw_string(font, off + Vector2(size.x - 60, 12), "%d/%d" % [int(value), int(MAX)], HORIZONTAL_ALIGNMENT_RIGHT, 60, 13, BAR_HI)
+	draw_string(Game.FONT_NUM, off + Vector2(size.x - 60, 12), "%d/%d" % [int(value), int(MAX)], HORIZONTAL_ALIGNMENT_RIGHT, 60, 8, BAR_HI)
 	draw_rect(r, EMPTY_COLOR)
 	# ghost of the shaved-off energy
 	draw_rect(Rect2(r.position, Vector2(r.size.x * _ghost / MAX, r.size.y)), Color(1, 1, 1, 0.85))

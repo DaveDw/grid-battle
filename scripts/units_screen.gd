@@ -3,6 +3,7 @@ extends Control
 ## one (mouse, keys or controller) shows its kit; pressing it plays its attack.
 
 var _detail: Label
+var _card_pic: TextureRect   # the unit's card art (hidden for units without a card)
 var _name: Label
 var _big: FighterSprite
 var _first: Button
@@ -11,6 +12,7 @@ func _ready() -> void:
 	add_child(preload("res://scripts/menu_background.gd").make("space", Color(0.4, 0.55, 0.95)))
 	var title := Label.new()
 	title.text = "UNITS"
+	title.add_theme_font_override("font", Game.FONT_HEAD)
 	title.add_theme_font_size_override("font_size", 38)
 	title.position = Vector2(40, 18)
 	add_child(title)
@@ -38,6 +40,7 @@ func _ready() -> void:
 				s.sprite_path = "res://assets/sprites/%s.png" % key
 				s.height = 84.0
 				s.max_width = 100.0
+				s.max_height = 96.0
 				s.feet_y = 0.0
 				s.position = Vector2(55, 100)
 				b.add_child(s)
@@ -59,10 +62,12 @@ func _ready() -> void:
 	_big = FighterSprite.new()
 	_big.height = 250.0
 	_big.max_width = 360.0
+	_big.max_height = 275.0
 	_big.feet_y = 0.0
 	_big.position = Vector2(200, 285)
 	stage.add_child(_big)
 	_name = Label.new()
+	_name.add_theme_font_override("font", Game.FONT_HEAD)
 	_name.add_theme_font_size_override("font_size", 26)
 	v.add_child(_name)
 	_detail = Label.new()
@@ -71,6 +76,8 @@ func _ready() -> void:
 	_detail.add_theme_font_size_override("font_size", 15)
 	_detail.add_theme_color_override("font_color", Color(0.78, 0.84, 0.94))
 	v.add_child(_detail)
+	_card_pic = Game.card_icon("", 64)
+	v.add_child(_card_pic)
 	var back := Button.new()
 	back.text = "Back"
 	back.position = Vector2(40, 650)
@@ -99,6 +106,9 @@ func _show(key: String, role: String) -> void:
 		var c: Dictionary = Game.CARDS[k["card"]]
 		lines.append("Card: %s (%d): %s" % [c["name"], int(c["cost"]), c["text"]])
 	_detail.text = "\n".join(lines)
+	var has_card: bool = k["card"] != "" and Game.CARDS.has(k["card"])
+	_card_pic.texture = Game.card_art(k["card"]) if has_card else null
+	_card_pic.visible = _card_pic.texture != null
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):

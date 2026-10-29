@@ -30,6 +30,7 @@ func _ready() -> void:
 	v.add_child(head)
 	var title := Label.new()
 	title.text = _ev["title"]
+	title.add_theme_font_override("font", Game.FONT_HEAD)
 	title.add_theme_font_size_override("font_size", 36)
 	v.add_child(title)
 	_text = Label.new()
@@ -91,6 +92,9 @@ func _pick_card() -> void:
 		b.text = "%s  (%d)" % [Game.CARDS[id]["name"], int(Game.card_cost(id))]
 		b.tooltip_text = Game.CARDS[id]["text"]
 		b.custom_minimum_size = Vector2(230, 44)
+		b.add_theme_font_override("font", Game.FONT_CARD)
+		b.add_theme_font_size_override("font_size", 8)
+		Game.card_button_icon(b, id)
 		b.disabled = _fx.has("remove") and id == lead
 		b.pressed.connect(func():
 			Game.pick_card_effect(_fx, id)

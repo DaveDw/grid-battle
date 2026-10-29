@@ -109,3 +109,7 @@
 - [x] 6 more sector modifiers (Gemma), data-driven SECTOR_MODS; 21 events (10 from Gemma's premises, reworked); commander voice lines; 15 tips; a Units screen (animated roster); run stats on the end screens; dark-backed, sequenced battle banners.
 - [ ] Codex art: 13/24 units done; resume per kb/NEXT.md.
 - Packages last built at 11:33 (before the Units screen, run stats and the last 4 events). Rebuild with tools/build_release.sh.
+
+## Alpha Test Snapshot v0.0.3 (2026-10-28)
+- [x] Version bumped to 0.0.3 (game.gd, export presets, READMEs). Builds in builds/windows, builds/linux, builds/macos; archives in builds/release. art_backup/ now excluded from exports.
+- Includes the redone idles imported so far (14 by Codex) plus the Red Giant and Cinder Scout placeholders.

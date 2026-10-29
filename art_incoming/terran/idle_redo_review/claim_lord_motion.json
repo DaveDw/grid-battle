@@ -1,0 +1,50 @@
+[
+  {
+    "frame": 1,
+    "body_cape_armour_dy": 0,
+    "knuckle_glow_strength": 0,
+    "blink": false
+  },
+  {
+    "frame": 2,
+    "body_cape_armour_dy": 1,
+    "knuckle_glow_strength": 0,
+    "blink": false
+  },
+  {
+    "frame": 3,
+    "body_cape_armour_dy": 1,
+    "knuckle_glow_strength": 0.4,
+    "blink": false
+  },
+  {
+    "frame": 4,
+    "body_cape_armour_dy": 2,
+    "knuckle_glow_strength": 1.0,
+    "blink": false
+  },
+  {
+    "frame": 5,
+    "body_cape_armour_dy": 2,
+    "knuckle_glow_strength": 0.75,
+    "blink": true
+  },
+  {
+    "frame": 6,
+    "body_cape_armour_dy": 1,
+    "knuckle_glow_strength": 0.3,
+    "blink": false
+  },
+  {
+    "frame": 7,
+    "body_cape_armour_dy": 1,
+    "knuckle_glow_strength": 0,
+    "blink": false
+  },
+  {
+    "frame": 8,
+    "body_cape_armour_dy": 0,
+    "knuckle_glow_strength": 0,
+    "blink": false
+  }
+]

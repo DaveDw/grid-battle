@@ -1,0 +1,114 @@
+[
+  {
+    "frame": 1,
+    "torso_rifle_scarf_dxy": [
+      0,
+      0
+    ],
+    "head_dxy": [
+      0,
+      0
+    ],
+    "eyes": "master",
+    "visor_glint": false,
+    "seam_pixels": 0
+  },
+  {
+    "frame": 2,
+    "torso_rifle_scarf_dxy": [
+      0,
+      1
+    ],
+    "head_dxy": [
+      0,
+      1
+    ],
+    "eyes": "master",
+    "visor_glint": false,
+    "seam_pixels": 0
+  },
+  {
+    "frame": 3,
+    "torso_rifle_scarf_dxy": [
+      0,
+      1
+    ],
+    "head_dxy": [
+      0,
+      1
+    ],
+    "eyes": "master",
+    "visor_glint": false,
+    "seam_pixels": 0
+  },
+  {
+    "frame": 4,
+    "torso_rifle_scarf_dxy": [
+      0,
+      2
+    ],
+    "head_dxy": [
+      1,
+      2
+    ],
+    "eyes": "right",
+    "visor_glint": true,
+    "seam_pixels": 23
+  },
+  {
+    "frame": 5,
+    "torso_rifle_scarf_dxy": [
+      0,
+      2
+    ],
+    "head_dxy": [
+      1,
+      2
+    ],
+    "eyes": "blink",
+    "visor_glint": true,
+    "seam_pixels": 23
+  },
+  {
+    "frame": 6,
+    "torso_rifle_scarf_dxy": [
+      0,
+      1
+    ],
+    "head_dxy": [
+      1,
+      1
+    ],
+    "eyes": "right",
+    "visor_glint": true,
+    "seam_pixels": 23
+  },
+  {
+    "frame": 7,
+    "torso_rifle_scarf_dxy": [
+      0,
+      1
+    ],
+    "head_dxy": [
+      0,
+      1
+    ],
+    "eyes": "master",
+    "visor_glint": false,
+    "seam_pixels": 0
+  },
+  {
+    "frame": 8,
+    "torso_rifle_scarf_dxy": [
+      0,
+      0
+    ],
+    "head_dxy": [
+      0,
+      0
+    ],
+    "eyes": "master",
+    "visor_glint": false,
+    "seam_pixels": 0
+  }
+]

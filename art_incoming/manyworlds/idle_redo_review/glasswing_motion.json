@@ -1,0 +1,154 @@
+[
+  {
+    "frame": 1,
+    "body_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "angles_degrees": {
+      "wing_ul": 0,
+      "wing_ll": 0,
+      "wing_ur": 0,
+      "wing_lr": 0,
+      "antenna_left": 0,
+      "antenna_right": 0
+    }
+  },
+  {
+    "frame": 2,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "angles_degrees": {
+      "wing_ul": -3,
+      "wing_ll": -3,
+      "wing_ur": 3,
+      "wing_lr": 3,
+      "antenna_left": 0,
+      "antenna_right": 0
+    }
+  },
+  {
+    "frame": 3,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "angles_degrees": {
+      "wing_ul": 0,
+      "wing_ll": 0,
+      "wing_ur": 0,
+      "wing_lr": 0,
+      "antenna_left": -3,
+      "antenna_right": 3
+    }
+  },
+  {
+    "frame": 4,
+    "body_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "angles_degrees": {
+      "wing_ul": -3,
+      "wing_ll": -3,
+      "wing_ur": 3,
+      "wing_lr": 3,
+      "antenna_left": -3,
+      "antenna_right": 3
+    }
+  },
+  {
+    "frame": 5,
+    "body_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "angles_degrees": {
+      "wing_ul": 0,
+      "wing_ll": 0,
+      "wing_ur": 0,
+      "wing_lr": 0,
+      "antenna_left": -3,
+      "antenna_right": 3
+    }
+  },
+  {
+    "frame": 6,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "angles_degrees": {
+      "wing_ul": -3,
+      "wing_ll": -3,
+      "wing_ur": 3,
+      "wing_lr": 3,
+      "antenna_left": 0,
+      "antenna_right": 0
+    }
+  },
+  {
+    "frame": 7,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "angles_degrees": {
+      "wing_ul": 0,
+      "wing_ll": 0,
+      "wing_ur": 0,
+      "wing_lr": 0,
+      "antenna_left": 0,
+      "antenna_right": 0
+    }
+  },
+  {
+    "frame": 8,
+    "body_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "angles_degrees": {
+      "wing_ul": -3,
+      "wing_ll": -3,
+      "wing_ur": 3,
+      "wing_lr": 3,
+      "antenna_left": 0,
+      "antenna_right": 0
+    }
+  }
+]

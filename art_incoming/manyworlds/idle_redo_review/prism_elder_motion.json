@@ -1,0 +1,514 @@
+[
+  {
+    "frame": 1,
+    "body_dxy": [
+      0,
+      0
+    ],
+    "head_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": null,
+    "floating_objects": {
+      "crystal_left_large": [
+        0,
+        0
+      ],
+      "crystal_left_lower": [
+        0,
+        0
+      ],
+      "crystal_right_lower": [
+        0,
+        0
+      ],
+      "crystal_right_upper": [
+        0,
+        0
+      ],
+      "crystal_left_spear": [
+        0,
+        0
+      ],
+      "crystal_left_upper": [
+        0,
+        0
+      ],
+      "crystal_left_middle": [
+        0,
+        0
+      ],
+      "crystal_gold_star": [
+        0,
+        0
+      ],
+      "crystal_right_small": [
+        0,
+        0
+      ],
+      "crystal_right_large": [
+        0,
+        0
+      ],
+      "crystal_front_left": [
+        0,
+        0
+      ],
+      "crystal_front_right": [
+        0,
+        0
+      ]
+    },
+    "glow_pulse": 0,
+    "all_ambient_sparks_animated": true
+  },
+  {
+    "frame": 2,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "head_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": null,
+    "floating_objects": {
+      "crystal_left_large": [
+        0,
+        1
+      ],
+      "crystal_left_lower": [
+        0,
+        -1
+      ],
+      "crystal_right_lower": [
+        0,
+        1
+      ],
+      "crystal_right_upper": [
+        0,
+        -1
+      ],
+      "crystal_left_spear": [
+        0,
+        1
+      ],
+      "crystal_left_upper": [
+        0,
+        -1
+      ],
+      "crystal_left_middle": [
+        0,
+        1
+      ],
+      "crystal_gold_star": [
+        0,
+        -1
+      ],
+      "crystal_right_small": [
+        0,
+        1
+      ],
+      "crystal_right_large": [
+        0,
+        -1
+      ],
+      "crystal_front_left": [
+        0,
+        1
+      ],
+      "crystal_front_right": [
+        0,
+        -1
+      ]
+    },
+    "glow_pulse": 0,
+    "all_ambient_sparks_animated": true
+  },
+  {
+    "frame": 3,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "head_dxy": [
+      1,
+      1
+    ],
+    "legs_dxy": null,
+    "floating_objects": {
+      "crystal_left_large": [
+        -1,
+        2
+      ],
+      "crystal_left_lower": [
+        0,
+        -2
+      ],
+      "crystal_right_lower": [
+        1,
+        2
+      ],
+      "crystal_right_upper": [
+        -1,
+        -2
+      ],
+      "crystal_left_spear": [
+        0,
+        2
+      ],
+      "crystal_left_upper": [
+        1,
+        -2
+      ],
+      "crystal_left_middle": [
+        -1,
+        2
+      ],
+      "crystal_gold_star": [
+        0,
+        -2
+      ],
+      "crystal_right_small": [
+        1,
+        2
+      ],
+      "crystal_right_large": [
+        -1,
+        -2
+      ],
+      "crystal_front_left": [
+        0,
+        2
+      ],
+      "crystal_front_right": [
+        1,
+        -2
+      ]
+    },
+    "glow_pulse": 0.35,
+    "all_ambient_sparks_animated": true
+  },
+  {
+    "frame": 4,
+    "body_dxy": [
+      0,
+      2
+    ],
+    "head_dxy": [
+      1,
+      2
+    ],
+    "legs_dxy": null,
+    "floating_objects": {
+      "crystal_left_large": [
+        -1,
+        3
+      ],
+      "crystal_left_lower": [
+        0,
+        -3
+      ],
+      "crystal_right_lower": [
+        1,
+        3
+      ],
+      "crystal_right_upper": [
+        -1,
+        -3
+      ],
+      "crystal_left_spear": [
+        0,
+        3
+      ],
+      "crystal_left_upper": [
+        1,
+        -3
+      ],
+      "crystal_left_middle": [
+        -1,
+        3
+      ],
+      "crystal_gold_star": [
+        0,
+        -3
+      ],
+      "crystal_right_small": [
+        1,
+        3
+      ],
+      "crystal_right_large": [
+        -1,
+        -3
+      ],
+      "crystal_front_left": [
+        0,
+        3
+      ],
+      "crystal_front_right": [
+        1,
+        -3
+      ]
+    },
+    "glow_pulse": 1,
+    "all_ambient_sparks_animated": true
+  },
+  {
+    "frame": 5,
+    "body_dxy": [
+      0,
+      2
+    ],
+    "head_dxy": [
+      1,
+      2
+    ],
+    "legs_dxy": null,
+    "floating_objects": {
+      "crystal_left_large": [
+        -1,
+        3
+      ],
+      "crystal_left_lower": [
+        0,
+        -3
+      ],
+      "crystal_right_lower": [
+        1,
+        3
+      ],
+      "crystal_right_upper": [
+        -1,
+        -3
+      ],
+      "crystal_left_spear": [
+        0,
+        3
+      ],
+      "crystal_left_upper": [
+        1,
+        -3
+      ],
+      "crystal_left_middle": [
+        -1,
+        3
+      ],
+      "crystal_gold_star": [
+        0,
+        -3
+      ],
+      "crystal_right_small": [
+        1,
+        3
+      ],
+      "crystal_right_large": [
+        -1,
+        -3
+      ],
+      "crystal_front_left": [
+        0,
+        3
+      ],
+      "crystal_front_right": [
+        1,
+        -3
+      ]
+    },
+    "glow_pulse": 0.65,
+    "all_ambient_sparks_animated": true
+  },
+  {
+    "frame": 6,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "head_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": null,
+    "floating_objects": {
+      "crystal_left_large": [
+        -1,
+        2
+      ],
+      "crystal_left_lower": [
+        0,
+        -2
+      ],
+      "crystal_right_lower": [
+        1,
+        2
+      ],
+      "crystal_right_upper": [
+        -1,
+        -2
+      ],
+      "crystal_left_spear": [
+        0,
+        2
+      ],
+      "crystal_left_upper": [
+        1,
+        -2
+      ],
+      "crystal_left_middle": [
+        -1,
+        2
+      ],
+      "crystal_gold_star": [
+        0,
+        -2
+      ],
+      "crystal_right_small": [
+        1,
+        2
+      ],
+      "crystal_right_large": [
+        -1,
+        -2
+      ],
+      "crystal_front_left": [
+        0,
+        2
+      ],
+      "crystal_front_right": [
+        1,
+        -2
+      ]
+    },
+    "glow_pulse": 0.25,
+    "all_ambient_sparks_animated": true
+  },
+  {
+    "frame": 7,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "head_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": null,
+    "floating_objects": {
+      "crystal_left_large": [
+        0,
+        1
+      ],
+      "crystal_left_lower": [
+        0,
+        -1
+      ],
+      "crystal_right_lower": [
+        0,
+        1
+      ],
+      "crystal_right_upper": [
+        0,
+        -1
+      ],
+      "crystal_left_spear": [
+        0,
+        1
+      ],
+      "crystal_left_upper": [
+        0,
+        -1
+      ],
+      "crystal_left_middle": [
+        0,
+        1
+      ],
+      "crystal_gold_star": [
+        0,
+        -1
+      ],
+      "crystal_right_small": [
+        0,
+        1
+      ],
+      "crystal_right_large": [
+        0,
+        -1
+      ],
+      "crystal_front_left": [
+        0,
+        1
+      ],
+      "crystal_front_right": [
+        0,
+        -1
+      ]
+    },
+    "glow_pulse": 0,
+    "all_ambient_sparks_animated": true
+  },
+  {
+    "frame": 8,
+    "body_dxy": [
+      0,
+      0
+    ],
+    "head_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": null,
+    "floating_objects": {
+      "crystal_left_large": [
+        0,
+        0
+      ],
+      "crystal_left_lower": [
+        0,
+        0
+      ],
+      "crystal_right_lower": [
+        0,
+        0
+      ],
+      "crystal_right_upper": [
+        0,
+        0
+      ],
+      "crystal_left_spear": [
+        0,
+        0
+      ],
+      "crystal_left_upper": [
+        0,
+        0
+      ],
+      "crystal_left_middle": [
+        0,
+        0
+      ],
+      "crystal_gold_star": [
+        0,
+        0
+      ],
+      "crystal_right_small": [
+        0,
+        0
+      ],
+      "crystal_right_large": [
+        0,
+        0
+      ],
+      "crystal_front_left": [
+        0,
+        0
+      ],
+      "crystal_front_right": [
+        0,
+        0
+      ]
+    },
+    "glow_pulse": 0,
+    "all_ambient_sparks_animated": true
+  }
+]

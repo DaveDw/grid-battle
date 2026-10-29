@@ -1,0 +1,192 @@
+{
+  "fortify": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 7,
+    "bbox": [
+      4,
+      4,
+      28,
+      30
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "claim": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 7,
+    "bbox": [
+      4,
+      2,
+      27,
+      29
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "stake_claim": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 7,
+    "bbox": [
+      4,
+      3,
+      28,
+      30
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "sandbags": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 5,
+    "bbox": [
+      3,
+      7,
+      29,
+      27
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "barrage": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 6,
+    "bbox": [
+      4,
+      2,
+      29,
+      27
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "hold_the_line": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 7,
+    "bbox": [
+      3,
+      5,
+      30,
+      29
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "requisition": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 6,
+    "bbox": [
+      5,
+      2,
+      28,
+      29
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "suppressing_fire": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 6,
+    "bbox": [
+      2,
+      6,
+      30,
+      26
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "supply_drop": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 7,
+    "bbox": [
+      3,
+      2,
+      29,
+      30
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "dig_in": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 6,
+    "bbox": [
+      4,
+      2,
+      29,
+      30
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  }
+}

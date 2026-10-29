@@ -23,6 +23,8 @@ var unit_name := ""
 var role := ""                  # "leader" / "heavy" / "light"
 var primary := "standard"
 var passive := ""
+var alt_primary := ""           # a leader fighting alone: its squad's fire, on the right swap button
+var alt_role := ""              # whose shot numbers the alternate fire uses
 var col := 0
 var row := 0
 var prev_col := 0               # last tile stood on (Parallax afterimage)
@@ -79,6 +81,8 @@ func setup(bf: Node2D, data: Dictionary, unit_team: int) -> void:
 	role = data["role"]
 	primary = data.get("primary", "standard")
 	passive = data.get("passive", "")
+	alt_primary = data.get("alt", "")
+	alt_role = data.get("alt_role", "")
 	max_hp = data["hp"]
 	hp = max_hp
 	col = data["cell"].x
@@ -102,8 +106,20 @@ func is_alive() -> bool:
 func is_telegraphing() -> bool:
 	return _telegraph > 0.0
 
+## Put the unit straight on a tile (setting up the battle: no move, no animation).
+func place(c: int, r: int) -> void:
+	col = c
+	row = r
+	prev_col = c
+	prev_row = r
+	if _move_tween:
+		_move_tween.kill()
+	position = grid.panel_center(c, r)
+
 ## Slide to a new tile. The battlefield has already checked it is legal and free.
 func move_to(c: int, r: int) -> void:
+	if hp <= 0:
+		return
 	var toward := 1 if team == 0 else -1
 	sprite.play_move("up" if r < row else "down" if r > row else "fwd" if (c - col) * toward > 0 else "back")
 	prev_col = col
@@ -245,8 +261,12 @@ func _run_ai(delta: float) -> void:
 	if _telegraph > 0.0:
 		_telegraph -= delta
 		if _telegraph <= 0.0:
-			if primary == "charge":
+			# a lone leader mixes in its squad's fire
+			var alt := alt_primary != "" and randf() < 0.4
+			if (alt_primary if alt else primary) == "charge":
 				_ai_charging = AI_CHARGE_TIME
+			elif alt:
+				grid.fire_alt(self)
 			else:
 				grid.fire_primary(self)
 		return

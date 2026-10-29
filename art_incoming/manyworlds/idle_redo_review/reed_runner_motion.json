@@ -1,0 +1,122 @@
+[
+  {
+    "frame": 1,
+    "body_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "upper_jaw_degrees": 0,
+    "pouch_inflate_step": 0,
+    "eye_glow": 0,
+    "blink": false
+  },
+  {
+    "frame": 2,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "upper_jaw_degrees": 0,
+    "pouch_inflate_step": 0,
+    "eye_glow": 0,
+    "blink": false
+  },
+  {
+    "frame": 3,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "upper_jaw_degrees": 0,
+    "pouch_inflate_step": 1,
+    "eye_glow": 0,
+    "blink": false
+  },
+  {
+    "frame": 4,
+    "body_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "upper_jaw_degrees": 0,
+    "pouch_inflate_step": 2,
+    "eye_glow": 0,
+    "blink": false
+  },
+  {
+    "frame": 5,
+    "body_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "upper_jaw_degrees": 0,
+    "pouch_inflate_step": 2,
+    "eye_glow": 0,
+    "blink": true
+  },
+  {
+    "frame": 6,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "upper_jaw_degrees": 0,
+    "pouch_inflate_step": 1,
+    "eye_glow": 0,
+    "blink": false
+  },
+  {
+    "frame": 7,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "upper_jaw_degrees": 0,
+    "pouch_inflate_step": 0,
+    "eye_glow": 0,
+    "blink": false
+  },
+  {
+    "frame": 8,
+    "body_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "upper_jaw_degrees": 0,
+    "pouch_inflate_step": 0,
+    "eye_glow": 0,
+    "blink": false
+  }
+]

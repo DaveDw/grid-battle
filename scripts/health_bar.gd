@@ -88,4 +88,4 @@ func _draw() -> void:
 	var outline := _bar_poly(bar, 1.0)
 	outline.append(outline[0])
 	draw_polyline(outline, Color(0.5, 0.95, 1.0) if lit else Color(0.45, 0.5, 0.6), 2.0 if lit else 1.0)
-	draw_string(font, Vector2(bar.position.x + 14, bar.end.y - 3), "%d" % unit.hp, HORIZONTAL_ALIGNMENT_RIGHT if mirrored else HORIZONTAL_ALIGNMENT_LEFT, bar.size.x - 28, 12, Color(0, 0, 0, 0.75))
+	draw_string(Game.FONT_NUM, Vector2(bar.position.x + 14, bar.end.y - 3), "%d" % unit.hp, HORIZONTAL_ALIGNMENT_RIGHT if mirrored else HORIZONTAL_ALIGNMENT_LEFT, bar.size.x - 28, 8, Color(0, 0, 0, 0.75))

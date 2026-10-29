@@ -1,0 +1,83 @@
+{
+  "riptide": {
+    "colours_including_outline": 6,
+    "bbox": [
+      3,
+      2,
+      29,
+      32
+    ]
+  },
+  "mire": {
+    "colours_including_outline": 6,
+    "bbox": [
+      1,
+      4,
+      31,
+      31
+    ]
+  },
+  "flood": {
+    "colours_including_outline": 6,
+    "bbox": [
+      2,
+      0,
+      30,
+      31
+    ]
+  },
+  "spore_bloom": {
+    "colours_including_outline": 7,
+    "bbox": [
+      5,
+      2,
+      28,
+      31
+    ]
+  },
+  "undertow_surge": {
+    "colours_including_outline": 6,
+    "bbox": [
+      3,
+      2,
+      29,
+      32
+    ]
+  },
+  "regrowth": {
+    "colours_including_outline": 7,
+    "bbox": [
+      5,
+      6,
+      30,
+      29
+    ]
+  },
+  "mudslide": {
+    "colours_including_outline": 6,
+    "bbox": [
+      1,
+      4,
+      30,
+      31
+    ]
+  },
+  "mycelial_link": {
+    "colours_including_outline": 6,
+    "bbox": [
+      3,
+      3,
+      30,
+      29
+    ]
+  },
+  "tide_pool": {
+    "colours_including_outline": 6,
+    "bbox": [
+      2,
+      2,
+      30,
+      30
+    ]
+  }
+}

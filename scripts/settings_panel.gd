@@ -26,6 +26,7 @@ func _ready() -> void:
 	panel.add_child(v)
 	var title := Label.new()
 	title.text = "SETTINGS"
+	title.add_theme_font_override("font", Game.FONT_HEAD)
 	title.add_theme_font_size_override("font_size", 30)
 	v.add_child(title)
 	_section(v, "Audio")
@@ -61,6 +62,8 @@ func _ready() -> void:
 	var keys := Label.new()
 	keys.text = "Keyboard: WASD move · Q/E swap · Space fire · 1-3 cards · Esc pause\nController: D-pad move · L1/R1 swap · A fire · X/Y/B cards · right stick aims, R2 confirms · Start pause"
 	keys.add_theme_font_size_override("font_size", 14)
+	keys.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	keys.custom_minimum_size = Vector2(560, 0)   # wrap inside the panel instead of stretching it off-screen
 	keys.add_theme_color_override("font_color", Color(0.65, 0.72, 0.85))
 	v.add_child(keys)
 	var back := Button.new()

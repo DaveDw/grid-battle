@@ -1,0 +1,114 @@
+[
+  {
+    "frame": 1,
+    "body_and_weapon_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "glass_glint": false,
+    "blade_glow": 0,
+    "ember_dxy": null
+  },
+  {
+    "frame": 2,
+    "body_and_weapon_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "glass_glint": false,
+    "blade_glow": 0,
+    "ember_dxy": null
+  },
+  {
+    "frame": 3,
+    "body_and_weapon_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "glass_glint": true,
+    "blade_glow": 0.5,
+    "ember_dxy": null
+  },
+  {
+    "frame": 4,
+    "body_and_weapon_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "glass_glint": true,
+    "blade_glow": 1,
+    "ember_dxy": null
+  },
+  {
+    "frame": 5,
+    "body_and_weapon_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "glass_glint": true,
+    "blade_glow": 0.65,
+    "ember_dxy": null
+  },
+  {
+    "frame": 6,
+    "body_and_weapon_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "glass_glint": true,
+    "blade_glow": 0,
+    "ember_dxy": null
+  },
+  {
+    "frame": 7,
+    "body_and_weapon_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "glass_glint": false,
+    "blade_glow": 0,
+    "ember_dxy": null
+  },
+  {
+    "frame": 8,
+    "body_and_weapon_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "glass_glint": false,
+    "blade_glow": 0,
+    "ember_dxy": null
+  }
+]

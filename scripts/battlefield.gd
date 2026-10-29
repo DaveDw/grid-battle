@@ -1,18 +1,23 @@
 extends Node2D
 ## The battle: a 6x9 grid (left 3 columns are the player's side, right 3 the enemy's),
-## three units per side, shared squad energy + stamina per team, a deck and hand per
-## team, and the squad kits from DESIGN.md (unique primary fires, passives, cards).
+## up to three units per side, shared squad energy + stamina per team, a deck and hand
+## per team, and the squad kits from DESIGN.md (unique primary fires, passives, cards).
+## Smaller squads (Conquest) fight on a shorter board: 3 rows fewer for each unit the
+## bigger squad is short of three. In Conquest the enemy is placed first and shown,
+## then the player places their units, then a 3-2-1 countdown starts the fight.
 ## Both teams follow the same rules: the enemy AI moves, shoots and plays cards through
 ## the same functions as the player, paying the same stamina and energy.
 ## Ground is held per tile: each side's base columns, plus temporary ground from Claim
 ## (a whole column) and Stake Claim (single tiles). Controls are in InputLayout.
 
 const COLS := 6
-const ROWS := 9
+const FULL_ROWS := 9
+const ROWS_PER_UNIT := 3         # rows dropped from the top per unit under three
 const PANEL_W := 150.0
 const PANEL_H := 46.0
 const GRID_X := 190.0
-const GRID_Y := 160.0
+const GRID_TOP := 160.0          # top of a full board (shorter boards keep the same bottom)
+const COUNTDOWN := 3.0
 const PLAYER_MAX_COL := 2
 const SHOT_SPEED := 620.0
 
@@ -58,6 +63,8 @@ const BORROWED_HP := 15
 const BORROWED_STAMINA := 2
 const REWIND_TIME := 2.0
 
+var rows := FULL_ROWS
+var grid_y := GRID_TOP
 var time := 0.0
 var player_units: Array[Unit] = []
 var enemy_units: Array[Unit] = []
@@ -98,6 +105,14 @@ var aim_slot := -1              # hand slot being aimed, -1 = not aiming
 var aim_tile := Vector2i(0, 0)
 var _no_shot_frame := -1        # right-click that cancelled aiming doesn't also fire
 
+# setting up (Conquest): place the squad, then count down
+var placing := false
+var place_idx := 0              # player unit being placed
+var place_tile := Vector2i(1, 0)
+var _countdown := -1.0          # >= 0 while counting down to the fight
+var _start_label: Label
+var _health_bars: Array = []    # [HealthBar, Unit] for the player's bars (click to swap)
+
 @onready var hud: CanvasLayer = $HUD
 @onready var energy: EnergyBar = $HUD/Energy
 @onready var stamina: StaminaBar = $HUD/Stamina
@@ -116,6 +131,11 @@ func _ready() -> void:
 	var enemy_faction: String = Game.leader_by_id(Game.run["enemy"])["faction"]
 	var boss := int(Game.run["stage"]) == Game.STAGES_PER_SECTOR - 1
 	ai = Game.ai_params(lvl, enemy_faction, boss)
+	var conquest := Game.mode() == "conquest"
+	# the board shrinks to fit the bigger squad
+	var biggest := maxi(Game.squad_size(), Game.enemy_squad_size())
+	rows = FULL_ROWS - ROWS_PER_UNIT * (3 - biggest)
+	grid_y = GRID_TOP + (FULL_ROWS - rows) * PANEL_H
 	for d in Game.squad_for(Game.run["leader"], false):
 		var u := _spawn(d, 0)
 		u.hp = Game.starting_hp(u.role, u.max_hp)   # damage carries over within a sector
@@ -129,6 +149,14 @@ func _ready() -> void:
 	var enemy_hp: float = ai["hp_mult"] * float(fx.get("enemy_hp", 1.0)) * float(next.get("enemy_hp", 1.0))
 	for d in Game.squad_for(Game.run["enemy"], true, enemy_hp):
 		enemy_units.append(_spawn(d, 1))
+	if conquest:
+		# the enemy's spots are decided (and shown) before the player places
+		var cells := _enemy_cells(enemy_units.size())
+		for i in enemy_units.size():
+			enemy_units[i].place(cells[i].x, cells[i].y)
+		cells = _spread_cells(0, player_units.size())
+		for i in player_units.size():
+			player_units[i].place(cells[i].x, cells[i].y)
 	# the enemy squad has its own (hidden) energy, stamina and hand
 	var e_energy := EnergyBar.new()
 	var e_stamina := StaminaBar.new()
@@ -148,6 +176,8 @@ func _ready() -> void:
 		e_deck.append(fpool[randi() % fpool.size()])
 	e_hand.setup(e_deck, e_energy)
 	e_hand.team = 1
+	for h in hands:
+		h.hold = conquest
 	if next.has("barrier"):
 		# the squad starts the battle behind a shield (energy refills too fast to matter)
 		for u in player_units:
@@ -159,15 +189,18 @@ func _ready() -> void:
 	for team in 2:
 		team_stamina[team].refill_time = StaminaBar.REFILL_TIME * float(fx.get("stamina", [1.0, 1.0])[team])
 		team_energy[team].recharge_delay = EnergyBar.RECHARGE_DELAY * float(fx.get("recharge", [1.0, 1.0])[team])
-		hands[team].draw_time = CardHand.DRAW_TIME * float(fx.get("draw", [1.0, 1.0])[team])
+		hands[team].draw_time = (CardHand.HOLD_DRAW_TIME if conquest else CardHand.DRAW_TIME) * float(fx.get("draw", [1.0, 1.0])[team])
 	if fx.has("barrier"):
 		for u in player_units + enemy_units:
 			u.barrier = maxf(u.barrier, float(fx["barrier"]))
 			u.barrier_until = 30.0
 	var tiles: Dictionary = fx.get("tiles", {})
+	var shift := (FULL_ROWS - rows) / 2   # the modifier's tiles are laid out for a full board: keep them centred
 	for k in tiles:
 		for p in tiles[k]:
-			var t := Vector2i(p[0], p[1])
+			var t := Vector2i(p[0], p[1] - shift)
+			if not in_grid(t):
+				continue
 			match k:
 				"mire": mires[t] = 9999.0
 				"fire": fires[t] = {"until": 9999.0, "next": 1.0}
@@ -182,23 +215,6 @@ func _ready() -> void:
 		info.text = "NG+%d  ·  " % int(Game.run["ng"]) + info.text
 	if ai["boss"]:
 		info.text = info.text.replace("STAGE 3/3", "COMMANDER")
-	# tell the player how this faction fights
-	(func():
-		# one after another, so they never pile up on top of each other
-		var lines: Array = []
-		if ai["boss"]:
-			lines.append(["SECTOR COMMANDER", 20, 1.2])
-			var taunt := Game.commander_line(Game.run["enemy"], "taunts")
-			if taunt != "":
-				lines.append(["%s: \"%s\"" % [Game.UNITS[Game.leader_by_id(Game.run["enemy"])["leader"]]["name"], taunt], 15, 2.2])
-		lines.append([ai["tag"], 14, 2.0])
-		if ai["doctrine"] != "":
-			var doc: Dictionary = Game.DOCTRINES[ai["doctrine"]]
-			lines.append(["%s: %s" % [doc["name"], doc["text"]], 14, 2.5])
-		var at := 0.0
-		for l in lines:
-			get_tree().create_timer(at).timeout.connect(_announce.bind(1, l[0], l[1], l[2]))
-			at += l[2] + 0.3).call_deferred()
 	if ai["doctrine"] != "":
 		_doctrine_t = Game.DOCTRINES[ai["doctrine"]]["every"] * 0.6
 	info.position = Vector2(400, 8)
@@ -206,15 +222,17 @@ func _ready() -> void:
 	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	info.position = Vector2(440, 8)
 	info.size = Vector2(400, 24)
-	info.add_theme_font_size_override("font_size", 14)
+	info.add_theme_font_override("font", Game.FONT_HEAD)
+	info.add_theme_font_size_override("font_size", 20)
 	info.add_theme_color_override("font_color", Color(0.6, 0.7, 0.85))
 	hud.add_child(info)
-	for i in 3:
+	for i in player_units.size():
 		var pb := HealthBar.new()
 		pb.position = Vector2(24, 14 + i * 36)
 		pb.size = Vector2(440, 30)
 		hud.add_child(pb)
 		pb.bind(player_units[i], false)
+	for i in enemy_units.size():
 		var eb := HealthBar.new()
 		eb.position = Vector2(1280 - 24 - 440, 14 + i * 36)
 		eb.size = Vector2(440, 30)
@@ -227,7 +245,167 @@ func _ready() -> void:
 		if not c in all_cards:
 			all_cards.append(c)
 	Sfx.warm(player_units + enemy_units, all_cards)
+	Music.play("commander" if ai["boss"] else enemy_faction)
+	if conquest:
+		_begin_placement()
+	else:
+		_start_banners.call_deferred()
 	queue_redraw()
+
+## Tell the player how this faction fights, one line after another so they never pile up.
+func _start_banners() -> void:
+	var lines: Array = []
+	if ai["boss"]:
+		lines.append(["SECTOR COMMANDER", 20, 1.2])
+		var taunt := Game.commander_line(Game.run["enemy"], "taunts")
+		if taunt != "":
+			lines.append(["%s: \"%s\"" % [Game.UNITS[Game.leader_by_id(Game.run["enemy"])["leader"]]["name"], taunt], 15, 2.2])
+	lines.append([ai["tag"], 14, 2.0])
+	if ai["doctrine"] != "":
+		var doc: Dictionary = Game.DOCTRINES[ai["doctrine"]]
+		lines.append(["%s: %s" % [doc["name"], doc["text"]], 14, 2.5])
+	var at := 0.0
+	for l in lines:
+		get_tree().create_timer(at).timeout.connect(_announce.bind(1, l[0], l[1], l[2]))
+		at += l[2] + 0.3
+
+# --- setting up (Conquest) ------------------------------------------------------------
+
+## `n` cells on `team`'s side spread evenly down the board (the player's starting
+## suggestions, and anyone the board shrank under).
+func _spread_cells(team: int, n: int) -> Array:
+	var out := []
+	for i in n:
+		var c := (1 if i % 2 == 0 else 2) if team == 0 else (4 if i % 2 == 0 else 3)
+		out.append(Vector2i(c, int((i + 0.5) * rows / float(n))))
+	return out
+
+## The enemy's starting spots: a different row each, mostly in the middle column.
+func _enemy_cells(n: int) -> Array:
+	var free_rows := range(rows)
+	free_rows.shuffle()
+	var out := []
+	for i in n:
+		out.append(Vector2i([3, 4, 4, 5][randi() % 4], free_rows[i % free_rows.size()]))
+	return out
+
+## Hold the fight: the enemy stands where it will start, and the player puts each of
+## their units down in turn.
+func _begin_placement() -> void:
+	placing = true
+	battle_on = false
+	place_idx = 0
+	for h in hands:
+		h.set_process(false)   # no draws until the fight starts
+	for u in player_units:
+		u.visible = false
+	_start_label = Label.new()
+	_start_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_start_label.position = Vector2(240, 118)
+	_start_label.size = Vector2(800, 40)
+	_start_label.add_theme_font_override("font", Game.FONT_HEAD)
+	_start_label.add_theme_font_size_override("font_size", 20)
+	_start_label.add_theme_color_override("font_outline_color", Color(0, 0, 0))
+	_start_label.add_theme_constant_override("outline_size", 6)
+	hud.add_child(_start_label)
+	_pick_up(0)
+
+## Start placing player unit `i`: it follows the cursor, half see-through.
+func _pick_up(i: int) -> void:
+	place_idx = i
+	var u := player_units[i]
+	place_tile = Vector2i(u.col, u.row)
+	u.visible = true
+	u.modulate = Color(1, 1, 1, 0.55)
+	_set_active(i)
+	_update_place_text()
+
+func _update_place_text() -> void:
+	var u := player_units[place_idx]
+	var keys := "D-pad moves  ·  A places  ·  B takes back" if Game.using_pad else "WASD / mouse moves  ·  Space / click places  ·  Esc takes back"
+	_start_label.text = "PLACE YOUR SQUAD  ·  %s (%d/%d)\n%s" % [u.unit_name.to_upper(), place_idx + 1, player_units.size(), keys]
+
+## Can the unit being placed go on tile `t`? Its own side, and not on a unit placed before it.
+func _can_place(t: Vector2i) -> bool:
+	if not in_grid(t) or not holds(0, t.x, t.y):
+		return false
+	for k in place_idx:
+		if player_units[k].col == t.x and player_units[k].row == t.y:
+			return false
+	return true
+
+func _update_placement(delta: float) -> void:
+	if _countdown >= 0.0:
+		var before := ceili(_countdown)
+		_countdown -= delta
+		if _countdown <= 0.0:
+			_start_fight()
+		elif ceili(_countdown) != before:
+			_show_count(ceili(_countdown))
+		return
+	var step := Vector2i.ZERO
+	if Input.is_action_just_pressed("move_up"):
+		step = Vector2i.UP
+	elif Input.is_action_just_pressed("move_down"):
+		step = Vector2i.DOWN
+	elif Input.is_action_just_pressed("move_left"):
+		step = Vector2i.LEFT
+	elif Input.is_action_just_pressed("move_right"):
+		step = Vector2i.RIGHT
+	if step != Vector2i.ZERO:
+		_move_place_cursor(place_tile + step)
+	if Input.is_action_just_pressed("buster") or Input.is_action_just_pressed("ui_accept"):
+		_place_here()
+	elif Input.is_action_just_pressed("ui_cancel") and place_idx > 0:
+		player_units[place_idx].visible = false
+		_pick_up(place_idx - 1)
+
+func _move_place_cursor(t: Vector2i) -> void:
+	if not in_grid(t) or not holds(0, t.x, t.y):
+		return
+	place_tile = t
+	player_units[place_idx].place(t.x, t.y)
+
+func _place_here() -> void:
+	if not _can_place(place_tile):
+		stamina.deny()
+		return
+	var u := player_units[place_idx]
+	u.place(place_tile.x, place_tile.y)
+	u.modulate = Color.WHITE
+	u.sprite.play_land()
+	Sfx.unit_step(u)
+	if place_idx + 1 < player_units.size():
+		_pick_up(place_idx + 1)
+	else:
+		_set_active(0)
+		_countdown = COUNTDOWN
+		_start_label.add_theme_font_override("font", Game.FONT_HEAD)
+		_start_label.add_theme_font_size_override("font_size", 64)
+		_start_label.position = Vector2(240, 300)
+		_start_label.size = Vector2(800, 90)
+		_show_count(ceili(_countdown))
+
+func _show_count(n: int) -> void:
+	_start_label.text = str(n)
+	_start_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.35))
+	_start_label.scale = Vector2.ONE
+	Sfx.play("ui_move", Sfx.ui_move())
+
+func _start_fight() -> void:
+	placing = false
+	_countdown = -1.0
+	battle_on = true
+	for h in hands:
+		h.set_process(true)
+	_start_label.text = "FIGHT!"
+	_start_label.add_theme_color_override("font_color", Color(0.5, 0.95, 1.0))
+	var tw := _start_label.create_tween()
+	tw.tween_interval(0.5)
+	tw.tween_property(_start_label, "modulate:a", 0.0, 0.4)
+	tw.tween_callback(_start_label.queue_free)
+	Sfx.play("ui_press", Sfx.ui_press())
+	_start_banners()
 
 ## Space behind the grid: the planet of the sector being fought over, with the
 ## nebula tinted to its colours (each sector looks different).
@@ -257,13 +435,13 @@ func _spawn(d: Dictionary, team: int) -> Unit:
 
 ## Centre point of a grid panel, in battlefield-local coordinates.
 func panel_center(col: int, row: int) -> Vector2:
-	return Vector2(GRID_X + col * PANEL_W + PANEL_W * 0.5, GRID_Y + row * PANEL_H + PANEL_H * 0.5)
+	return Vector2(GRID_X + col * PANEL_W + PANEL_W * 0.5, grid_y + row * PANEL_H + PANEL_H * 0.5)
 
 func row_of_y(y: float) -> int:
-	return clampi(int(floor((y - GRID_Y) / PANEL_H)), 0, ROWS - 1)
+	return clampi(int(floor((y - grid_y) / PANEL_H)), 0, rows - 1)
 
 func in_grid(t: Vector2i) -> bool:
-	return t.x >= 0 and t.x < COLS and t.y >= 0 and t.y < ROWS
+	return t.x >= 0 and t.x < COLS and t.y >= 0 and t.y < rows
 
 func units_of(team: int) -> Array[Unit]:
 	return player_units if team == 0 else enemy_units
@@ -303,7 +481,7 @@ func _connected_ground(team: int) -> Dictionary:
 	var seen := {}
 	var queue: Array = []
 	for c in COLS:
-		for r in ROWS:
+		for r in rows:
 			var k := Vector2i(c, r)
 			if holds(team, c, r) and not stakes.has(k):
 				seen[k] = true
@@ -359,6 +537,11 @@ func _swap(step: int) -> void:
 # --- main loop ---------------------------------------------------------------------
 
 func _process(delta: float) -> void:
+	if placing:
+		_update_placement(delta)
+		_update_hud()
+		queue_redraw()
+		return
 	if not battle_on:
 		if Input.is_action_just_pressed("confirm"):
 			if Game.run.is_empty():
@@ -407,6 +590,16 @@ func _player_input(delta: float) -> void:
 			release_charge(u)
 	elif Input.is_action_just_pressed("buster") and can_shoot:
 		fire_primary(u)
+	# a lone leader: the right swap button fires its squad's weapon
+	if u.alt_primary == "charge":
+		if Input.is_action_just_pressed("swap_next") and energy.value < 1.0:
+			energy.deny()
+		elif Input.is_action_pressed("swap_next"):
+			charge_tick(u, delta)
+		elif charges.has(u.get_instance_id()):
+			release_charge(u)
+	elif u.alt_primary != "" and Input.is_action_just_pressed("swap_next"):
+		fire_alt(u)
 	for i in 3:
 		if Input.is_action_just_pressed("card_%d" % (i + 1)):
 			select_card(i)
@@ -421,7 +614,7 @@ func _player_input(delta: float) -> void:
 		elif Input.is_action_just_pressed("aim_right"):
 			step = Vector2i.RIGHT
 		if step != Vector2i.ZERO:
-			aim_tile = Vector2i(clampi(aim_tile.x + step.x, 0, COLS - 1), clampi(aim_tile.y + step.y, 0, ROWS - 1))
+			aim_tile = Vector2i(clampi(aim_tile.x + step.x, 0, COLS - 1), clampi(aim_tile.y + step.y, 0, rows - 1))
 		if Input.is_action_just_pressed("aim_confirm"):
 			confirm_aim()
 		elif Input.is_action_just_pressed("aim_cancel"):
@@ -480,6 +673,18 @@ func _default_aim(id: String) -> Vector2i:
 ## Mouse / touch: tap a hand card to select it, a health bar to swap to that unit, a
 ## tile to aim (and confirm) a tile card. Right-click cancels aiming.
 func _unhandled_input(event: InputEvent) -> void:
+	if placing:
+		if _countdown >= 0.0:
+			return
+		if event is InputEventMouseMotion:
+			var t := _tile_at(event.position)
+			if t != place_tile:
+				_move_place_cursor(t)
+		elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			_move_place_cursor(_tile_at(event.position))
+			_place_here()
+			get_viewport().set_input_as_handled()
+		return
 	if not battle_on:
 		return
 	if event.is_action_pressed("pause"):
@@ -504,7 +709,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				select_card(slot)
 				get_viewport().set_input_as_handled()
 				return
-			for i in 3:
+			for i in player_units.size():
 				if Rect2(24, 14 + i * 36, 440, 30).has_point(event.position) and player_units[i].is_alive():
 					_set_active(i)
 					get_viewport().set_input_as_handled()
@@ -516,7 +721,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 
 func _tile_at(screen: Vector2) -> Vector2i:
-	var p := screen - position - Vector2(GRID_X, GRID_Y)
+	var p := screen - position - Vector2(GRID_X, grid_y)
 	if p.x < 0 or p.y < 0:
 		return Vector2i(-1, -1)
 	return Vector2i(int(p.x / PANEL_W), int(p.y / PANEL_H))
@@ -603,7 +808,7 @@ func _push_to_nearest(u: Unit, prefer_rows := false) -> void:
 	var best := Vector2i(-1, -1)
 	var best_d := 999.0
 	for c in COLS:
-		for r in ROWS:
+		for r in rows:
 			if (c != u.col or r != u.row) and can_move(u, c, r):
 				var dc := c - u.col
 				var col_cost := 2.0 if prefer_rows else (0.9 if signi(dc) == back else 3.0)
@@ -692,6 +897,28 @@ func fire_primary(u: Unit) -> bool:
 	u.sprite.play_attack()
 	return true
 
+## A lone leader's alternate fire: its squad's primary, with that unit's shot numbers.
+func fire_alt(u: Unit) -> bool:
+	if u.alt_primary == "" or u.alt_primary == "charge":
+		return false
+	var keep := [u.primary, u.role]
+	u.primary = u.alt_primary
+	u.role = u.alt_role
+	var ok := fire_primary(u)
+	u.primary = keep[0]
+	u.role = keep[1]
+	return ok
+
+## Energy one alternate shot costs.
+func alt_cost(u: Unit) -> float:
+	var keep := [u.primary, u.role]
+	u.primary = u.alt_primary
+	u.role = u.alt_role
+	var c := primary_cost(u)
+	u.primary = keep[0]
+	u.role = keep[1]
+	return c
+
 ## Bookkeeping every shot triggers: protocol SILENCE, self-damage passives, Glasswing.
 func _on_fired(u: Unit) -> void:
 	Sfx.unit_fire(u)
@@ -747,6 +974,8 @@ func _update_shots(delta: float) -> void:
 	var spawned: Array = []
 	var i := shots.size() - 1
 	while i >= 0:
+		if not battle_on:
+			return   # a hit just ended the battle (the end screen cleared the shots)
 		var s: Dictionary = shots[i]
 		var done := false
 		if s["kind"] == "mortar":
@@ -768,7 +997,7 @@ func _update_shots(delta: float) -> void:
 			if s.has("split_x") and (s["x"] - s["split_x"]) * s["dir"] >= 0.0:
 				s.erase("split_x")
 				for dr in [-1, 1]:
-					if row + dr >= 0 and row + dr < ROWS:
+					if row + dr >= 0 and row + dr < rows:
 						var b: Dictionary = s.duplicate()
 						b["ty"] = panel_center(0, row + dr).y
 						b["dmg"] = REFRACT_SPLIT_DMG
@@ -795,6 +1024,8 @@ func _update_shots(delta: float) -> void:
 				if src and is_instance_valid(src) and src.passive == "steady_aim":
 					src.streak = 0   # a miss breaks Steady Aim
 				done = true
+		if not battle_on:
+			return
 		if done:
 			shots.remove_at(i)
 		i -= 1
@@ -904,6 +1135,7 @@ func _popup(pos: Vector2, text: String, col: Color) -> void:
 	var l := Label.new()
 	l.text = text
 	l.position = pos + Vector2(randf_range(-14, 14), 0)
+	l.add_theme_font_override("font", Game.FONT_NUM)
 	l.add_theme_font_size_override("font_size", 16)
 	l.add_theme_color_override("font_color", col)
 	l.add_theme_color_override("font_outline_color", Color(0, 0, 0))
@@ -1117,7 +1349,7 @@ func _apply_card(team: int, id: String, sel: Unit, aim_row: int, tile: Vector2i)
 			for c in COLS:
 				tries.append(Vector2i(c, sel.row))
 			for c in COLS:
-				for r in ROWS:
+				for r in rows:
 					tries.append(Vector2i(c, r))
 			drones[team] = {}
 			for t in tries:
@@ -1141,7 +1373,7 @@ func _apply_card(team: int, id: String, sel: Unit, aim_row: int, tile: Vector2i)
 					cols.append(c)
 			if team == 1:
 				cols.reverse()
-			var r0 := clampi(aim_row, 0, ROWS - 2)
+			var r0 := clampi(aim_row, 0, rows - 2)
 			var tiles := {}
 			for c in cols.slice(0, 2):
 				for r in [r0, r0 + 1]:
@@ -1195,13 +1427,14 @@ func _apply_card(team: int, id: String, sel: Unit, aim_row: int, tile: Vector2i)
 		"barrage":
 			var from := sel.position + Vector2(0, -sel.sprite.height)
 			for dr in [-1, 0, 1]:
-				if tile.y + dr >= 0 and tile.y + dr < ROWS:
+				if tile.y + dr >= 0 and tile.y + dr < rows:
 					shots.append({"kind": "mortar", "team": team, "src": sel, "from": from, "tc": tile.x, "tr": tile.y + dr,
 						"t": -0.15 * absi(dr), "dmg": 14})
 		"hold_the_line":
 			guard_until[team] = time + 5.0
 		"requisition":
-			hands[team]._draw_card_from_deck()
+			if not hands[team].is_full():
+				hands[team]._draw_card_from_deck()
 		"target_lock":
 			var t := unit_at(tile.x, tile.y)
 			if t and t.team == foe:
@@ -1229,7 +1462,7 @@ func _apply_card(team: int, id: String, sel: Unit, aim_row: int, tile: Vector2i)
 					u.heal_rate = 4.0
 		"mudslide":
 			for dr in [-1, 0, 1]:
-				if tile.y + dr >= 0 and tile.y + dr < ROWS:
+				if tile.y + dr >= 0 and tile.y + dr < rows:
 					mires[Vector2i(tile.x, tile.y + dr)] = time + MIRE_TIME
 		"last_stand":
 			sel.undying_until = time + 4.0
@@ -1254,7 +1487,7 @@ func _apply_card(team: int, id: String, sel: Unit, aim_row: int, tile: Vector2i)
 					booms.append([u.position, 22.0, 0.3, Color(1.0, 0.8, 0.4)])
 		"firewall":
 			for dr in [-1, 0, 1]:
-				if tile.y + dr >= 0 and tile.y + dr < ROWS:
+				if tile.y + dr >= 0 and tile.y + dr < rows:
 					fields[Vector2i(tile.x, tile.y + dr)] = {"team": team, "until": time + CONTAIN_TIME}
 		"mycelial_link":
 			sel.link_until = time + 6.0
@@ -1320,7 +1553,7 @@ func use_doctrine() -> void:
 			var tile := _best_column_tile()
 			var from: Vector2 = casters[0].position + Vector2(0, -casters[0].sprite.height)
 			for dr in [-1, 0, 1]:
-				if tile.y + dr >= 0 and tile.y + dr < ROWS:
+				if tile.y + dr >= 0 and tile.y + dr < rows:
 					shots.append({"kind": "mortar", "team": 1, "src": null, "from": from, "tc": tile.x, "tr": tile.y + dr,
 						"t": -0.2 * absi(dr), "dmg": 12})
 		"ascendancy":
@@ -1330,7 +1563,7 @@ func use_doctrine() -> void:
 		"manyworlds":
 			var u: Unit = active_unit() if active_unit().is_alive() else targets[0]
 			for dr in [-1, 0, 1]:
-				if u.row + dr >= 0 and u.row + dr < ROWS:
+				if u.row + dr >= 0 and u.row + dr < rows:
 					mires[Vector2i(u.col, u.row + dr)] = time + MIRE_TIME
 	_announce(1, Game.DOCTRINES[ai["doctrine"]]["name"], 16)
 	Sfx.doctrine()
@@ -1413,7 +1646,7 @@ func _ai_card_unit(id: String) -> Unit:
 func _ai_aim_row() -> int:
 	var alive := player_units.filter(func(u): return u.is_alive())
 	if alive.is_empty():
-		return 4
+		return rows / 2
 	var best: int = alive[randi() % alive.size()].row
 	var best_n := 0
 	for u in alive:
@@ -1502,6 +1735,7 @@ func _announce(team: int, text: String, size := 20, hold := 1.0) -> void:
 	var showing := hud.get_children().filter(func(n): return n.has_meta("announce")).size()
 	l.set_meta("announce", true)
 	l.position = Vector2(420, 34 + 26 * (showing % 3))
+	l.add_theme_font_override("font", Game.FONT_HEAD)
 	l.add_theme_font_size_override("font_size", size)
 	l.add_theme_color_override("font_color", Color(0.55, 0.9, 1.0) if team == 0 else Color(1.0, 0.6, 0.5))
 	l.add_theme_color_override("font_outline_color", Color(0, 0, 0))
@@ -1530,13 +1764,27 @@ func _update_hud() -> void:
 		txt += "  ·  %d energy" % int(primary_cost(u))
 	if time < u.overclock_until:
 		txt += "  ·  OVERCLOCKED"
+	if u.alt_primary != "":
+		txt += "\nAlt fire (%s): %s" % ["R1" if Game.using_pad else "E", Game.PRIMARY_NAMES.get(u.alt_primary, "Shot")]
+		if u.alt_primary == "standard":
+			txt = txt.trim_suffix("Shot") + "Heavy Shot"
+		if u.alt_primary != "charge":
+			txt += "  ·  %d energy" % int(alt_cost(u))
 	if u.passive != "":
 		txt += "\nPassive: %s" % Game.PASSIVE_NAMES[u.passive]
 	if aim_slot >= 0:
 		txt = ("Aiming %s: right stick picks a tile, R2 confirms\n(L2 to cancel)" if Game.using_pad else
 			"Aiming %s: click a tile\n(right-click / Esc to cancel)") % Game.CARDS[hand.hand[aim_slot]]["name"]
 	primary_label.text = txt
-	$HUD/Controls.text = "D-pad · L1/R1 swap · A fire · X/Y/B cards · Start" if Game.using_pad else "WASD · Q/E swap · Space fire · 1-3 cards · Esc"
+	# 3 lines (a lone leader's alt fire): lift it and drop the controls hint so they clear
+	var tall := txt.count("\n") >= 2
+	primary_label.position.y = 616.0 if tall else 630.0
+	$HUD/Controls.position.y = 694.0 if tall else 682.0
+	var solo := player_units.size() == 1
+	if Game.using_pad:
+		$HUD/Controls.text = "D-pad · %s · A fire · X/Y/B cards · Start" % ("R1 alt fire" if solo else "L1/R1 swap")
+	else:
+		$HUD/Controls.text = "WASD · %s · Space fire · 1-3 cards · Esc" % ("E alt fire" if solo else "Q/E swap")
 
 func _on_unit_killed(u: Unit) -> void:
 	Sfx.unit_death(u)
@@ -1570,11 +1818,13 @@ func _on_unit_killed(u: Unit) -> void:
 ## End screen (CanvasLayer above everything); everyone stops acting.
 func _show_over(text: String, hint: String) -> void:
 	Sfx.stinger(text != "DEFEAT")
+	Music.duck(true)
 	battle_on = false
 	cancel_aim()
 	shots = []
 	overlay_text = text
 	over_title.text = text
+	over_title.add_theme_font_override("font", Game.FONT_HEAD)
 	over_dim.visible = true
 	over_title.visible = true
 	over_hint.text = hint
@@ -1585,12 +1835,12 @@ func _show_over(text: String, hint: String) -> void:
 # --- drawing -------------------------------------------------------------------------
 
 func _tile_rect(c: int, r: int) -> Rect2:
-	return Rect2(GRID_X + c * PANEL_W + 2.0, GRID_Y + r * PANEL_H + 2.0, PANEL_W - 4.0, PANEL_H - 4.0)
+	return Rect2(GRID_X + c * PANEL_W + 2.0, grid_y + r * PANEL_H + 2.0, PANEL_W - 4.0, PANEL_H - 4.0)
 
 func _draw() -> void:
 	var font := ThemeDB.fallback_font
 	for c in COLS:
-		for r in ROWS:
+		for r in rows:
 			var inner := _tile_rect(c, r)
 			var fill := Color(0.22, 0.32, 0.55, 0.55) if holds(0, c, r) else Color(0.55, 0.25, 0.28, 0.55)
 			if r % 2 == 1:
@@ -1598,9 +1848,9 @@ func _draw() -> void:
 			draw_rect(inner, fill)
 			draw_rect(inner, Color(0.8, 0.85, 1.0, 0.25), false, 1.5)
 	var mid := GRID_X + (PLAYER_MAX_COL + 1) * PANEL_W
-	draw_line(Vector2(mid, GRID_Y - 6), Vector2(mid, GRID_Y + ROWS * PANEL_H + 6), Color(1, 1, 1, 0.35), 2.0)
+	draw_line(Vector2(mid, grid_y - 6), Vector2(mid, grid_y + rows * PANEL_H + 6), Color(1, 1, 1, 0.35), 2.0)
 	if not claim.is_empty():
-		var cr := Rect2(GRID_X + claim["col"] * PANEL_W, GRID_Y, PANEL_W, ROWS * PANEL_H)
+		var cr := Rect2(GRID_X + claim["col"] * PANEL_W, grid_y, PANEL_W, rows * PANEL_H)
 		var ca := _fade_in_out(claim["until"], 10.0)
 		var gold := Color(1.0, 0.82, 0.3)
 		_glow_rect(cr, Color(gold, 0.22 * ca))
@@ -1673,7 +1923,7 @@ func _draw() -> void:
 				_draw_tether(bound[a].position, bound[b].position, Color(0.6, 0.3, 1.0), a * 3 + b)
 	if not protocol.is_empty():
 		var x0 := GRID_X + (0.0 if protocol["team"] == 0 else 3 * PANEL_W)
-		draw_string(font, Vector2(x0 + 6, GRID_Y + ROWS * PANEL_H + 4), "PROTOCOL %s  %.1fs" % [protocol["rule"], protocol["until"] - time], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(1.0, 0.45, 0.45))
+		draw_string(font, Vector2(x0 + 6, grid_y + rows * PANEL_H + 4), "PROTOCOL %s  %.1fs" % [protocol["rule"], protocol["until"] - time], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(1.0, 0.45, 0.45))
 	for team in 2:
 		var d: Dictionary = drones[team]
 		if not d.is_empty():
@@ -1683,7 +1933,7 @@ func _draw() -> void:
 			draw_arc(p, 11.0, 0, TAU, 20, Color(0.2, 0.25, 0.3), 1.5)
 	# Parallax afterimage: faint copy on the tile it last stood on
 	for u in player_units + enemy_units:
-		if u.is_alive() and u.primary == "afterimage" and (u.prev_col != u.col or u.prev_row != u.row):
+		if u.is_alive() and "afterimage" in [u.primary, u.alt_primary] and (u.prev_col != u.col or u.prev_row != u.row):
 			var tex := u.sprite.get_texture()
 			var h := u.sprite.height
 			var w := tex.get_width() * h / tex.get_height()
@@ -1739,6 +1989,17 @@ func _draw() -> void:
 			var ang := n * TAU / 8.0 + float(b[1])
 			var d1 := r * (0.6 + 0.6 * (1.0 - k))
 			draw_line(b[0] + Vector2.from_angle(ang) * d1, b[0] + Vector2.from_angle(ang) * (d1 + 6.0 * k + 2.0), Color(c.lightened(0.3), k), 2.0)
+	# setting up: the player's side glows, the cursor shows if the unit can go there
+	if placing and _countdown < 0.0:
+		var pulse := 0.5 + 0.5 * sin(Time.get_ticks_msec() / 1000.0 * 6.0)
+		for c in PLAYER_MAX_COL + 1:
+			for r in rows:
+				draw_rect(_tile_rect(c, r), Color(0.5, 0.85, 1.0, 0.06 + 0.05 * pulse))
+		var ok := _can_place(place_tile)
+		var pc := Color(0.5, 1.0, 0.7) if ok else Color(1.0, 0.3, 0.3)
+		var tr := _tile_rect(place_tile.x, place_tile.y).grow(2.0 + pulse * 2.0)
+		draw_rect(tr, Color(pc, 0.18))
+		draw_rect(tr, pc, false, 3.0)
 	# aiming reticle (gold if the card can land there, red if not)
 	if aim_slot >= 0 and aim_slot < hand.hand.size():
 		var ok := valid_tile(0, hand.hand[aim_slot], aim_tile)

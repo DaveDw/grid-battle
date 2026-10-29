@@ -1,0 +1,173 @@
+{
+  "deploy_drone": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 7,
+    "bbox": [
+      3,
+      3,
+      29,
+      27
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "issue_protocol": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 6,
+    "bbox": [
+      6,
+      3,
+      27,
+      29
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "overclock": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 6,
+    "bbox": [
+      3,
+      3,
+      30,
+      29
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "containment": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 7,
+    "bbox": [
+      4,
+      3,
+      29,
+      30
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "target_lock": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 6,
+    "bbox": [
+      3,
+      3,
+      30,
+      30
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "shield_drone": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 7,
+    "bbox": [
+      4,
+      2,
+      28,
+      30
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "recompile": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 7,
+    "bbox": [
+      4,
+      2,
+      29,
+      30
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "firewall": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 7,
+    "bbox": [
+      3,
+      5,
+      30,
+      30
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  },
+  "data_breach": {
+    "size": [
+      128,
+      128
+    ],
+    "native_size": [
+      32,
+      32
+    ],
+    "opaque_colours_including_outline": 6,
+    "bbox": [
+      5,
+      3,
+      30,
+      29
+    ],
+    "exact_4x_blocks": true,
+    "transparent": true
+  }
+}

@@ -25,6 +25,7 @@ func _ready() -> void:
 	var title := Label.new()
 	title.text = "PAUSED"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_override("font", Game.FONT_HEAD)
 	title.add_theme_font_size_override("font_size", 30)
 	_box.add_child(title)
 	var has_run := int(Game.run.get("slot", -1)) >= 0

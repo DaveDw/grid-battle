@@ -1,0 +1,98 @@
+[
+  {
+    "frame": 1,
+    "hull_mortar_cannon_dy": 0,
+    "barrel_degrees_up": 0,
+    "barrel_pivot": [
+      196,
+      99
+    ],
+    "lit_canister_band": null,
+    "smoke_dy": 0,
+    "smoke_alpha": 255
+  },
+  {
+    "frame": 2,
+    "hull_mortar_cannon_dy": 1,
+    "barrel_degrees_up": 0,
+    "barrel_pivot": [
+      196,
+      99
+    ],
+    "lit_canister_band": 0,
+    "smoke_dy": -1,
+    "smoke_alpha": 220
+  },
+  {
+    "frame": 3,
+    "hull_mortar_cannon_dy": 2,
+    "barrel_degrees_up": 0,
+    "barrel_pivot": [
+      196,
+      99
+    ],
+    "lit_canister_band": 1,
+    "smoke_dy": -2,
+    "smoke_alpha": 160
+  },
+  {
+    "frame": 4,
+    "hull_mortar_cannon_dy": 2,
+    "barrel_degrees_up": 0,
+    "barrel_pivot": [
+      196,
+      99
+    ],
+    "lit_canister_band": 2,
+    "smoke_dy": -3,
+    "smoke_alpha": 90
+  },
+  {
+    "frame": 5,
+    "hull_mortar_cannon_dy": 2,
+    "barrel_degrees_up": 2,
+    "barrel_pivot": [
+      196,
+      99
+    ],
+    "lit_canister_band": 3,
+    "smoke_dy": -4,
+    "smoke_alpha": 20
+  },
+  {
+    "frame": 6,
+    "hull_mortar_cannon_dy": 1,
+    "barrel_degrees_up": 2,
+    "barrel_pivot": [
+      196,
+      99
+    ],
+    "lit_canister_band": 4,
+    "smoke_dy": 3,
+    "smoke_alpha": 65
+  },
+  {
+    "frame": 7,
+    "hull_mortar_cannon_dy": 1,
+    "barrel_degrees_up": 0,
+    "barrel_pivot": [
+      196,
+      99
+    ],
+    "lit_canister_band": 5,
+    "smoke_dy": 1,
+    "smoke_alpha": 170
+  },
+  {
+    "frame": 8,
+    "hull_mortar_cannon_dy": 0,
+    "barrel_degrees_up": 0,
+    "barrel_pivot": [
+      196,
+      99
+    ],
+    "lit_canister_band": null,
+    "smoke_dy": 0,
+    "smoke_alpha": 255
+  }
+]

@@ -6,7 +6,14 @@ extends Node
 const SAVE_DIR := "user://saves/"
 const SLOTS := 3
 const SETTINGS_PATH := "user://settings.cfg"
-const VERSION := "Alpha Test Snapshot v0.0.2"
+const VERSION := "Alpha Test Snapshot v0.0.3"
+
+## Fonts (user's pick, 2026-10-29). Silkscreen is the project default for general UI
+## text (project.godot gui/theme/custom_font). Press Start 2P: everything on cards,
+## plus numbers and stats. Jersey 10: headers and title lines.
+const FONT_CARD := preload("res://assets/fonts/font_card.tres")
+const FONT_NUM := FONT_CARD
+const FONT_HEAD := preload("res://assets/fonts/font_head.tres")
 
 const FACTIONS := {
 	"terran": {"name": "Terran Partition Authority", "color": Color(1.0, 0.5, 0.15), "blurb": "Old-Earth order enforced in steel. Holds ground, fortifies tiles, punishes anyone who steps out of line."},
@@ -229,18 +236,79 @@ func leader_by_id(id: String) -> Dictionary:
 			return l
 	return LEADERS[0]
 
-## Unit spawn data for a leader's squad (leader, heavy, light), in Battlefield format.
-func squad_for(leader_id: String, enemy: bool, hp_mult := 1.0) -> Array:
+## Game modes. Conquest (the default): pick how many units to control (1-3); the
+## enemy fields as many (more after sector CONQUEST_GROW_AFTER), you place your squad
+## before each battle, and cards wait in hand until played. Evolution: the full game,
+## three units a side, and a full hand burns a card on every draw.
+const MODES := {
+	"conquest": {"name": "Conquest", "text": "Control 1-3 units; the enemy matches you (and grows after sector 3). Place your squad before each battle. Cards wait in hand until played."},
+	"evolution": {"name": "Evolution", "text": "The full game: three units a side, and a full hand burns a card on every draw."},
+}
+const CONQUEST_GROW_AFTER := 3
+
+func mode() -> String:
+	return run.get("mode", "evolution")   # runs saved before modes existed were Evolution
+
+## How many units the player controls this run.
+func squad_size() -> int:
+	return int(run.get("squad", 3)) if mode() == "conquest" else 3
+
+## How many units the enemy fields this battle: the player's count, then one more for
+## each sector past CONQUEST_GROW_AFTER (up to the whole squad).
+func enemy_squad_size() -> int:
+	if mode() != "conquest":
+		return 3
+	var extra := maxi(int(run.get("sector", 1)) - CONQUEST_GROW_AFTER, 0)
+	return clampi(squad_size() + extra, 1, 3)
+
+## Roles fielded by a squad of `size`: the leader, then `lackey` ("heavy" / "light") at
+## size 2, everyone at 3.
+func squad_roles(size: int, lackey := "heavy") -> Array:
+	match size:
+		1: return ["leader"]
+		2: return ["leader", lackey]
+	return ["leader", "heavy", "light"]
+
+## A leader fighting alone takes over its squad's tricks: the first unique primary of
+## its heavy / light as an alternate fire (else the heavy's shot), and the first
+## passive in the squad if it has none of its own. -> {alt, alt_role, passive}
+func solo_kit(leader_id: String) -> Dictionary:
 	var l := leader_by_id(leader_id)
-	var cells := [Vector2i(4, 4), Vector2i(4, 7), Vector2i(3, 1)] if enemy else [Vector2i(1, 4), Vector2i(1, 7), Vector2i(2, 1)]
+	var out := {"alt": "standard", "alt_role": "heavy", "passive": KITS[l["leader"]]["passive"]}
+	for role in ["heavy", "light"]:
+		if KITS[l[role]]["primary"] != "standard":
+			out["alt"] = KITS[l[role]]["primary"]
+			out["alt_role"] = role
+			break
+	for role in ["heavy", "light"]:
+		if out["passive"] == "" and KITS[l[role]]["passive"] != "":
+			out["passive"] = KITS[l[role]]["passive"]
+	return out
+
+## Unit spawn data for a leader's squad, in Battlefield format. `size` < 0: the run's
+## squad size (the player's) or this battle's enemy size. `lackey`: who joins the leader
+## in a squad of 2 ("" = the run's pick for the player, random for the enemy). Cells are
+## defaults for a full 9-row board; the battlefield re-places smaller squads.
+func squad_for(leader_id: String, enemy: bool, hp_mult := 1.0, size := -1, lackey := "") -> Array:
+	var l := leader_by_id(leader_id)
+	if size < 0:
+		size = enemy_squad_size() if enemy else squad_size()
+	if lackey == "":
+		lackey = ["heavy", "light"][randi() % 2] if enemy else str(run.get("lackey", "heavy"))
+	var cells := {"leader": Vector2i(4, 4), "heavy": Vector2i(4, 7), "light": Vector2i(3, 1)} if enemy else \
+		{"leader": Vector2i(1, 4), "heavy": Vector2i(1, 7), "light": Vector2i(2, 1)}
 	var out := []
-	var i := 0
-	for role in ["leader", "heavy", "light"]:
+	for role in squad_roles(size, lackey):
 		var key: String = l[role]
-		out.append({"name": UNITS[key]["name"], "sprite": key, "role": role, "hp": int(round(ROLES[role]["hp"] * hp_mult)),
-			"height": ROLES[role]["height"], "muzzle": UNITS[key]["muzzle"], "cell": cells[i],
-			"primary": KITS[key]["primary"], "passive": KITS[key]["passive"]})
-		i += 1
+		var d := {"name": UNITS[key]["name"], "sprite": key, "role": role, "hp": int(round(ROLES[role]["hp"] * hp_mult)),
+			"height": ROLES[role]["height"], "muzzle": UNITS[key]["muzzle"], "cell": cells[role],
+			"primary": KITS[key]["primary"], "passive": KITS[key]["passive"]}
+		if size == 1:
+			var kit := solo_kit(leader_id)
+			d["passive"] = kit["passive"]
+			d["alt"] = kit["alt"]
+			d["alt_role"] = kit["alt_role"]
+		out.append(d)
 	return out
 
 ## Which faction a card belongs to ("" if none): starter cards by faction, leader
@@ -280,6 +348,37 @@ func deck_for(leader_id: String) -> Array:
 
 func sprite_texture(key: String) -> Texture2D:
 	return load("res://assets/sprites/%s.png" % key)
+
+## A card's pixel-art icon (128x128: 32x32 art at 4x), or null if it isn't drawn yet.
+## Draw it at 32, 64 or 128 px with nearest filtering so the pixels stay square.
+## Cached so the texture outlives the frame: a CanvasItem draw call doesn't keep its
+## texture alive, and a freed one renders as a white square.
+var _card_art := {}
+func card_art(id: String) -> Texture2D:
+	if not _card_art.has(id):
+		var path := "res://assets/cards/%s.png" % id
+		_card_art[id] = load(path) if ResourceLoader.exists(path) else null
+	return _card_art[id]
+
+## A TextureRect showing a card's icon at `px` (32, 64 or 128 keeps the pixels square).
+## Empty box (same size) for cards whose art isn't drawn yet, so layouts don't jump.
+func card_icon(id: String, px := 64) -> TextureRect:
+	var icon := TextureRect.new()
+	icon.texture = card_art(id)
+	icon.custom_minimum_size = Vector2(px, px)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN   # never stretched wide by a container
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return icon
+
+## Puts a card's icon on a Button (left of its text) at `px`.
+func card_button_icon(b: Button, id: String, px := 32) -> void:
+	b.icon = card_art(id)
+	b.add_theme_constant_override("icon_max_width", px)
+	b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 ## The unit pictured on a card: the one whose kit brings it, else a unit of the card's
 ## faction (picked by the card's name, so it's always the same one).
@@ -329,11 +428,14 @@ func latest_slot() -> int:
 ## Run fields: slot, leader, deck, sector (current, 1-based), stage (0-2), order
 ## (factions this sector), enemy (leader id), battle, wins, phase ("map" / "battle" /
 ## "draft" / "won"), offer, hp (carried squad HP), map (columns of {mod}), path
-## (chosen node per column), ng, infinite, win_deck (deck snapshot at the win).
+## (chosen node per column), ng, infinite, win_deck (deck snapshot at the win), mode
+## ("conquest" / "evolution"), squad (units controlled), lackey (who joins at squad 2).
 ## `ng`: New Game+ level (harder, more sectors). `deck`: a sculpted starting deck
 ## (NG+ only); empty = the leader's starter deck.
-func new_run(leader_id: String, slot: int, ng := 0, deck := []) -> void:
+## `game_mode` / `squad` / `lackey`: see MODES (Evolution always fields all three).
+func new_run(leader_id: String, slot: int, ng := 0, deck := [], game_mode := "evolution", squad := 3, lackey := "heavy") -> void:
 	run = {"slot": slot, "leader": leader_id, "battle": 1, "wins": 0, "seed": randi(),
+		"mode": game_mode, "squad": clampi(squad, 1, 3) if game_mode == "conquest" else 3, "lackey": lackey,
 		"started_at": Time.get_unix_time_from_system(),
 		"deck": deck.duplicate() if not deck.is_empty() else starter_deck(leader_id),
 		"sector": 1, "stage": 0, "order": _sector_order(leader_id), "phase": "map",
@@ -904,7 +1006,7 @@ const FACTION_CARDS := {
 }
 
 ## Battle won: record the squad's HP (it carries over within a sector), roll the
-## draft offer from your faction's cards + the beaten faction's (saved, so quitting
+## draft offer: one of your faction's cards + one of the beaten faction's (saved, so quitting
 ## can't reroll it) and wait for the pick.
 ## `squad_hp`: role -> HP left (0 = fallen).
 func win_battle(squad_hp := {}) -> void:
@@ -918,12 +1020,26 @@ func win_battle(squad_hp := {}) -> void:
 				if squad_hp[role] > 0:
 					squad_hp[role] = mini(ROLES[role]["hp"], int(squad_hp[role] + ROLES[role]["hp"] * heal))
 		run["hp"] = squad_hp
-	var pool := faction_cards(leader_by_id(run["leader"])["faction"])
-	for c in faction_cards(leader_by_id(run["enemy"])["faction"]):
-		if not c in pool:
-			pool.append(c)
-	pool.shuffle()
-	run["offer"] = pool.slice(0, draft_choices())
+	# one card from your faction, one from the faction you just beat; any extra slots
+	# (sector modifiers, events) are random from both
+	var own := faction_cards(leader_by_id(run["leader"])["faction"])
+	var beaten := faction_cards(leader_by_id(run["enemy"])["faction"])
+	own.shuffle()
+	beaten.shuffle()
+	var offer: Array = []
+	for pool in [own, beaten]:
+		for c in pool:
+			if not c in offer:
+				offer.append(c)
+				break
+	var rest: Array = (own + beaten).filter(func(c): return not c in offer)
+	rest.shuffle()
+	for c in rest:
+		if offer.size() >= draft_choices():
+			break
+		if not c in offer:
+			offer.append(c)
+	run["offer"] = offer.slice(0, draft_choices())
 	run.erase("draft_bonus")   # an event's wider pick is used up
 	save_run()
 
@@ -1040,10 +1156,18 @@ func save_settings() -> void:
 
 func apply_settings() -> void:
 	AudioServer.set_bus_volume_db(0, linear_to_db(maxf(float(settings["master_volume"]), 0.0001)))
-	if get_node_or_null("/root/Sfx"):
-		get_node("/root/Sfx").apply_volume()
+	for bus_owner in ["/root/Sfx", "/root/Music"]:
+		if get_node_or_null(bus_owner):
+			get_node(bus_owner).apply_volume()
 	if DisplayServer.get_name() != "headless":
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if settings["fullscreen"] else DisplayServer.WINDOW_MODE_WINDOWED)
+		# only touch the window when fullscreen actually changes, so other settings
+		# don't knock a maximized window back to its small windowed size
+		var mode := DisplayServer.window_get_mode()
+		var is_full := mode == DisplayServer.WINDOW_MODE_FULLSCREEN or mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN
+		if settings["fullscreen"] and not is_full:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		elif not settings["fullscreen"] and is_full:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if settings["vsync"] else DisplayServer.VSYNC_DISABLED)
 
 # --- screens -----------------------------------------------------------------
@@ -1051,6 +1175,7 @@ func apply_settings() -> void:
 ## Fade out, change scene, fade back in.
 func go(scene_path: String) -> void:
 	get_tree().paused = false
+	Music.for_scene(scene_path)
 	var tw := create_tween()
 	tw.tween_property(_fade, "color:a", 1.0, 0.18)
 	tw.tween_callback(func(): get_tree().change_scene_to_file(scene_path))

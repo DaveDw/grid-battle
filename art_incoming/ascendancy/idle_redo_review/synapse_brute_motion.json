@@ -1,0 +1,122 @@
+[
+  {
+    "frame": 1,
+    "whole_body_dxy": [
+      0,
+      0
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": null,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0,
+    "tablet_data_scroll_px": null
+  },
+  {
+    "frame": 2,
+    "whole_body_dxy": [
+      0,
+      1
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": null,
+    "core_source_multiplier": 0.3,
+    "core_bright_mix": 0,
+    "tablet_data_scroll_px": null
+  },
+  {
+    "frame": 3,
+    "whole_body_dxy": [
+      0,
+      1
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": 340,
+    "core_source_multiplier": 0.6,
+    "core_bright_mix": 0,
+    "tablet_data_scroll_px": null
+  },
+  {
+    "frame": 4,
+    "whole_body_dxy": [
+      0,
+      2
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": 344,
+    "core_source_multiplier": 0.9,
+    "core_bright_mix": 0.35,
+    "tablet_data_scroll_px": null
+  },
+  {
+    "frame": 5,
+    "whole_body_dxy": [
+      0,
+      2
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": 360,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0.95,
+    "tablet_data_scroll_px": null
+  },
+  {
+    "frame": 6,
+    "whole_body_dxy": [
+      0,
+      1
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": null,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0.45,
+    "tablet_data_scroll_px": null
+  },
+  {
+    "frame": 7,
+    "whole_body_dxy": [
+      0,
+      1
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": null,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0.12,
+    "tablet_data_scroll_px": null
+  },
+  {
+    "frame": 8,
+    "whole_body_dxy": [
+      0,
+      0
+    ],
+    "head_extra_dxy": [
+      0,
+      0
+    ],
+    "glasses_glint_center_source_x": null,
+    "core_source_multiplier": 1,
+    "core_bright_mix": 0,
+    "tablet_data_scroll_px": null
+  }
+]

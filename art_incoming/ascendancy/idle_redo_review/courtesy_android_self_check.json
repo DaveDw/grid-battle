@@ -1,0 +1,83 @@
+{
+  "source": "assets\\sprites\\ascendancy\\courtesy_android.png",
+  "base_offset": [
+    182,
+    2
+  ],
+  "master_sha256": "8860d08e6a355c8ed2dd029f74a9a5d2ebb41272db54bbf957dcc475265af6de",
+  "strip_size": [
+    4512,
+    333
+  ],
+  "frame_1_exact_clean_base": true,
+  "frame_8_exact": true,
+  "old_idle_pixels_used": false,
+  "frames": [
+    {
+      "rotated_head_mismatches": 0,
+      "fixed_body_mismatches": 0,
+      "gun_mismatches": 0,
+      "feet_region_mismatches": 0,
+      "unexplained_pixel_mismatches": 0,
+      "visible_seam_pixels": 0
+    },
+    {
+      "rotated_head_mismatches": 0,
+      "fixed_body_mismatches": 0,
+      "gun_mismatches": 0,
+      "feet_region_mismatches": 0,
+      "unexplained_pixel_mismatches": 0,
+      "visible_seam_pixels": 0
+    },
+    {
+      "rotated_head_mismatches": 0,
+      "fixed_body_mismatches": 0,
+      "gun_mismatches": 0,
+      "feet_region_mismatches": 0,
+      "unexplained_pixel_mismatches": 0,
+      "visible_seam_pixels": 8
+    },
+    {
+      "rotated_head_mismatches": 0,
+      "fixed_body_mismatches": 0,
+      "gun_mismatches": 0,
+      "feet_region_mismatches": 0,
+      "unexplained_pixel_mismatches": 0,
+      "visible_seam_pixels": 8
+    },
+    {
+      "rotated_head_mismatches": 0,
+      "fixed_body_mismatches": 0,
+      "gun_mismatches": 0,
+      "feet_region_mismatches": 0,
+      "unexplained_pixel_mismatches": 0,
+      "visible_seam_pixels": 8
+    },
+    {
+      "rotated_head_mismatches": 0,
+      "fixed_body_mismatches": 0,
+      "gun_mismatches": 0,
+      "feet_region_mismatches": 0,
+      "unexplained_pixel_mismatches": 0,
+      "visible_seam_pixels": 8
+    },
+    {
+      "rotated_head_mismatches": 0,
+      "fixed_body_mismatches": 0,
+      "gun_mismatches": 0,
+      "feet_region_mismatches": 0,
+      "unexplained_pixel_mismatches": 0,
+      "visible_seam_pixels": 0
+    },
+    {
+      "rotated_head_mismatches": 0,
+      "fixed_body_mismatches": 0,
+      "gun_mismatches": 0,
+      "feet_region_mismatches": 0,
+      "unexplained_pixel_mismatches": 0,
+      "visible_seam_pixels": 0
+    }
+  ],
+  "godot_run": false,
+  "published": true
+}

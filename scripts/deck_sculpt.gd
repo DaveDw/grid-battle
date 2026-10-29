@@ -36,6 +36,7 @@ func _ready() -> void:
 	panel.add_child(v)
 	var title := Label.new()
 	title.text = "STARTING DECK  —  %s" % Game.UNITS[Game.leader_by_id(leader_id)["leader"]]["name"].to_upper()
+	title.add_theme_font_override("font", Game.FONT_HEAD)
 	title.add_theme_font_size_override("font_size", 26)
 	v.add_child(title)
 	_hint = Label.new()
@@ -167,6 +168,9 @@ func _card_button(id: String, suffix: String) -> Button:
 	b.tooltip_text = c["text"]
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.custom_minimum_size = Vector2(0, 40)
+	b.add_theme_font_override("font", Game.FONT_CARD)
+	b.add_theme_font_size_override("font_size", 8)
+	Game.card_button_icon(b, id)
 	return b
 
 func _unhandled_input(event: InputEvent) -> void:

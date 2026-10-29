@@ -160,10 +160,18 @@ Each faction has 2 starter cards, ×3 each, plus 1 copy of the leader's unique c
 - If a chain breaks, a unit already standing on the cut-off tile stays put, but nobody can step onto it until it reconnects or expires. **[proposal]**
 
 ## Draw pressure
-- Hand of 3. The draw timer never stops: when it fills, a card is drawn; if the hand is full, a random card in hand is discarded to make room.
-- The draw bar flashes red as it nears full while the hand is full.
-- When the deck is empty, the discard pile is shuffled into a new deck.
-- Draw interval 4–5 s (tune with the 7-card deck).
+- Hand of 3. When the deck is empty, the discard pile is shuffled into a new deck.
+- **Evolution:** the draw timer never stops. When it fills, a card is drawn; if the hand is full, a random card in hand is discarded to make room. The draw bar flashes red as it nears full while the hand is full. Draw interval 7.5 s (was 4.5 s; slowed so it can be read).
+- **Conquest:** cards stay in hand until played. The timer runs only while a slot is empty, and draws a card each time it fills, until the hand is full. Draw interval 9 s.
+
+## Game modes (2026-10-27)
+- **Conquest** (default): pick a leader, then how many units to control (1-3).
+  - At 2 units you pick the lackey (heavy or light).
+  - Alone, the leader takes its squad's first unique primary as an alternate fire on the right swap button (E / R1), else the heavy's shot. It also takes the squad's first passive if it has none of its own.
+  - The enemy fields the same count (random lackey at 2, the same solo kit at 1) through sector 3. After that it adds one unit per sector, up to all three.
+  - The board drops its top 3 rows per unit the bigger squad is short of three: 9, 6 or 3 rows.
+  - Before each battle the enemy's positions are rolled and shown, the player places their units, then a 3-2-1 countdown starts the fight.
+- **Evolution:** the original game. Three units a side, a full board, it starts at once, and the burning hand.
 
 ## Controls
 | Action | Mouse + keyboard | Controller | Touch (e.g. Steam Deck screen) |

@@ -1,0 +1,152 @@
+{
+  "siege_rig": {
+    "source": "assets/sprites/terran/siege_rig_idle.png",
+    "master_sha256": "3ae4c79918ac0eb7e7299c158a6a564f607ae20c3bdb638b05c3897616db587c",
+    "strip_size": [
+      3424,
+      365
+    ],
+    "frame_1_exact": true,
+    "frame_8_exact": true,
+    "frames": [
+      {
+        "body_rigid_mismatches": 0,
+        "barrel_rigid_transform_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "barrel_rigid_transform_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "barrel_rigid_transform_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "barrel_rigid_transform_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "barrel_rigid_transform_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 57
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "barrel_rigid_transform_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 57
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "barrel_rigid_transform_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "barrel_rigid_transform_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 0
+      }
+    ],
+    "godot_run": false,
+    "effect_mask_pixels_at_037": [
+      52,
+      90,
+      96,
+      101,
+      103,
+      97,
+      124,
+      52
+    ]
+  },
+  "claim_lord": {
+    "source": "assets/sprites/terran/claim_lord_idle.png",
+    "master_sha256": "f4b731d2a89fa4d3d9c5d4267aca9fbe290c7b94c2adebf220a81bc843a7d240",
+    "strip_size": [
+      4336,
+      352
+    ],
+    "frame_1_exact": true,
+    "frame_8_exact": true,
+    "frames": [
+      {
+        "body_cape_armour_rigid_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 0
+      },
+      {
+        "body_cape_armour_rigid_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 35
+      },
+      {
+        "body_cape_armour_rigid_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 35
+      },
+      {
+        "body_cape_armour_rigid_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 70
+      },
+      {
+        "body_cape_armour_rigid_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 70
+      },
+      {
+        "body_cape_armour_rigid_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 35
+      },
+      {
+        "body_cape_armour_rigid_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 35
+      },
+      {
+        "body_cape_armour_rigid_mismatches": 0,
+        "stationary_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 0
+      }
+    ],
+    "godot_run": false,
+    "effect_mask_pixels_at_037": [
+      0,
+      0,
+      84,
+      97,
+      110,
+      84,
+      0,
+      0
+    ]
+  }
+}

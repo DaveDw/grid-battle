@@ -1,0 +1,156 @@
+{
+  "breacher": {
+    "source": "assets/sprites/terran/breacher_idle.png",
+    "source_master_sha256": "88ffeb55bea07f6c5b5ba1855be25fdfefe5358a72441a2554b094f1aeb58169",
+    "strip_size": [
+      4480,
+      329
+    ],
+    "frame_1_exact": true,
+    "frame_8_exact": true,
+    "frames": [
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 0,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 223,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 223,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 446,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 446,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 223,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 223,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 0,
+        "clipped_rigid_pixels": 0
+      }
+    ],
+    "godot_run": false
+  },
+  "standard_guard": {
+    "source": "assets/sprites/terran/standard_guard_idle.png",
+    "source_master_sha256": "0ef0e7a63fd61f442fd1803d3d1a039a1c0893a2cf9310f5b8d1ddc101d66730",
+    "strip_size": [
+      3888,
+      306
+    ],
+    "frame_1_exact": true,
+    "frame_8_exact": true,
+    "frames": [
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 0,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 5,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 5,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 9,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 9,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 5,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 5,
+        "clipped_rigid_pixels": 0
+      },
+      {
+        "body_rigid_mismatches": 0,
+        "shield_or_rifle_rigid_mismatches": 0,
+        "stationary_visible_legs_mismatches": 0,
+        "feet_mismatches": 0,
+        "seam_pixels": 0,
+        "clipped_rigid_pixels": 0
+      }
+    ],
+    "godot_run": false
+  }
+}

@@ -13,6 +13,7 @@ func _ready() -> void:
 	_add_leader_lineup()
 	_title = Label.new()
 	_title.text = "GRID BATTLE"
+	_title.add_theme_font_override("font", Game.FONT_HEAD)
 	_title.add_theme_font_size_override("font_size", 76)
 	_title.add_theme_color_override("font_color", Color(0.9, 0.97, 1.0))
 	_title.add_theme_color_override("font_outline_color", Color(0.1, 0.4, 0.7))
@@ -37,6 +38,8 @@ func _ready() -> void:
 	if latest >= 0:
 		var d := Game.read_slot(latest)
 		cont.text = "Continue  —  %s, sector %d stage %d" % [Game.UNITS[Game.leader_by_id(d.get("leader", ""))["leader"]]["name"], int(d.get("sector", 1)), int(d.get("stage", 0)) + 1]
+		if d.get("mode", "evolution") == "conquest":
+			cont.text += "  ·  Conquest"
 	_button("Start New Run", func(): Game.go("res://scenes/character_select.tscn"))
 	_button("Load Run", func(): Game.go("res://scenes/load_run.tscn"))
 	_button("Collection", func(): Game.go("res://scenes/collection.tscn"))
@@ -51,7 +54,9 @@ func _ready() -> void:
 	ver.text = Game.VERSION
 	ver.add_theme_font_size_override("font_size", 13)
 	ver.add_theme_color_override("font_color", Color(0.45, 0.5, 0.6))
-	ver.position = Vector2(1280 - 170, 690)
+	ver.size = Vector2(400, 20)
+	ver.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	ver.position = Vector2(1280 - 16 - 400, 690)
 	add_child(ver)
 	var hint := Label.new()
 	hint.text = "Arrows / D-pad / mouse to choose  ·  Enter / A to select  ·  Esc / B to go back"
@@ -99,7 +104,11 @@ func _on_settings() -> void:
 func _on_how_to_play() -> void:
 	var d := AcceptDialog.new()
 	d.title = "How to Play"
-	d.dialog_text = "Pick a leader. Their heavy and light come with them: three units per side.\n\n" \
+	d.dialog_autowrap = true   # wrap long lines instead of stretching past the screen
+	d.dialog_text = "Pick a leader and a mode.\n" \
+		+ "CONQUEST: choose how many units you control (1-3); the enemy brings the same, then one more each sector after the third. " \
+		+ "Place your squad before each battle. Cards stay in hand until you play them. A leader alone fires its squad's weapon on E / R1.\n" \
+		+ "EVOLUTION: three units a side, and a full hand burns a card on every draw.\n\n" \
 		+ "WASD / D-pad: move the unit you control (each tile costs a stamina chunk; stamina refills constantly).\n" \
 		+ "Q / E or L1 / R1: swap which unit you control.\n" \
 		+ "Space, right-click or A: the controlled unit's primary fire (costs energy; recharges after a short pause).\n" \
@@ -115,5 +124,6 @@ func _on_how_to_play() -> void:
 	d.visibility_changed.connect(func():
 		if not d.visible:
 			_buttons.get_child(6).grab_focus())
-	d.popup_centered(Vector2i(620, 0))
+	d.get_label().add_theme_font_size_override("font_size", 12)
+	d.popup_centered(Vector2i(1040, 0))
 	d.get_ok_button().grab_focus()

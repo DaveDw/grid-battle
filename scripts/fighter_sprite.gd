@@ -15,6 +15,9 @@ extends Node2D
 @export var height := 112.0
 ## If > 0, also shrink wide art to fit this width.
 @export var max_width := 0.0
+## If > 0, also shrink so the whole frame (raised flags included) fits this height,
+## for sprites drawn inside a box.
+@export var max_height := 0.0
 ## Feet offset below the panel centre.
 @export var feet_y := 40.0
 ## Where the weapon muzzle is, as a fraction of the (unmirrored) art's width/height.
@@ -46,6 +49,7 @@ var _t := 0.0
 var _flash := 0.0          # muzzle flash time left
 var _windup := false
 var _anim: Tween
+var _dead := false         # death played: no other animation may bring the sprite back
 
 func _ready() -> void:
 	_sprite = Sprite2D.new()
@@ -89,6 +93,8 @@ func _apply_art() -> void:
 		# fit the character (as wide as the still art at this scale), not the roomy cell
 		var art_w := size.x if body_h <= 0.0 else _still.get_width() * body_h / _still.get_height()
 		s = minf(s, max_width / art_w)
+	if max_height > 0.0:
+		s = minf(s, max_height / size.y)
 	_base_scale = Vector2(-s if face_left else s, s)
 	_sprite.scale = _base_scale
 	_sprite.position = Vector2(0.0, feet_y)
@@ -167,6 +173,8 @@ func _restart_anim() -> Tween:
 
 ## Shot fired: kick back against the facing, squash, flash at the muzzle.
 func play_attack() -> void:
+	if _dead:
+		return   # e.g. Ember Shot's self-damage killed the shooter mid-shot
 	end_windup()
 	_flash = 0.12
 	_move_t = -1.0
@@ -187,6 +195,8 @@ func play_attack() -> void:
 
 ## Enemy telegraph: crouch and lean back while pulsing, for `duration` seconds.
 func play_windup(duration: float) -> void:
+	if _dead:
+		return
 	_windup = true
 	var lean := 6.0 if face_left else -6.0
 	var tw := _restart_anim()
@@ -200,6 +210,8 @@ func end_windup() -> void:
 
 ## Took damage: white flash and a short shake.
 func play_hit() -> void:
+	if _dead:
+		return
 	end_windup()
 	var tw := _restart_anim()
 	_sprite.modulate = Color(3.0, 3.0, 3.0)
@@ -210,7 +222,7 @@ func play_hit() -> void:
 
 ## Moving one tile: `d` is "up" / "down" / "fwd" / "back". Shows that pose, if drawn.
 func play_move(d: String) -> void:
-	if _moves.has(d) and _attack_t < 0.0:
+	if _moves.has(d) and _attack_t < 0.0 and not _dead:
 		_sprite.texture = _moves[d]
 		_sprite.hframes = 1
 		_sprite.frame = 0
@@ -218,7 +230,7 @@ func play_move(d: String) -> void:
 
 ## Landed on a new panel: quick squash so the snap reads as a hop.
 func play_land() -> void:
-	if _windup:
+	if _windup or _dead:
 		return
 	var tw := _restart_anim()
 	_sprite.scale = _base_scale * Vector2(1.12, 0.86)
@@ -227,6 +239,12 @@ func play_land() -> void:
 ## Deleted: flash, sink and fade out.
 func play_death() -> void:
 	end_windup()
+	_dead = true
+	_flash = 0.0
+	if _attack_t >= 0.0 or _move_t >= 0.0:
+		_attack_t = -1.0
+		_move_t = -1.0
+		_show_idle()   # back on the idle sheet, or the idle loop indexes past the attack frames
 	var tw := _restart_anim()
 	_sprite.modulate = Color(3.0, 3.0, 3.0)
 	tw.set_parallel(true)

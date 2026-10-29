@@ -1,0 +1,171 @@
+{
+  "frame1": {
+    "seam_pixels": 0
+  },
+  "frame2": {
+    "seam_pixels": 0
+  },
+  "frame3": {
+    "seam_pixels": 196
+  },
+  "frame4": {
+    "seam_pixels": 217
+  },
+  "frame5": {
+    "seam_pixels": 196
+  },
+  "frame6": {
+    "seam_pixels": 24
+  },
+  "frame7": {
+    "seam_pixels": 0
+  },
+  "frame8": {
+    "seam_pixels": 0
+  },
+  "frame_1_is_master": true,
+  "master": {
+    "cleaned_pixels": 434,
+    "frame_size": [
+      690,
+      368
+    ],
+    "source": "res://assets/sprites/ascendancy/protocol_warden_idle.png"
+  },
+  "motion": {
+    "body": {
+      "dx": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "dy": [
+        0,
+        0,
+        2,
+        2,
+        2,
+        0,
+        0,
+        0
+      ],
+      "max_shift_px": 2,
+      "rot": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "left_hip": {
+      "dx": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "dy": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "max_shift_px": 0,
+      "rot": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "pupil": {
+      "dx": [
+        0.0,
+        0.0,
+        1.0,
+        2.0,
+        1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "dy": [
+        0.0,
+        0.0,
+        2.0,
+        2.0,
+        2.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max_shift_px": 2,
+      "rot": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "right_hip": {
+      "dx": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "dy": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "max_shift_px": 0,
+      "rot": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "problems": [],
+  "stray_blobs": []
+}

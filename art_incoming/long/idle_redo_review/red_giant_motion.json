@@ -1,0 +1,114 @@
+[
+  {
+    "frame": 1,
+    "body_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {},
+    "lava_glow": 0,
+    "ember_age": null
+  },
+  {
+    "frame": 2,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {},
+    "lava_glow": 0.1,
+    "ember_age": null
+  },
+  {
+    "frame": 3,
+    "body_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {},
+    "lava_glow": 0.45,
+    "ember_age": 0
+  },
+  {
+    "frame": 4,
+    "body_dxy": [
+      0,
+      3
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {},
+    "lava_glow": 1,
+    "ember_age": 1
+  },
+  {
+    "frame": 5,
+    "body_dxy": [
+      0,
+      3
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {},
+    "lava_glow": 0.8,
+    "ember_age": 2
+  },
+  {
+    "frame": 6,
+    "body_dxy": [
+      0,
+      2
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {},
+    "lava_glow": 0.3,
+    "ember_age": 3
+  },
+  {
+    "frame": 7,
+    "body_dxy": [
+      0,
+      1
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {},
+    "lava_glow": 0.1,
+    "ember_age": null
+  },
+  {
+    "frame": 8,
+    "body_dxy": [
+      0,
+      0
+    ],
+    "legs_dxy": [
+      0,
+      0
+    ],
+    "drones": {},
+    "lava_glow": 0,
+    "ember_age": null
+  }
+]
