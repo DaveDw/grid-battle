@@ -99,6 +99,7 @@ func _pick_card() -> void:
 		b.add_theme_font_override("font", Game.FONT_CARD)
 		b.add_theme_font_size_override("font_size", 8)
 		Game.card_button_icon(b, id)
+		Game.rarity_frame(b, id)
 		b.disabled = _fx.has("remove") and not Game.can_remove(id)
 		b.pressed.connect(func():
 			Game.pick_card_effect(_fx, id)

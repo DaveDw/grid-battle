@@ -185,7 +185,7 @@ func _ready() -> void:
 	var e_deck := Game.enemy_deck(Game.run["enemy"], lvl)
 	var fpool := Game.faction_cards(enemy_faction)
 	for n in int(next.get("enemy_cards", 0)) + int(fx.get("enemy_cards", 0)):
-		e_deck.append(fpool[randi() % fpool.size()])
+		e_deck.append(Game.weighted_card(fpool))
 	e_hand.setup(e_deck, e_energy)
 	e_hand.team = 1
 	for h in hands:

@@ -135,3 +135,8 @@
 - [x] Enemy AI rebuilt from Codex's plan (kb/proposals/codex-enemy-ai.md): aims, dodges with a reaction delay, rations stamina/energy, kit and faction tactics, card plans and combos; full cadence at level 5 (was 8).
 - [x] Battle shows the last card each side played.
 - Checks: feedback.tscn 16, shots.tscn, ai_probe.tscn 20, lane/lastcard screenshots. Windows build smoke-tested headless.
+
+## Alpha Test Snapshot v0.0.7 (2026-10-30)
+- [x] Card rarity: Common (blue) < Uncommon (green) < Rare (purple) < Legendary (yellow). Starters Common, leader cards Rare, Supernova Legendary; drafts, event cards and enemy decks weighted 100/55/25/8; frames coloured by rarity everywhere. Check: rarity.tscn.
+- [x] Credits: "A game by David Dwight" on every role; third-party font, music and engine creators credited by name.
+- Windows build smoke-tested headless.

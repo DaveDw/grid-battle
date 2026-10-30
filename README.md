@@ -6,7 +6,7 @@
 
 *Four factions · eight leaders · 24 units · 38 cards · one shared grid, and the line down the middle is for sale.*
 
-![Version](https://img.shields.io/badge/version-Alpha%20Test%20Snapshot%20v0.0.6-orange)
+![Version](https://img.shields.io/badge/version-Alpha%20Test%20Snapshot%20v0.0.7-orange)
 ![Engine](https://img.shields.io/badge/engine-Godot%204.7-478cbf?logo=godotengine&logoColor=white)
 ![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS-555)
 ![Status](https://img.shields.io/badge/status-alpha-red)
@@ -216,7 +216,7 @@ Each faction fields two leaders. A leader always brings the same heavy and light
 
 ![All 38 card icons](docs/screenshots/cards.png)
 
-There are **38 cards**: each squad's signature card, two starter cards per faction, and draftable cards that only appear as rewards. Every card has its own 32 px pixel icon.
+There are **38 cards**: each squad's signature card, two starter cards per faction, and draftable cards that only appear as rewards. Every card has its own 32 px pixel icon and a rarity shown by its frame colour: **Common** (blue), **Uncommon** (green), **Rare** (purple) and **Legendary** (yellow). Starter cards are Common and leader cards Rare; rarer cards turn up less often in drafts and events.
 
 <details>
 <summary><b>Full card list</b></summary>
@@ -372,7 +372,7 @@ On Windows you can also double-click `Play Grid Battle.bat`; edit the Godot path
 **Exporting.** `export_presets.cfg` defines three presets: *Windows Alpha*, *Linux Alpha* and *macOS Alpha*.
 
 ```bash
-godot --headless --path . --export-release "Linux Alpha" builds/linux/GridBattle-Alpha-0.0.6.x86_64
+godot --headless --path . --export-release "Linux Alpha" builds/linux/GridBattle-Alpha-0.0.7.x86_64
 ```
 
 Or run `bash tools/build_release.sh` (Git Bash on Windows), which exports all three and packs the archives into `builds/release/`. Set the Godot path (`G`) and version (`V`) at the top of the script first.
@@ -415,17 +415,7 @@ grid-battle/
 
 ## Development
 
-Grid Battle is built by a human director working with a small team of AI collaborators. Each one has a defined job:
-
-| Role | Who |
-| --- | --- |
-| Game design and direction | DaveDw |
-| Programming, systems, card art, review and the art pipeline | Claude (Anthropic) |
-| Programming (early stages) | Hermes Agent running Qwen locally |
-| Unit animation frames | Codex |
-| Card, event, modifier and tip proposals; copy editing | Gemma via Hermes, running locally |
-
-They coordinate through the knowledge base in [`kb/`](kb/):
+Grid Battle is made by David Dwight. Work is organised through the knowledge base in [`kb/`](kb/):
 - **briefs** are the tasks handed out;
 - **proposals** are what comes back;
 - **decisions** record what the director approved;
@@ -487,22 +477,25 @@ Open an issue on GitHub, or send your notes straight to the developer.
 
 | | |
 | --- | --- |
-| **Game design and direction** | DaveDw |
-| **Programming** | Claude (Anthropic) · Hermes Agent (Qwen, local) |
-| **Character art** | Faction sprite sheets: Terran Partition Authority · Ascendancy League · Manyworlds Resistance · The Long Tomorrow |
-| **Unit animation** | Codex |
-| **Card and bullet art** | Claude (Anthropic) |
+| **A game by** | **David Dwight**: design, direction, programming, art direction, animation, card and bullet art, writing, sound design, music, testing and balance |
+| **Game design and direction** | David Dwight |
+| **Programming** | David Dwight |
+| **Art direction and character art** | David Dwight |
+| **Unit animation** | David Dwight |
+| **Card and bullet art** | David Dwight |
+| **Writing** | David Dwight |
+| **Testing and balance** | David Dwight |
 | **Fonts** | [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) (CodeMan38), [Silkscreen](https://fonts.google.com/specimen/Silkscreen) (Jason Kottke), [Jersey 10](https://fonts.google.com/specimen/Jersey+10) (Sarah Cadigan-Fried), all under the SIL Open Font License |
-| **Sound** | Synthesized in code (`scripts/sfx.gd`), with its own shot sound for every unit |
-| **Music** | Original score generated in code (`tools/compose_music.gd`), plus CC0 tracks from [OpenGameArt.org](https://opengameart.org): "Outer Space Loop" by wipics · "Claimed by the Void" mix by vitalezzz & tricksntraps · "Space Battle" and "Ocean Trance" by MintoDog · "Kohle und Stahl" and "Some Militaristic Tune" by Spring Spring · "Ganymede" by congusbongus · "Hunter-class Lifeform" by vitalezzz · "Energy Storm" by iamoneabe · "The Plague" by Indieteur (with added drums) · "Technovillain" by Joth · "The True Villain Emerges" by Umplix · "Carnage & Boss Battle" by Centurion of war & nene |
-| **Engine** | [Godot Engine](https://godotengine.org) 4.7 (MIT) |
+| **Sound** | David Dwight: synthesized in code (`scripts/sfx.gd`), with its own shot sound for every unit |
+| **Music** | David Dwight: original score generated in code (`tools/compose_music.gd`), plus CC0 tracks from [OpenGameArt.org](https://opengameart.org): "Outer Space Loop" by wipics · "Claimed by the Void" mix by vitalezzz & tricksntraps · "Space Battle" and "Ocean Trance" by MintoDog · "Kohle und Stahl" and "Some Militaristic Tune" by Spring Spring · "Ganymede" by congusbongus · "Hunter-class Lifeform" by vitalezzz · "Energy Storm" by iamoneabe · "The Plague" by Indieteur (with added drums) · "Technovillain" by Joth · "The True Villain Emerges" by Umplix · "Carnage & Boss Battle" by Centurion of war & nene |
+| **Engine** | [Godot Engine](https://godotengine.org) 4.7 by Juan Linietsky, Ariel Manzur and the Godot contributors (MIT) |
 | **Inspired by** | Grid battlers and deck-building roguelikes |
 
 ---
 
 ## License
 
-There is no license file yet, so the game's code and original art are **all rights reserved** by the author until one is chosen. Third-party assets keep their own licenses:
+There is no license file yet, so the game's code and original art are **all rights reserved** by David Dwight until one is chosen. Third-party assets keep their own licenses:
 
 - The fonts are under the SIL Open Font License; the full texts are in `assets/fonts/OFL-*.txt`.
 - The music library tracks are CC0.

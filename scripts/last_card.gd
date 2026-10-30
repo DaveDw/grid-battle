@@ -65,6 +65,7 @@ func show_card(id: String, cost: float) -> void:
 	var c: Dictionary = Game.CARDS[id]
 	_icon.texture = Game.card_art(id)
 	_name.text = c["name"]
+	_name.add_theme_color_override("font_color", Game.rarity_color(id))
 	_cost.text = "%d energy" % int(cost)
 	_text.text = c["text"].replace("/", "/" + char(0x2060))
 	size = Vector2(172, 0)   # shrink to the new text

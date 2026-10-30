@@ -6,7 +6,7 @@ extends Node
 const SAVE_DIR := "user://saves/"
 const SLOTS := 3
 const SETTINGS_PATH := "user://settings.cfg"
-const VERSION := "Alpha Test Snapshot v0.0.6"
+const VERSION := "Alpha Test Snapshot v0.0.7"
 
 ## Fonts (user's pick, 2026-10-29). Silkscreen is the project default for general UI
 ## text (project.godot gui/theme/custom_font). Press Start 2P: everything on cards,
@@ -941,7 +941,7 @@ func _add_event_card(what: String) -> void:
 			pool = faction_cards(what.trim_prefix("faction:")) if what.begins_with("faction:") else [what]
 	var deck: Array = run["deck"]
 	if deck.size() < DECK_CAP:
-		deck.append(pool[randi() % pool.size()])
+		deck.append(weighted_card(pool))
 
 ## The event's card-picking effects, once the player has picked `card` from the deck.
 func pick_card_effect(fx: Dictionary, card: String) -> void:
@@ -1056,6 +1056,74 @@ func faction_cards(faction: String) -> Array:
 	out.append_array(FACTION_CARDS[faction])
 	return out
 
+## Card rarity: 0 Common (blue) < 1 Uncommon (green) < 2 Rare (purple) < 3 Legendary
+## (yellow). Starter cards are Common and leader cards Rare; the draftable cards are rated
+## by strength (CARD_RARITY). Rarer cards turn up less often in drafts, events and enemy
+## decks: a card's chance is its RARITY_WEIGHT against the others in the pool.
+const RARITY_NAMES := ["Common", "Uncommon", "Rare", "Legendary"]
+const RARITY_COLORS := [Color(0.36, 0.62, 1.0), Color(0.36, 0.86, 0.46), Color(0.72, 0.46, 1.0), Color(1.0, 0.82, 0.26)]
+const RARITY_WEIGHT := [100.0, 55.0, 25.0, 8.0]
+const CARD_RARITY := {
+	# Terran
+	"requisition": 0, "supply_drop": 0,
+	"barrage": 1, "hold_the_line": 1, "suppressing_fire": 1,
+	"dig_in": 2,                  # 40% less damage and 25% more for 8s
+	# Ascendancy
+	"target_lock": 0, "recompile": 0, "data_breach": 0,
+	"shield_drone": 1, "firewall": 1,
+	# Manyworlds
+	"mudslide": 0,
+	"undertow_surge": 1, "mycelial_link": 1, "tide_pool": 1,
+	"regrowth": 2,                # up to 60 HP across the squad for 24
+	# The Long Tomorrow
+	"flash_forward": 0,
+	"collapse": 1,
+	"last_stand": 2, "burn_bright": 2, "echo_strike": 2,
+	"supernova": 3,               # 30 to every enemy in the row: up to 90 damage for 30
+}
+
+func card_rarity(id: String) -> int:
+	for f in STARTERS:
+		if id in STARTERS[f]:
+			return 0
+	for l in LEADERS:
+		if leader_card(l["id"]) == id:
+			return 2
+	return int(CARD_RARITY.get(id, 0))
+
+func rarity_color(id: String) -> Color:
+	return RARITY_COLORS[card_rarity(id)]
+
+## Frame a card's button or panel in its rarity colour (the theme's look otherwise kept).
+func rarity_frame(c: Control, id: String) -> void:
+	var col := rarity_color(id)
+	var states := ["normal", "hover", "pressed", "focus", "disabled"] if c is Button else ["panel"]
+	for st in states:
+		var base := c.get_theme_stylebox(st)
+		var sb: StyleBoxFlat = base.duplicate() if base is StyleBoxFlat else StyleBoxFlat.new()
+		if not base is StyleBoxFlat:
+			sb.bg_color = Color(0.1, 0.12, 0.18, 0.0 if st == "focus" else 0.9)
+		sb.border_color = col.lightened(0.35) if st in ["focus", "hover"] else (col.darkened(0.4) if st == "disabled" else col)
+		sb.set_border_width_all(3 if st in ["focus", "hover"] else 2)
+		# keep text clear of the frame (a fresh box has no padding of its own)
+		for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+			sb.set_content_margin(side, maxf(sb.get_content_margin(side), 8.0 if c is PanelContainer else 6.0))
+		c.add_theme_stylebox_override(st, sb)
+
+## A card from `pool`, rarer ones less likely (RARITY_WEIGHT); never one in `exclude`.
+## "" if nothing is left.
+func weighted_card(pool: Array, exclude := []) -> String:
+	var options := pool.filter(func(c): return not c in exclude)
+	var total := 0.0
+	for c in options:
+		total += RARITY_WEIGHT[card_rarity(c)]
+	var roll := randf() * total
+	for c in options:
+		roll -= RARITY_WEIGHT[card_rarity(c)]
+		if roll <= 0.0:
+			return c
+	return options[-1] if not options.is_empty() else ""
+
 ## Cards a faction offers in drafts beyond its starters and leader cards.
 const FACTION_CARDS := {
 	"terran": ["barrage", "hold_the_line", "requisition", "suppressing_fire", "supply_drop", "dig_in"],
@@ -1081,23 +1149,19 @@ func win_battle(squad_hp := {}) -> void:
 		run["hp"] = squad_hp
 	# one card from your faction, one from the faction you just beat; any extra slots
 	# (sector modifiers, events) are random from both
+	# (rarer cards come up less often: weighted_card)
 	var own := faction_cards(leader_by_id(run["leader"])["faction"])
 	var beaten := faction_cards(leader_by_id(run["enemy"])["faction"])
-	own.shuffle()
-	beaten.shuffle()
 	var offer: Array = []
 	for pool in [own, beaten]:
-		for c in pool:
-			if not c in offer:
-				offer.append(c)
-				break
-	var rest: Array = (own + beaten).filter(func(c): return not c in offer)
-	rest.shuffle()
-	for c in rest:
-		if offer.size() >= draft_choices():
-			break
-		if not c in offer:
+		var c := weighted_card(pool, offer)
+		if c != "":
 			offer.append(c)
+	while offer.size() < draft_choices():
+		var c := weighted_card(own + beaten, offer)
+		if c == "":
+			break
+		offer.append(c)
 	run["offer"] = offer.slice(0, draft_choices())
 	run.erase("draft_bonus")   # an event's wider pick is used up
 	save_run()
@@ -1151,7 +1215,7 @@ func enemy_deck(enemy_id: String, lvl: int) -> Array:
 	var deck := starter_deck(enemy_id)
 	var pool := faction_cards(leader_by_id(enemy_id)["faction"])
 	for n in mini(lvl, DECK_CAP - deck.size()):
-		deck.append(pool[randi() % pool.size()])
+		deck.append(weighted_card(pool))
 	deck.shuffle()
 	return deck
 

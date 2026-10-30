@@ -96,6 +96,7 @@ func _build_summary() -> void:
 		_label(Vector2(0, 200), 16, Color(0.6, 0.75, 0.95), "JOINS YOUR COLLECTION")
 		var c: Dictionary = Game.CARDS[r["reward"]]
 		var box := PanelContainer.new()
+		Game.rarity_frame(box, r["reward"])
 		box.position = Vector2(470, 235)
 		box.custom_minimum_size = Vector2(340, 150)
 		add_child(box)

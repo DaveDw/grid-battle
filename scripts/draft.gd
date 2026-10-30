@@ -104,6 +104,7 @@ func _card_button(id: String, cb: Callable, count := 0, locked := false) -> Butt
 	b.custom_minimum_size = Vector2(300, 260) if count == 0 else Vector2(230, 120)
 	b.pressed.connect(cb)
 	b.disabled = locked
+	Game.rarity_frame(b, id)
 	var v := VBoxContainer.new()
 	v.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	v.offset_left = 16
@@ -150,6 +151,13 @@ func _card_button(id: String, cb: Callable, count := 0, locked := false) -> Butt
 	tag.add_theme_font_size_override("font_size", 8)
 	tag.add_theme_color_override("font_color", Game.FACTIONS[fac]["color"] if fac != "" else Color(0.7, 0.7, 0.8))
 	v.add_child(tag)
+	if count == 0:   # big cards name their rarity under the tag
+		var rar := Label.new()
+		rar.text = Game.RARITY_NAMES[Game.card_rarity(id)].to_upper()
+		rar.add_theme_font_override("font", Game.FONT_CARD)
+		rar.add_theme_font_size_override("font_size", 8)
+		rar.add_theme_color_override("font_color", Game.rarity_color(id))
+		v.add_child(rar)
 	var t := Label.new()
 	t.text = c["text"].replace("/", "/" + char(0x2060))   # word joiner: never break "HP/s" after the slash
 	t.autowrap_mode = TextServer.AUTOWRAP_WORD

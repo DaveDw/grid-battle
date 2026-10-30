@@ -334,3 +334,13 @@ Supernova 30 (pay 25% current HP, 30 to every enemy in the row).
 - **Commander voices:** each leader taunts at the start of a commander battle and has a defeat line (`COMMANDER_LINES`).
 - **Card costs** go through `Game.card_cost(id, team)`, so events can discount the player's cards.
 - **New cards (from the knowledge base):** Supply Drop, Dig In, Data Breach, Tide Pool, Flash Forward, Collapse.
+
+## Card rarity (2026-10-30)
+Common (blue) < Uncommon (green) < Rare (purple) < Legendary (yellow). Starter cards are Common and leader cards Rare **[you]**; draftable cards are rated by strength **[proposal]**. A card's chance in a draft, event reward or enemy deck is its weight against the rest of the pool: Common 100, Uncommon 55, Rare 25, Legendary 8 (`Game.CARD_RARITY`, `RARITY_WEIGHT`).
+
+| Rarity | Cards |
+| --- | --- |
+| Common | the 8 starters · Requisition · Supply Drop · Target Lock · Recompile · Data Breach · Mudslide · Flash Forward |
+| Uncommon | Artillery Barrage · Hold the Line · Suppressing Fire · Shield Drone · Firewall · Undertow Surge · Mycelial Link · Tide Pool · Collapse |
+| Rare | the 8 leader cards · Dig In · Regrowth · Last Stand · Burn Bright · Echo Strike |
+| Legendary | Supernova (up to 90 damage for 30 energy) |

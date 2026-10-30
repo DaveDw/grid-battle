@@ -3,19 +3,29 @@ extends Control
 
 const LINES := [
 	["GRID BATTLE", 48],
+	["", 12],
+	["A game by", 16], ["David Dwight", 30],
+	["", 24],
+	["Game design & direction", 16], ["David Dwight", 26],
 	["", 20],
-	["Game design & direction", 16], ["(your name here)", 26],
+	["Programming", 16], ["David Dwight", 26],
 	["", 20],
-	["Character art", 16], ["Faction sprite sheets", 26],
-	["Terran Partition Authority · Ascendancy League", 18], ["Manyworlds Resistance · The Long Tomorrow", 18],
+	["Art direction & character art", 16], ["David Dwight", 26],
 	["", 20],
-	["Programming", 16], ["Hermes Agent (Qwen3.8 Coding, local)", 22], ["Claude (Anthropic)", 22],
+	["Unit animation", 16], ["David Dwight", 26],
 	["", 20],
-	["Card and bullet art", 16], ["Claude (Anthropic)", 22],
+	["Card and bullet art", 16], ["David Dwight", 26],
 	["", 20],
-	["Fonts (SIL Open Font License)", 16], ["Press Start 2P · Silkscreen · Jersey 10", 22],
+	["Writing: cards, events, sectors and lore", 16], ["David Dwight", 26],
 	["", 20],
-	["Engine", 16], ["Godot Engine 4.7", 26],
+	["Sound design", 16], ["David Dwight", 26], ["every effect synthesized in code", 18],
+	["", 20],
+	["Testing & balance", 16], ["David Dwight", 26],
+	["", 20],
+	["Fonts (SIL Open Font License)", 16],
+	["Press Start 2P by CodeMan38", 20], ["Silkscreen by Jason Kottke", 20], ["Jersey 10 by Sarah Cadigan-Fried", 20],
+	["", 20],
+	["Engine", 16], ["Godot Engine 4.7", 26], ["by Juan Linietsky, Ariel Manzur and the Godot contributors (MIT)", 18],
 	["", 20],
 	["Inspired by", 16], ["grid battlers and deck-building roguelikes", 22],
 	["", 40],
@@ -35,7 +45,7 @@ func _ready() -> void:
 	var lines: Array = LINES.duplicate()
 	# music credits go after the Engine block
 	var at := lines.find(["Godot Engine 4.7", 26]) + 1
-	var music: Array = [["", 20], ["Music", 16], ["Original score generated in code", 22]]
+	var music: Array = [["", 20], ["Music", 16], ["David Dwight", 26], ["original score generated in code, with these tracks:", 18]]
 	for c in Music.CREDITS:
 		music.append([c, 18])
 	for i in music.size():

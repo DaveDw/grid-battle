@@ -192,7 +192,8 @@ func _draw() -> void:
 			lift -= 8.0
 		r.position.y += lift
 		draw_rect(r, Color(0.12, 0.17, 0.27) if ok else Color(0.09, 0.1, 0.14))
-		var edge := Color(0.55, 0.85, 1.0) if ok else Color(0.3, 0.33, 0.42)
+		var rc := Game.rarity_color(hand[i])   # the frame shows the card's rarity
+		var edge := rc if ok else rc.darkened(0.55)
 		if armed == i:
 			edge = Color(1.0, 0.85, 0.3)
 		draw_rect(r, edge, false, 3.0 if armed == i else 2.0)

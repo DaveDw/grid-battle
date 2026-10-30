@@ -192,6 +192,7 @@ func _card_button(id: String, suffix: String, usable := true) -> Button:
 	b.add_theme_font_override("font", Game.FONT_CARD)
 	b.add_theme_font_size_override("font_size", 8)
 	Game.card_button_icon(b, id)
+	Game.rarity_frame(b, id)
 	return b
 
 func _unhandled_input(event: InputEvent) -> void:

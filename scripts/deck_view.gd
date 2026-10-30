@@ -88,6 +88,7 @@ func _card(id: String, count: int) -> Control:
 	var c: Dictionary = Game.CARDS[id]
 	var box := PanelContainer.new()
 	box.custom_minimum_size = Vector2(CARD_W, CARD_H)
+	Game.rarity_frame(box, id)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 	box.add_child(row)
