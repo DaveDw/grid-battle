@@ -11,7 +11,7 @@ const LINES := [
 	["", 20],
 	["Programming", 16], ["Hermes Agent (Qwen3.8 Coding, local)", 22], ["Claude (Anthropic)", 22],
 	["", 20],
-	["Card art", 16], ["Claude (Anthropic)", 22],
+	["Card and bullet art", 16], ["Claude (Anthropic)", 22],
 	["", 20],
 	["Fonts (SIL Open Font License)", 16], ["Press Start 2P · Silkscreen · Jersey 10", 22],
 	["", 20],

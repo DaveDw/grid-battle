@@ -54,6 +54,9 @@ var pip_until := -1.0
 var marks := {}                 # "analysis" / "interval" -> {until, team, accum}
 var overclock_until := -1.0     # Overclock: half-cost primary until then...
 var jam_until := -1.0           # ...then can't fire until this
+var echo_until := -1.0          # Echo Strike: every shot fires a free echo until then
+var echoing := false            # true while firing an echo (echoes don't echo)
+var last_charge := 0.0          # energy in the last Charge Beam (its echo copies it)
 var history: Array = []         # [time, col, row, hp] samples for Rewind
 var heal_rate := 6.0            # HP/s while heal_until is running (Medpod, Regrowth)
 var barrier := 0.0              # Shield Drone HP left...
@@ -245,11 +248,34 @@ func _draw() -> void:
 	elif t < jam_until:
 		var font := ThemeDB.fallback_font
 		draw_string(font, head + Vector2(-40, -14), "JAMMED", HORIZONTAL_ALIGNMENT_CENTER, 80, 11, Color(1.0, 0.4, 0.35))
+	# Echo Strike: two pale rings pulse around the unit while every shot is echoed
+	if t < echo_until:
+		var mid := Vector2(0, feet.y - sprite.height * 0.5)
+		for n in 2:
+			var r := 22.0 + fmod(t * 30.0 + n * 12.0, 24.0)
+			draw_arc(mid, r, 0.0, TAU, 32, Color(1.0, 0.85, 0.55, 0.5 - (r - 22.0) / 50.0), 2.0)
 	# Prism Elder: refraction charged
 	if refract_ready:
 		draw_circle(Vector2(0, feet.y - sprite.height * 0.5), 10.0 + 3.0 * sin(t * 10.0), Color(1.0, 0.85, 0.4, 0.35))
 
+
 # --- AI (enemy team): same calls as the player, so it pays stamina and energy ----------
+## The enemy brain, after Codex's plan (kb/proposals/codex-enemy-ai.md): fire only when
+## a shot can land, move to useful lanes, react to visible shots after a human-like
+## delay, keep stamina and energy in reserve, and play to each kit's strengths. Which
+## behaviours are on, and how fast, comes from Game.ai_params(level, faction).
+
+var _threat_seen := {}          # ids of shots already reacted to
+var _react_t := -1.0            # counting down to a dodge decision
+var _plan_dir := Vector2i.ZERO  # Prism Elder: the second step of a Refraction setup
+var _plan_t := 0.0
+var _resting := false           # Red Giant / Cinder Scout holding fire at low HP
+var _alt_next := false          # the current wind-up fires the alternate primary
+var _burst_left := 0            # Field Scholar / Captain: shots left in a mark burst
+
+## Fire within `t` seconds if a shot is lined up (a card combo's volley).
+func ai_fire_soon(t: float) -> void:
+	_ai_attack = minf(_ai_attack, t)
 
 func _run_ai(delta: float) -> void:
 	if _ai_charging > 0.0:
@@ -258,46 +284,176 @@ func _run_ai(delta: float) -> void:
 		if _ai_charging <= 0.0:
 			grid.release_charge(self)
 		return
+	var ai: Dictionary = grid.ai
 	if _telegraph > 0.0:
 		_telegraph -= delta
 		if _telegraph <= 0.0:
-			# a lone leader mixes in its squad's fire
-			var alt := alt_primary != "" and randf() < 0.4
-			if (alt_primary if alt else primary) == "charge":
-				_ai_charging = AI_CHARGE_TIME
-			elif alt:
-				grid.fire_alt(self)
-			else:
-				grid.fire_primary(self)
+			_release(ai)
 		return
-	var ai: Dictionary = grid.ai
-	# dodge: roll once per incoming shot window to sidestep up or down
-	_dodge_cd -= delta
-	if _dodge_cd <= 0.0 and grid.incoming_shot(self):
-		_dodge_cd = 0.6
-		if randf() < ai["dodge"]:
-			for d in ([Vector2i.UP, Vector2i.DOWN] if randf() < 0.5 else [Vector2i.DOWN, Vector2i.UP]):
-				if grid.can_move(self, col + d.x, row + d.y) and grid.try_move(self, d):
-					break
+	_watch_threats(delta, ai)
+	# the second step of a planned Refraction setup
+	if _plan_dir != Vector2i.ZERO:
+		_plan_t -= delta
+		if _plan_t <= 0.0:
+			if grid.can_move(self, col + _plan_dir.x, row + _plan_dir.y):
+				grid.try_move(self, _plan_dir)
+			_plan_dir = Vector2i.ZERO
+			ai_fire_soon(0.2)
+		return
 	_ai_move -= delta
 	if _ai_move <= 0.0:
 		_ai_move = randf_range(ai["move_min"], ai["move_max"])
-		var dirs := [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
-		dirs.shuffle()
-		# focus: line up on the weakest player unit's row
-		var target_row: int = grid.weakest_player_row()
-		if target_row >= 0 and target_row != row and randf() < ai["focus"]:
-			dirs.push_front(Vector2i.DOWN if target_row > row else Vector2i.UP)
-		# reckless factions press toward the border
-		if randf() < ai.get("front", 0.0):
-			dirs.push_front(Vector2i.LEFT if team == 1 else Vector2i.RIGHT)
-		for d in dirs:
-			if grid.can_move(self, col + d.x, row + d.y):
-				grid.try_move(self, d)
-				break
+		_ai_step(ai)
 	_ai_attack -= delta
 	if _ai_attack <= 0.0:
 		_ai_attack = randf_range(ai["attack_min"], ai["attack_max"])
-		if grid.can_afford_primary(self):
-			_telegraph = ai["telegraph"]
-			sprite.play_windup(_telegraph)
+		# SILENCE makes every player shot cost HP: trade more freely while it lasts
+		if grid.ai_protocol_rule(1 - team) == "SILENCE":
+			_ai_attack *= 0.75
+		_ai_try_attack(ai)
+
+## End of the wind-up: recheck the lane (an empty one cancels), then fire.
+func _release(ai: Dictionary) -> void:
+	var lands: bool = grid.ai_alt_lands(self) if _alt_next else grid.ai_shot_lands(self)
+	if not lands and randf() < ai.get("aim", 0.0):
+		_ai_attack = maxf(_ai_attack, 0.6)
+		return
+	if (alt_primary if _alt_next else primary) == "charge":
+		# a 0.8s beam normally; a longer one when the bar can afford it
+		_ai_charging = 1.2 if grid.team_energy[team].value >= 50.0 else 0.8
+	elif _alt_next:
+		grid.fire_alt(self)
+	else:
+		grid.fire_primary(self)
+	# a mark burst: the next shot 1.4s after this one (release to release)
+	if _burst_left > 0:
+		_burst_left -= 1
+		if _burst_left > 0:
+			_ai_attack = maxf(1.4 - float(ai["telegraph"]), 0.3)
+	# Glasswing: Hit and Run makes the next step free, so take a useful one now
+	if passive == "hit_and_run" and int(ai.get("level", 0)) >= 1:
+		_ai_move = minf(_ai_move, 0.3)
+
+## Visible shots: notice each once, then after the reaction delay maybe sidestep to a
+## safer row (never instantly, never twice within 0.8s).
+func _watch_threats(delta: float, ai: Dictionary) -> void:
+	_dodge_cd -= delta
+	if _react_t >= 0.0:
+		_react_t -= delta
+		if _react_t < 0.0 and _dodge_cd <= 0.0 and randf() < float(ai["dodge"]):
+			_dodge_cd = 0.8
+			var here: float = grid.ai_tile_score(self, col, row)
+			var best := Vector2i.ZERO
+			for d in ([Vector2i.UP, Vector2i.DOWN] if randf() < 0.5 else [Vector2i.DOWN, Vector2i.UP]):
+				if grid.can_move(self, col, row + d.y):
+					var sc: float = grid.ai_tile_score(self, col, row + d.y)
+					if sc > here:
+						here = sc
+						best = d
+			if best != Vector2i.ZERO:
+				grid.try_move(self, best)   # may spend the stamina kept in reserve
+		return
+	if float(ai["dodge"]) <= 0.0:
+		return
+	var s: Dictionary = grid.incoming_threat(self)
+	if not s.is_empty() and not _threat_seen.has(s.get("id", -1)):
+		_threat_seen[s.get("id", -1)] = true
+		_react_t = float(ai["reaction"])
+
+## A move: to the best neighbouring tile (or stay), keeping stamina for dodges.
+func _ai_step(ai: Dictionary) -> void:
+	if grid.time < rooted_until:
+		return
+	var reserve := int(ai.get("reserve", 0))
+	if reserve >= 2 and grid.units_of(team).filter(func(u): return u.is_alive()).size() < 2:
+		reserve = 1   # alone, one chunk is enough
+	var stamina: float = grid.team_stamina[team].value
+	var free: bool = passive == "hit_and_run" and grid.time - last_fired_at <= 1.0 and free_moves_used < 3
+	if not free and stamina < reserve + 1:
+		return
+	# Prism Elder (level 2+): two quick vertical steps arm Refraction when a split pays
+	if primary == "refraction" and not refract_ready and int(ai.get("level", 0)) >= 2 and stamina >= reserve + 2:
+		for d in [Vector2i.UP, Vector2i.DOWN]:
+			if grid.can_move(self, col, row + d.y) and grid.can_move(self, col, row + 2 * d.y) \
+					and grid.ai_refract_pays(self, row + 2 * d.y):
+				grid.try_move(self, d)
+				_plan_dir = d
+				_plan_t = 0.35
+				return
+	if randf() < float(ai.get("smart", 0.0)):
+		var best := Vector2i.ZERO
+		var best_score: float = grid.ai_tile_score(self, col, row) + float(ai.get("stay", 0.0))
+		for d in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+			if grid.can_move(self, col + d.x, row + d.y):
+				var sc: float = grid.ai_tile_score(self, col + d.x, row + d.y) + randf() * 0.3
+				if sc > best_score:
+					best = d
+					best_score = sc
+		if best != Vector2i.ZERO:
+			grid.try_move(self, best)
+		if grid.ai_shot_lands(self):
+			ai_fire_soon(0.25)
+		return
+	# otherwise wander as before: towards the weakest row, or the border for Long Tomorrow
+	var dirs := [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
+	dirs.shuffle()
+	var target_row: int = grid.weakest_player_row()
+	if target_row >= 0 and target_row != row and randf() < ai["focus"]:
+		dirs.push_front(Vector2i.DOWN if target_row > row else Vector2i.UP)
+	if randf() < ai.get("front", 0.0):
+		dirs.push_front(Vector2i.LEFT if team == 1 else Vector2i.RIGHT)
+	for d in dirs:
+		if grid.can_move(self, col + d.x, row + d.y):
+			grid.try_move(self, d)
+			break
+
+## An attack decision: kit discipline first, then pick the fire mode and wind up.
+func _ai_try_attack(ai: Dictionary) -> void:
+	var lvl := int(ai.get("level", 0))
+	# self-damaging shooters rest at 25% HP and resume above 35%
+	if passive == "overheat" or primary == "ember":
+		if hp <= max_hp * 0.25:
+			_resting = true
+		elif hp > max_hp * 0.35:
+			_resting = false
+		if _resting:
+			_ai_attack = 0.5
+			return
+	# the squad lets its energy refill rather than starving itself (a mark burst
+	# already under way keeps its budget)
+	if grid.ai_recovering(team) and _burst_left == 0:
+		_ai_attack = 0.4
+		return
+	# Standard Guard (level 1+): settle 1.5s for Braced's cheap shots, unless hurt
+	if passive == "braced" and lvl >= 1 and hp > max_hp * 0.4 and grid.time - last_moved_at < 1.5:
+		_ai_attack = 1.55 - (grid.time - last_moved_at)
+		return
+	# fire mode: a lone leader uses its squad's weapon when that's what lands
+	_alt_next = false
+	var lands: bool = grid.ai_shot_lands(self)
+	if alt_primary != "" and grid.ai_alt_lands(self) and (not lands or randf() < 0.5) \
+			and grid.team_energy[team].value >= grid.alt_cost(self):
+		_alt_next = true
+		lands = true
+	# Captain Everafter: don't reset a mark that's waiting to detonate
+	if passive == "interval_mark" and not _alt_next and grid.ai_only_marked(self):
+		lands = false
+	if not lands:
+		_burst_left = 0     # the lane is lost: abandon a burst
+	if not lands and randf() < float(ai.get("aim", 0.0)):
+		_ai_attack = 0.25   # nothing to hit: look again soon
+		return
+	# level 2+: a marker fires three shots 1.4s apart to land its mark inside 4s
+	# (one burst per squad every 6s, with 24 energy to fund it)
+	if (passive == "analysis" or passive == "interval_mark") and int(ai.get("level", 0)) >= 2 \
+			and _burst_left == 0 and lands and not _alt_next and grid.time - grid._burst_at >= 6.0 \
+			and grid.team_energy[team].value >= 24.0:
+		_burst_left = 3
+		grid._burst_at = grid.time
+	var mode := alt_primary if _alt_next else primary
+	if mode == "charge" and grid.team_energy[team].value < 20.0:
+		_ai_attack = 0.4    # a beam needs a real budget
+		return
+	if _alt_next or grid.can_afford_primary(self):
+		_telegraph = ai["telegraph"]
+		sprite.play_windup(_telegraph)

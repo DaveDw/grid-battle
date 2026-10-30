@@ -7,6 +7,7 @@ var _ev: Dictionary
 var _box: VBoxContainer
 var _text: Label
 var _fx: Dictionary = {}
+var _panel: PanelContainer
 
 func _ready() -> void:
 	if Game.run.is_empty() or Game.run.get("phase") != "event":
@@ -17,9 +18,11 @@ func _ready() -> void:
 	var tint: Color = Game.FACTIONS[fac]["color"] if fac != "" else Color(0.55, 0.7, 1.0)
 	add_child(preload("res://scripts/menu_background.gd").make("space", tint, Game.node_planet(int(Game.run["sector"]) - 1, int(Game.run["path"][-1])) if not Game.run.get("path", []).is_empty() else -1, Vector2(1080, 520), 320.0))
 	var panel := PanelContainer.new()
-	panel.position = Vector2(160, 110)
+	_panel = panel
 	panel.custom_minimum_size = Vector2(760, 0)
 	add_child(panel)
+	# centred on screen, and kept centred when the card picker changes its height
+	panel.resized.connect(func(): panel.position = ((Vector2(1280, 720) - panel.size) * 0.5).round())
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 14)
 	panel.add_child(v)
@@ -75,8 +78,7 @@ func _choose(fx: Dictionary) -> void:
 func _pick_card() -> void:
 	for c in _box.get_children():
 		c.queue_free()
-	_text.text = "Choose a card to remove." if _fx.has("remove") else "Choose a card to make %d cheaper (every copy)." % int(_fx["discount"][0])
-	var lead := Game.leader_card(Game.run["leader"])
+	_text.text = "Choose a card to remove." if _fx.has("remove") else "Choose a card: one copy costs %d less." % int(_fx["discount"][0])
 	var seen := {}
 	var flow := HFlowContainer.new()
 	flow.custom_minimum_size = Vector2(720, 0)
@@ -89,13 +91,15 @@ func _pick_card() -> void:
 			continue
 		seen[id] = true
 		var b := Button.new()
-		b.text = "%s  (%d)" % [Game.CARDS[id]["name"], int(Game.card_cost(id))]
+		var note := Game.discount_note(id)
+		b.text = "%s  (%d)" % [Game.CARDS[id]["name"], int(Game.card_cost(id))] + ("
+" + note if note != "" else "")
 		b.tooltip_text = Game.CARDS[id]["text"]
 		b.custom_minimum_size = Vector2(230, 44)
 		b.add_theme_font_override("font", Game.FONT_CARD)
 		b.add_theme_font_size_override("font_size", 8)
 		Game.card_button_icon(b, id)
-		b.disabled = _fx.has("remove") and id == lead
+		b.disabled = _fx.has("remove") and not Game.can_remove(id)
 		b.pressed.connect(func():
 			Game.pick_card_effect(_fx, id)
 			_done())
@@ -104,6 +108,9 @@ func _pick_card() -> void:
 			first = b
 	if first:
 		first.grab_focus.call_deferred()
+	# the old choices are freed at the end of this frame; then shrink to fit (re-centres)
+	await get_tree().process_frame
+	_panel.size = Vector2.ZERO
 
 func _done() -> void:
 	Game.finish_event()

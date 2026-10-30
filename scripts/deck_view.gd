@@ -105,6 +105,9 @@ func _card(id: String, count: int) -> Control:
 	top.add_child(n)
 	var cost := Label.new()
 	cost.text = "%d" % int(Game.card_cost(id))
+	var note := Game.discount_note(id) if Game.run.get("deck", []).has(id) else ""
+	if note != "":
+		cost.text += "  (%s)" % note
 	cost.add_theme_font_override("font", Game.FONT_CARD)
 	cost.add_theme_font_size_override("font_size", 10)
 	cost.add_theme_color_override("font_color", Color(0.45, 0.8, 1.0))

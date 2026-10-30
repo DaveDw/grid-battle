@@ -147,7 +147,7 @@ Each faction has 2 starter cards, ×3 each, plus 1 copy of the leader's unique c
 | --- | --- | --- | --- |
 | Terran | **Stake Claim** ×3 | 15 | Claim one targeted enemy tile for 6–8 s; an enemy standing there is pushed back. |
 | Terran | **Sandbags** ×3 | 12 | Barricade on the tile in front of the selected unit for 8 s; absorbs the next 2 enemy shots in that row. |
-| Ascendancy | **Overclock** ×3 | 10 | Selected unit's primary costs half for 5 s, then can't fire for 2 s. |
+| Ascendancy | **Overclock** ×3 | 12 | Selected unit's primary costs half for 4 s, then can't fire for 3 s. **[tester feedback 2026-10-29: was 10 / 5 s / 2 s]** |
 | Ascendancy | **Containment Field** ×3 | 20 | An enemy on a targeted tile can't leave it for 3 s. |
 | Manyworlds | **Riptide** ×3 | 15 | Pull the first enemy in the selected unit's row one column toward you (forced movement). |
 | Manyworlds | **Mire** ×3 | 15 | Targeted tile becomes mud for 8 s; leaving it costs double stamina. |
@@ -283,14 +283,14 @@ Each faction has 2 starter cards, ×3 each, plus 1 copy of the leader's unique c
 | Manyworlds | Mudslide | 22 | Tile card: Mire on the tile and the tiles above and below, 8 s. |
 | Long Tomorrow | Last Stand | 16 | Selected unit can't drop below 1 HP for 4 s. |
 | Long Tomorrow | Burn Bright | 0 | Selected unit pays 20 HP: gain 40 energy. |
-| Long Tomorrow | Echo Strike | 18 | Selected unit fires its primary twice for free. |
+| Long Tomorrow | Echo Strike | 20 | For 4 s, each of the selected unit's shots is echoed by a free second shot. **[tester feedback 2026-10-29: was 2 free shots for 18]** |
 
 Each faction's draft pool is now 7 cards: 2 starters, its 2 leaders' cards and these 3. Enemy decks grow from their own faction's pool, so each faction's enemies keep their identity as they scale.
 
 **Balance reasoning:**
 - A standard shot gives about 0.6–1 damage per energy (light 5 for 8, leader 8 for 8, heavy 10 for 14). A full energy bar is worth about 80–100 damage.
 - Cards are priced against that:
-  - Echo Strike: 2 free shots (16–32 damage) for 18.
+  - Echo Strike: doubles shot damage for 4 s (you still pay for the first shot of each pair) for 20.
   - Barrage: 14 damage per tile hit, up to 42, for 28.
   - Burn Bright: trades 20 HP for 40 energy, which is about 30 damage of shots.
   - Hold the Line: worth about 6 damage per incoming hit for 5 s.

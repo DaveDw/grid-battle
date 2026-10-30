@@ -124,3 +124,14 @@
 - [x] Fullscreen by default (setting + project window mode), so first launches fill the screen.
 - [x] tools/publish_release.sh publishes builds as GitHub releases; the repo is now public so games can see them.
 - Windows build smoke-tested headless: starts clean.
+
+## Enemy AI proposal (2026-10-30)
+- [x] Planning deliverable: `kb/proposals/codex-enemy-ai.md`, following brief codex-07; shared tactics, all 24 units, faction/card combinations, faster level-5 AI cadence and fairness limits. Implementation remains with Claude.
+- Session (Codex, 2026-10-30): read the current mechanics and wrote the proposal; document checks passed (six sections, all 24 units, under 250 lines). No `.gd` edits or gameplay verification. Runtime acceptance checks are specified in the proposal for the implementation stage.
+
+## Alpha Test Snapshot v0.0.6 (2026-10-30)
+- [x] Tester feedback: centred event screen; event discounts apply to one copy; extra leader-card copies can be dropped; starting deck readable from character select; Echo Strike reworked (20: 4 s of free echo shots); Overclock 12 / 4 s / 3 s jam.
+- [x] Bullet sprite and fire sound for every unit (sounds levelled to one peak); shots drawn per lane with a tile glow and floor shadow.
+- [x] Enemy AI rebuilt from Codex's plan (kb/proposals/codex-enemy-ai.md): aims, dodges with a reaction delay, rations stamina/energy, kit and faction tactics, card plans and combos; full cadence at level 5 (was 8).
+- [x] Battle shows the last card each side played.
+- Checks: feedback.tscn 16, shots.tscn, ai_probe.tscn 20, lane/lastcard screenshots. Windows build smoke-tested headless.

@@ -6,7 +6,7 @@
 
 *Four factions · eight leaders · 24 units · 38 cards · one shared grid, and the line down the middle is for sale.*
 
-![Version](https://img.shields.io/badge/version-Alpha%20Test%20Snapshot%20v0.0.5-orange)
+![Version](https://img.shields.io/badge/version-Alpha%20Test%20Snapshot%20v0.0.6-orange)
 ![Engine](https://img.shields.io/badge/engine-Godot%204.7-478cbf?logo=godotengine&logoColor=white)
 ![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS-555)
 ![Status](https://img.shields.io/badge/status-alpha-red)
@@ -70,7 +70,7 @@ Wrapped around the fights is a roguelike campaign. Pick a leader and claim secto
 - ♾️ **Infinity and Beyond.** Won the run? Cash out, or keep claiming sectors until something finally stops you.
 - 📚 **Meta-progression.** A permanent card collection, New Game+ levels up to NG+3 and beyond, and deck sculpting for NG+ runs.
 - 🎮 **Keyboard and mouse, controller, and touch**, all supported in battle and in every menu.
-- 🎨 **Hand-animated pixel art.** 24 units with idle, attack and move frames, 38 card icons, 20 planets, and pixel fonts throughout.
+- 🎨 **Hand-animated pixel art.** 24 units with idle, attack and move frames, a bullet sprite per unit, 38 card icons, 20 planets, and pixel fonts throughout.
 - 🎵 **Music and sound.** Every sound effect is synthesized in code. Each faction and the commander have their own music rotation of original and CC0 tracks.
 
 ---
@@ -240,7 +240,7 @@ There are **38 cards**: each squad's signature card, two starter cards per facti
 | --- | --- | --- | --- |
 | Terran | Stake Claim | 15 | Take an enemy tile for 7 s; walkable if it joins your ground. |
 | Terran | Sandbags | 12 | Barricade in front of the unit stops 2 shots, 8 s. |
-| Ascendancy | Overclock | 10 | Half-cost shots for 5 s, then jammed for 2 s. |
+| Ascendancy | Overclock | 12 | Half-cost shots for 4 s, then jammed for 3 s. |
 | Ascendancy | Containment Field | 20 | An enemy on the tile can't move for 3 s. |
 | Manyworlds | Riptide | 15 | Pull the nearest enemy in your row 1 column closer. |
 | Manyworlds | Mire | 15 | Mud tile for 8 s: leaving it costs 2 stamina. |
@@ -269,7 +269,7 @@ There are **38 cards**: each squad's signature card, two starter cards per facti
 | Manyworlds | Tide Pool | 22 | Healing pool on your ground, 5 HP/s for 10 s. |
 | Long Tomorrow | Last Stand | 16 | Selected unit can't drop below 1 HP for 4 s. |
 | Long Tomorrow | Burn Bright | 0 | Selected unit pays 20 HP: gain 40 energy. |
-| Long Tomorrow | Echo Strike | 18 | Selected unit fires its primary twice, free. |
+| Long Tomorrow | Echo Strike | 20 | For 4 s, each of the selected unit's shots is echoed by a free second shot. |
 | Long Tomorrow | Supernova | 30 | Pay 25% of current HP: 30 damage to every enemy in the row. |
 | Long Tomorrow | Flash Forward | 10 | Leap up to 2 tiles forward, free; then can't move for 1.5 s. |
 | Long Tomorrow | Collapse | 20 | The unit falls; every enemy in its row takes half its remaining HP. |
@@ -372,7 +372,7 @@ On Windows you can also double-click `Play Grid Battle.bat`; edit the Godot path
 **Exporting.** `export_presets.cfg` defines three presets: *Windows Alpha*, *Linux Alpha* and *macOS Alpha*.
 
 ```bash
-godot --headless --path . --export-release "Linux Alpha" builds/linux/GridBattle-Alpha-0.0.5.x86_64
+godot --headless --path . --export-release "Linux Alpha" builds/linux/GridBattle-Alpha-0.0.6.x86_64
 ```
 
 Or run `bash tools/build_release.sh` (Git Bash on Windows), which exports all three and packs the archives into `builds/release/`. Set the Godot path (`G`) and version (`V`) at the top of the script first.
@@ -491,9 +491,9 @@ Open an issue on GitHub, or send your notes straight to the developer.
 | **Programming** | Claude (Anthropic) · Hermes Agent (Qwen, local) |
 | **Character art** | Faction sprite sheets: Terran Partition Authority · Ascendancy League · Manyworlds Resistance · The Long Tomorrow |
 | **Unit animation** | Codex |
-| **Card art** | Claude (Anthropic) |
+| **Card and bullet art** | Claude (Anthropic) |
 | **Fonts** | [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) (CodeMan38), [Silkscreen](https://fonts.google.com/specimen/Silkscreen) (Jason Kottke), [Jersey 10](https://fonts.google.com/specimen/Jersey+10) (Sarah Cadigan-Fried), all under the SIL Open Font License |
-| **Sound** | Synthesized in code (`scripts/sfx.gd`) |
+| **Sound** | Synthesized in code (`scripts/sfx.gd`), with its own shot sound for every unit |
 | **Music** | Original score generated in code (`tools/compose_music.gd`), plus CC0 tracks from [OpenGameArt.org](https://opengameart.org): "Outer Space Loop" by wipics · "Claimed by the Void" mix by vitalezzz & tricksntraps · "Space Battle" and "Ocean Trance" by MintoDog · "Kohle und Stahl" and "Some Militaristic Tune" by Spring Spring · "Ganymede" by congusbongus · "Hunter-class Lifeform" by vitalezzz · "Energy Storm" by iamoneabe · "The Plague" by Indieteur (with added drums) · "Technovillain" by Joth · "The True Villain Emerges" by Umplix · "Carnage & Boss Battle" by Centurion of war & nene |
 | **Engine** | [Godot Engine](https://godotengine.org) 4.7 (MIT) |
 | **Inspired by** | Grid battlers and deck-building roguelikes |

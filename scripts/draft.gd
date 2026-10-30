@@ -141,7 +141,8 @@ func _card_button(id: String, cb: Callable, count := 0, locked := false) -> Butt
 	# short faction name ("Terran", "Long Tomorrow") so the tag fits the card
 	fac_name = fac_name.trim_prefix("The ") if fac_name.begins_with("The ") else fac_name.split(" ")[0]
 	if count > 0:
-		tag.text = "LOCKED · leader card" if locked else fac_name
+		var note := Game.discount_note(id)
+		tag.text = "LOCKED · leader card" if locked else fac_name + ("  ·  " + note if note != "" else "")
 	else:
 		tag.text = "%s  ·  %s" % [fac_name, {"unit": "selected unit", "tile": "aimed at a tile", "none": "no target"}[c["target"]]]
 	tag.clip_text = true
@@ -218,20 +219,19 @@ func _on_pick(id: String) -> void:
 	# deck at the cap: pick a card to drop
 	_picked = id
 	_title.text = "DECK FULL"
-	_sub.text = "Adding %s. Choose a card to drop (your leader card stays)." % Game.CARDS[id]["name"]
+	_sub.text = "Adding %s. Choose a card to drop (one copy of your leader card stays)." % Game.CARDS[id]["name"]
 	for c in _choices.get_children():
 		c.queue_free()
 	var counts := {}
 	for d in Game.run["deck"]:
 		counts[d] = counts.get(d, 0) + 1
-	var lead := Game.leader_card(Game.run["leader"])
 	var grid := GridContainer.new()
 	grid.columns = 4
 	grid.add_theme_constant_override("h_separation", 12)
 	grid.add_theme_constant_override("v_separation", 12)
 	_choices.add_child(grid)
 	for d in counts:
-		grid.add_child(_card_button(d, _finish.bind(id, d), counts[d], d == lead))
+		grid.add_child(_card_button(d, _finish.bind(id, d), counts[d], not Game.can_remove(d)))
 	var back := Button.new()
 	back.text = "Back"
 	back.custom_minimum_size = Vector2(120, 44)

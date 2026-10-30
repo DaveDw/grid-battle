@@ -3,9 +3,9 @@ extends Node
 ## layered oscillators rendered once into an AudioStreamWAV and cached. Autoload "Sfx".
 ##
 ## Each faction has a timbre (Terran gritty and ballistic, Ascendancy clean lasers,
-## Manyworlds wet and organic, Long Tomorrow ragged and cosmic). A unit's shot is its
-## faction's timbre shaped by its primary, pitched by role (heavies lower), plus a small
-## fixed offset from its name so no two units sound quite alike. Cards sound by what
+## Manyworlds wet and organic, Long Tomorrow ragged and cosmic). Every unit's shot has
+## its own recipe in that timbre (UNIT_FIRE), matched to its bullet sprite; a unit
+## without one falls back to its faction's timbre shaped by its primary. Cards sound by what
 ## they do (heal, shield, terrain, strike...) in the timbre of the card's faction.
 ##
 ## Recipe: Array of layers. Layer keys (all optional but w/d):
@@ -14,7 +14,9 @@ extends Node
 ##   a: attack s   curve: decay exponent (1 = linear, higher = punchier)
 ##   at: start offset s   vib: [rate Hz, depth 0..1]   duty: square duty 0..1
 ##   lp: one-pole low-pass 0..1 (lower = darker)   crush: bit-crush steps (0 = off)
-## A recipe may end with {"echo": [delay s, feedback, repeats]}.
+## A recipe may end with {"echo": [delay s, feedback, repeats]} and/or {"norm": peak}
+## (bring the finished sound up or down to that peak; without it, sounds are only ever
+## turned down).
 
 const RATE := 22050
 const VOICES := 14
@@ -92,10 +94,13 @@ func play(key: String, r: Array, jitter := 0.04, db := 0.0) -> void:
 ## Render a recipe to a 16-bit mono WAV.
 func render(r: Array) -> AudioStreamWAV:
 	var echo: Array = []
+	var norm := 0.0
 	var total := 0.0
 	for l in r:
 		if l.has("echo"):
 			echo = l["echo"]
+		elif l.has("norm"):
+			norm = l["norm"]
 		else:
 			total = maxf(total, l.get("at", 0.0) + l["d"])
 	if not echo.is_empty():
@@ -104,7 +109,7 @@ func render(r: Array) -> AudioStreamWAV:
 	var buf := PackedFloat32Array()
 	buf.resize(n)
 	for l in r:
-		if not l.has("echo"):
+		if l.has("w"):
 			_layer(buf, l)
 	if not echo.is_empty():
 		var dl := int(echo[0] * RATE)
@@ -113,7 +118,7 @@ func render(r: Array) -> AudioStreamWAV:
 	var peak := 0.0001
 	for x in buf:
 		peak = maxf(peak, absf(x))
-	var gain := 0.85 / maxf(peak, 0.85)   # only scale down, never boost quiet recipes
+	var gain := norm / peak if norm > 0.0 else 0.85 / maxf(peak, 0.85)   # by default only scale down
 	var bytes := PackedByteArray()
 	bytes.resize(n * 2)
 	for i in n:
@@ -180,7 +185,120 @@ func _role_pitch(role: String) -> float:
 func unit_fire(u) -> void:
 	var faction: String = u.key.get_slice("/", 0)
 	var key: String = "fire:" + u.key
-	play(key, fire_recipe(faction, u.primary, _role_pitch(u.role) * (1.0 + 0.08 * _vary(u.key))), 0.05, -3.0)
+	var r: Array = UNIT_FIRE.get(u.key, [])
+	if r.is_empty():
+		r = fire_recipe(faction, u.primary, _role_pitch(u.role) * (1.0 + 0.08 * _vary(u.key)))
+	play(key, r + [{"norm": FIRE_PEAK}], 0.05, -3.0)
+
+## Every shot is levelled to this peak, so no unit's fire is lost under the others.
+const FIRE_PEAK := 0.8
+
+## One shot sound per unit, in its faction's timbre and matched to its bullet sprite.
+const UNIT_FIRE := {
+	# Terran: ballistic. Cracks, booms, a pump, a whistle.
+	"terran/banner_marshal": [   # officer's pistol: sharp crack and a bright ping
+		{"w": "noise", "f": [9000, 2500], "d": 0.1, "v": 0.8, "lp": 0.75, "curve": 4.0},
+		{"w": "square", "f": [260, 90], "d": 0.09, "v": 0.45, "duty": 0.3, "curve": 3.0},
+		{"w": "sine", "f": [1900, 1700], "d": 0.06, "v": 0.18, "at": 0.01}],
+	"terran/claim_lord": [   # heavy hand-cannon: a sharp crack over a deep thump
+		{"w": "noise", "f": [9000, 2500], "d": 0.09, "v": 0.9, "lp": 0.85, "curve": 3.0},
+		{"w": "noise", "f": [6000, 1000], "d": 0.2, "v": 0.7, "lp": 0.5, "curve": 2.5},
+		{"w": "sine", "f": [140, 48], "d": 0.24, "v": 0.9, "curve": 2.5},
+		{"w": "square", "f": [180, 60], "d": 0.12, "v": 0.25, "duty": 0.4}],
+	"terran/breacher": [   # breaching shotgun: wide blast, then the pump racks
+		{"w": "noise", "f": [7000, 700], "d": 0.26, "v": 0.95, "lp": 0.55, "curve": 2.0},
+		{"w": "square", "f": [120, 40], "d": 0.18, "v": 0.4, "duty": 0.45, "curve": 2.5},
+		{"w": "noise", "f": [4500, 3500], "d": 0.025, "v": 0.35, "at": 0.24},
+		{"w": "noise", "f": [3500, 2800], "d": 0.03, "v": 0.35, "at": 0.3}],
+	"terran/standard_guard": [   # issue rifle: crisp report with a short slap-back
+		{"w": "noise", "f": [10000, 4000], "d": 0.07, "v": 0.75, "lp": 0.8, "curve": 3.5},
+		{"w": "square", "f": [300, 120], "d": 0.06, "v": 0.35, "duty": 0.2, "curve": 3.0},
+		{"echo": [0.045, 0.3, 1]}],
+	"terran/pathfinder": [   # scout rifle, suppressed: a thwip and a far-off crack
+		{"w": "noise", "f": [3000, 1400], "d": 0.06, "v": 0.6, "lp": 0.3, "curve": 2.0},
+		{"w": "sine", "f": [900, 280], "d": 0.08, "v": 0.45, "curve": 2.0},
+		{"w": "noise", "f": [9000, 6000], "d": 0.03, "v": 0.25, "at": 0.06}],
+	"terran/siege_rig": [   # mortar: thump, rush of air, rising whistle
+		{"w": "noise", "f": [7000, 2000], "d": 0.08, "v": 0.6, "lp": 0.7, "curve": 3.0},
+		{"w": "noise", "f": [3000, 600], "d": 0.25, "v": 0.7, "lp": 0.4, "curve": 3.0},
+		{"w": "sine", "f": [100, 42], "d": 0.32, "v": 0.95, "curve": 2.0},
+		{"w": "square", "f": [300, 900], "d": 0.35, "v": 0.12, "at": 0.08, "duty": 0.3}],
+	# Ascendancy: clean electronics. Chirps, slices, hums, chimes.
+	"ascendancy/chief_visionary": [   # drone chirp: two quick rising tones
+		{"w": "sine", "f": [1200, 2100], "d": 0.06, "v": 0.6},
+		{"w": "sine", "f": [2400, 1700], "d": 0.09, "v": 0.5, "at": 0.05},
+		{"w": "square", "f": [4800, 4800], "d": 0.02, "v": 0.08, "duty": 0.1}],
+	"ascendancy/director_zero": [   # a cold digital slice
+		{"w": "square", "f": [2200, 180], "d": 0.13, "v": 0.5, "duty": 0.1, "crush": 3, "curve": 1.5},
+		{"w": "sine", "f": [4200, 3600], "d": 0.03, "v": 0.3},
+		{"w": "noise", "f": [12000, 9000], "d": 0.04, "v": 0.15}],
+	"ascendancy/synapse_brute": [   # Charge Beam release: a heavy surge
+		{"w": "saw", "f": [140, 70], "d": 0.45, "v": 0.5, "lp": 0.3, "curve": 1.5},
+		{"w": "sine", "f": [900, 300], "d": 0.4, "v": 0.5, "vib": [30, 0.05]},
+		{"w": "noise", "f": [8000, 2000], "d": 0.2, "v": 0.3, "lp": 0.6}],
+	"ascendancy/protocol_warden": [   # an enforcement buzz
+		{"w": "square", "f": [220, 110], "d": 0.16, "v": 0.45, "duty": 0.5, "curve": 1.5},
+		{"w": "sine", "f": [440, 440], "d": 0.12, "v": 0.35, "vib": [60, 0.06]},
+		{"w": "square", "f": [880, 880], "d": 0.03, "v": 0.12, "duty": 0.25, "at": 0.13}],
+	"ascendancy/field_scholar": [   # a clean laser zap with a data blip
+		{"w": "sine", "f": [1800, 500], "d": 0.14, "v": 0.7, "curve": 1.5},
+		{"w": "tri", "f": [3600, 1000], "d": 0.06, "v": 0.3},
+		{"w": "square", "f": [2600, 2600], "d": 0.02, "v": 0.1, "duty": 0.2, "at": 0.1}],
+	"ascendancy/courtesy_android": [   # Courtesy Round: a polite three-note chime
+		{"w": "sine", "f": [1320, 1320], "d": 0.08, "v": 0.4},
+		{"w": "sine", "f": [990, 990], "d": 0.12, "v": 0.4, "at": 0.07},
+		{"w": "tri", "f": [700, 350], "d": 0.14, "v": 0.4, "at": 0.12}],
+	# Manyworlds: wet and organic. Bloops, surf, puffs, chimes, squelches, buzz.
+	"manyworlds/tide_speaker": [   # an ink bloop with a splash
+		{"w": "sine", "f": [240, 720], "d": 0.14, "v": 0.7, "vib": [30, 0.15]},
+		{"w": "noise", "f": [2200, 800], "d": 0.12, "v": 0.3, "lp": 0.15, "at": 0.04}],
+	"manyworlds/reef_bulwark": [   # Undertow: a rolling surge of surf
+		{"w": "sine", "f": [180, 420], "d": 0.3, "v": 0.7, "vib": [18, 0.12], "curve": 1.5},
+		{"w": "noise", "f": [2500, 700], "d": 0.34, "v": 0.4, "lp": 0.15, "a": 0.05}],
+	"manyworlds/reed_runner": [   # a blowgun puff and the dart whistling off
+		{"w": "noise", "f": [5000, 2500], "d": 0.09, "v": 0.6, "lp": 0.4, "a": 0.01},
+		{"w": "sine", "f": [700, 1500], "d": 0.06, "v": 0.25, "at": 0.03}],
+	"manyworlds/prism_elder": [   # Refraction: glassy chimes, shimmering
+		{"w": "tri", "f": [1600, 1200], "d": 0.25, "v": 0.45},
+		{"w": "tri", "f": [2400, 1800], "d": 0.25, "v": 0.3, "at": 0.03},
+		{"w": "sine", "f": [3200, 2600], "d": 0.3, "v": 0.2, "at": 0.06},
+		{"echo": [0.06, 0.35, 3]}],
+	"manyworlds/spore_keeper": [   # a squelch, then a pop
+		{"w": "sine", "f": [340, 180], "d": 0.16, "v": 0.6, "vib": [45, 0.2]},
+		{"w": "noise", "f": [1500, 400], "d": 0.14, "v": 0.35, "lp": 0.1},
+		{"w": "sine", "f": [520, 260], "d": 0.05, "v": 0.45, "at": 0.11}],
+	"manyworlds/glasswing": [   # wings buzz, the stinger zips away
+		{"w": "saw", "f": [700, 1150], "d": 0.12, "v": 0.4, "vib": [90, 0.15], "lp": 0.5},
+		{"w": "noise", "f": [8000, 6000], "d": 0.05, "v": 0.2, "at": 0.07}],
+	# The Long Tomorrow: ragged and cosmic. Hisses, roars, crackle, tolls, the void.
+	"long/mission_mother": [   # a medic's dart: pneumatic hiss and a ping
+		{"w": "noise", "f": [7000, 3000], "d": 0.12, "v": 0.55, "lp": 0.6, "a": 0.01},
+		{"w": "tri", "f": [900, 620], "d": 0.1, "v": 0.3, "crush": 5},
+		{"w": "sine", "f": [1500, 1500], "d": 0.06, "v": 0.2, "at": 0.08}],
+	"long/red_giant": [   # a molten roar
+		{"w": "noise", "f": [8000, 2500], "d": 0.12, "v": 0.5, "lp": 0.7, "curve": 2.0},
+		{"w": "saw", "f": [180, 60], "d": 0.3, "v": 0.6, "crush": 4, "lp": 0.4, "curve": 1.5},
+		{"w": "noise", "f": [3000, 500], "d": 0.26, "v": 0.45, "lp": 0.35},
+		{"w": "sine", "f": [70, 35], "d": 0.3, "v": 0.7}],
+	"long/cinder_scout": [   # Ember Shot: a crackling flare
+		{"w": "noise", "f": [6000, 1500], "d": 0.3, "v": 0.6, "lp": 0.5, "curve": 1.2},
+		{"w": "saw", "f": [400, 120], "d": 0.22, "v": 0.35, "crush": 6}],
+	"long/captain_everafter": [   # a scythe's whoosh and a distant bell
+		{"w": "noise", "f": [1200, 5000], "d": 0.18, "v": 0.5, "lp": 0.45, "a": 0.08},
+		{"w": "sine", "f": [220, 218], "d": 0.45, "v": 0.3, "at": 0.12, "curve": 1.5},
+		{"w": "sine", "f": [440, 436], "d": 0.3, "v": 0.12, "at": 0.12},
+		{"echo": [0.12, 0.35, 2]}],
+	"long/deadweight": [   # the void: a sucking hum that drops away, with a crackle
+		{"w": "sine", "f": [55, 110], "d": 0.12, "v": 0.6, "a": 0.1},
+		{"w": "square", "f": [880, 220], "d": 0.2, "v": 0.18, "duty": 0.2, "crush": 3, "at": 0.11},
+		{"w": "sine", "f": [110, 40], "d": 0.3, "v": 0.9, "at": 0.11, "curve": 2.0},
+		{"w": "saw", "f": [120, 55], "d": 0.3, "v": 0.3, "lp": 0.2, "crush": 3, "at": 0.11}],
+	"long/parallax": [   # Afterimage: a crushed zap and its ghost
+		{"w": "saw", "f": [700, 350], "d": 0.16, "v": 0.45, "lp": 0.5, "crush": 5},
+		{"w": "saw", "f": [700, 350], "d": 0.16, "v": 0.25, "lp": 0.5, "crush": 5, "at": 0.09},
+		{"w": "sine", "f": [2800, 3400], "d": 0.08, "v": 0.12, "at": 0.02},
+		{"echo": [0.09, 0.3, 2]}],
+}
 
 func fire_recipe(faction: String, primary: String, p: float) -> Array:
 	match primary:

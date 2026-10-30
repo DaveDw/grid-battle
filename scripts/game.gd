@@ -6,7 +6,7 @@ extends Node
 const SAVE_DIR := "user://saves/"
 const SLOTS := 3
 const SETTINGS_PATH := "user://settings.cfg"
-const VERSION := "Alpha Test Snapshot v0.0.5"
+const VERSION := "Alpha Test Snapshot v0.0.6"
 
 ## Fonts (user's pick, 2026-10-29). Silkscreen is the project default for general UI
 ## text (project.godot gui/theme/custom_font). Press Start 2P: everything on cards,
@@ -81,7 +81,7 @@ const CARDS := {
 	# faction starter cards (3 copies each)
 	"stake_claim": {"name": "Stake Claim", "cost": 15.0, "target": "tile", "text": "Take an enemy tile for 7s; walkable if it joins your ground."},
 	"sandbags": {"name": "Sandbags", "cost": 12.0, "target": "unit", "text": "Barricade in front of the unit stops 2 shots, 8s."},
-	"overclock": {"name": "Overclock", "cost": 10.0, "target": "unit", "text": "Half-cost shots for 5s, then jammed for 2s."},
+	"overclock": {"name": "Overclock", "cost": 12.0, "target": "unit", "text": "Half-cost shots for 4s, then jammed for 3s."},
 	"containment": {"name": "Containment Field", "cost": 20.0, "target": "tile", "text": "An enemy on the tile can't move for 3s."},
 	"riptide": {"name": "Riptide", "cost": 15.0, "target": "unit", "text": "Pull the nearest enemy in your row 1 column closer."},
 	"mire": {"name": "Mire", "cost": 15.0, "target": "tile", "text": "Mud tile for 8s: leaving it costs 2 stamina."},
@@ -99,7 +99,7 @@ const CARDS := {
 	"mudslide": {"name": "Mudslide", "cost": 22.0, "target": "tile", "text": "Mud on the tile and the tiles above and below, 8s."},
 	"last_stand": {"name": "Last Stand", "cost": 16.0, "target": "unit", "text": "Selected unit can't drop below 1 HP for 4s."},
 	"burn_bright": {"name": "Burn Bright", "cost": 0.0, "target": "unit", "text": "Selected unit pays 20 HP: gain 40 energy."},
-	"echo_strike": {"name": "Echo Strike", "cost": 18.0, "target": "unit", "text": "Selected unit fires its primary twice, free."},
+	"echo_strike": {"name": "Echo Strike", "cost": 20.0, "target": "unit", "text": "For 4s, each of its shots is echoed by a free second shot."},
 	"suppressing_fire": {"name": "Suppressing Fire", "cost": 18.0, "target": "unit", "text": "Enemies in the selected unit's row can't fire for 3s."},
 	"firewall": {"name": "Firewall", "cost": 20.0, "target": "tile", "text": "Containment on the tile and the tiles above and below, 3s."},
 	"mycelial_link": {"name": "Mycelial Link", "cost": 16.0, "target": "unit", "text": "For 6s, damage to the selected unit is split across your squad."},
@@ -359,6 +359,14 @@ func card_art(id: String) -> Texture2D:
 		var path := "res://assets/cards/%s.png" % id
 		_card_art[id] = load(path) if ResourceLoader.exists(path) else null
 	return _card_art[id]
+
+## A unit's bullet sprite (assets/bullets/<faction>/<unit>.png, 16px, facing right).
+var _bullet_tex := {}
+func bullet_tex(key: String) -> Texture2D:
+	if not _bullet_tex.has(key):
+		var path := "res://assets/bullets/%s.png" % key
+		_bullet_tex[key] = load(path) if ResourceLoader.exists(path) else null
+	return _bullet_tex[key]
 
 ## A TextureRect showing a card's icon at `px` (32, 64 or 128 keeps the pixels square).
 ## Empty box (same size) for cards whose art isn't drawn yet, so layouts don't jump.
@@ -628,13 +636,57 @@ func draft_choices() -> int:
 		n += 1   # an event promised a wider pick
 	return n
 
-## A card's energy cost. The player's copies can be discounted by events
-## (run["discounts"]: card id -> energy off; never below 0).
-func card_cost(id: String, team := 0) -> float:
-	var c: float = CARDS[id]["cost"]
-	if team == 0 and not run.is_empty():
-		c -= float(run.get("discounts", {}).get(id, 0.0))
-	return maxf(c, 0.0)
+## A card's printed energy cost. Event discounts belong to single copies
+## (copy_discounts); in battle CardHand.cost_of() applies the drawn copy's.
+func card_cost(id: String, _team := 0) -> float:
+	return float(CARDS[id]["cost"])
+
+## Event discounts, one entry per discounted copy: card id -> [energy off, ...].
+## Never more entries than copies in the deck. (Saves from before 0.0.6 stored one
+## amount that applied to every copy; it's spread over those copies.)
+func copy_discounts() -> Dictionary:
+	var out := {}
+	if run.is_empty():
+		return out
+	var raw: Dictionary = run.get("discounts", {})
+	for id in raw:
+		var n: int = run["deck"].count(id)
+		var list: Array = []
+		if typeof(raw[id]) == TYPE_ARRAY:
+			list = raw[id].duplicate()
+		else:
+			for i in n:
+				list.append(float(raw[id]))
+		list.sort()
+		list.reverse()   # biggest first, so trimming keeps the best copies
+		list = list.slice(0, n)
+		if not list.is_empty():
+			out[id] = list
+	return out
+
+## "1 copy -5" / "2 copies -5, -4" for deck lists; "" when no copy is discounted.
+func discount_note(id: String) -> String:
+	var list: Array = copy_discounts().get(id, [])
+	if list.is_empty():
+		return ""
+	var parts := []
+	for d in list:
+		parts.append("-%d" % int(d))
+	return "%d %s %s" % [list.size(), "copy" if list.size() == 1 else "copies", ", ".join(parts)]
+
+## Can one copy of `id` leave the deck? Every card but the last copy of the leader card.
+func can_remove(id: String) -> bool:
+	return id != leader_card(run["leader"]) or run["deck"].count(id) > 1
+
+## Take one copy of `id` out of the deck; an undiscounted copy goes first.
+func remove_card(id: String) -> void:
+	var d := copy_discounts()
+	run["deck"].erase(id)
+	if d.has(id):
+		d[id] = d[id].slice(0, run["deck"].count(id))
+		if d[id].is_empty():
+			d.erase(id)
+	run["discounts"] = d
 
 # --- events between battles -------------------------------------------------------
 ## After a mid-sector draft there's EVENT_CHANCE of an event before the next battle.
@@ -644,7 +696,7 @@ func card_cost(id: String, team := 0) -> float:
 ##   hurt: share of max HP lost by every living unit (never below 1)
 ##   add: card id, or "own" / "enemy" / "any" for a random draftable card of that pool
 ##   remove: "choose" (the screen asks; the leader card can't go)
-##   discount: [energy, "choose"] cheapens every copy of a chosen card
+##   discount: [energy, "choose"] cheapens one copy of a chosen card
 ##   next: {enemy_hp (multiplier), barrier (HP of shield each unit starts with, 30s),
 ##         enemy_cards (extra cards in the enemy deck)} for the next battle only
 ##   draft_bonus: +1 card to choose from at the next draft
@@ -893,11 +945,18 @@ func _add_event_card(what: String) -> void:
 
 ## The event's card-picking effects, once the player has picked `card` from the deck.
 func pick_card_effect(fx: Dictionary, card: String) -> void:
-	if fx.get("remove", "") == "choose" and card != leader_card(run["leader"]):
-		run["deck"].erase(card)
+	if fx.get("remove", "") == "choose" and can_remove(card):
+		remove_card(card)
 	if fx.has("discount"):
-		var d: Dictionary = run.get("discounts", {})
-		d[card] = float(d.get(card, 0.0)) + float(fx["discount"][0])
+		# one copy: an undiscounted one if there is one, else the least discounted
+		var d := copy_discounts()
+		var list: Array = d.get(card, [])
+		if list.size() < run["deck"].count(card):
+			list.append(float(fx["discount"][0]))
+		else:
+			var lo := list.find(list.min())
+			list[lo] = float(list[lo]) + float(fx["discount"][0])
+		d[card] = list
 		run["discounts"] = d
 
 ## Event resolved: on to the battle.
@@ -1055,14 +1114,14 @@ func starting_hp(role: String, max_hp: int) -> int:
 func deck_full() -> bool:
 	return run["deck"].size() >= DECK_CAP
 
-## Draft pick: add `card`, dropping `drop` first if the deck is at the cap (the leader
-## card can't be dropped). Then advance to the next stage, or, after a sector's last
+## Draft pick: add `card`, dropping `drop` first if the deck is at the cap (the last
+## copy of the leader card can't be dropped). Then advance to the next stage, or, after a sector's last
 ## stage, back to the map (or to the run-won choice). Returns true if that finished a
 ## sector.
 func take_draft(card: String, drop := "") -> bool:
 	var deck: Array = run["deck"]
-	if drop != "" and drop != leader_card(run["leader"]):
-		deck.erase(drop)
+	if drop != "" and can_remove(drop):
+		remove_card(drop)
 	if deck.size() < DECK_CAP:
 		deck.append(card)
 	run.erase("offer")
@@ -1096,42 +1155,82 @@ func enemy_deck(enemy_id: String, lvl: int) -> Array:
 	deck.shuffle()
 	return deck
 
-## How each faction fights as the enemy (multipliers on the level's tuning).
+## How each faction fights as the enemy. Behaviour supplies most of the identity
+## (Battlefield.ai_tile_score, Unit._run_ai); these are modest multipliers on the
+## level's timings (kb/proposals/codex-enemy-ai.md).
 ##   move / attack / cards: interval multipliers (lower = more often)
-##   dodge, focus: added to the level's chances; front: chance a move steps toward the
-##   border; tag: the battle-start announcement.
+##   dodge, focus: added to the level's chances
+##   front: how much smart moves like tiles near the border (only where a shot lands)
+##   stay: how much a smart move prefers holding its tile (Terran dig in, Manyworlds roam)
+##   tag: the battle-start announcement
 const AI_STYLES := {
-	"terran": {"move": 1.5, "attack": 0.85, "cards": 1.0, "dodge": -0.05, "focus": 0.15, "front": 0.0, "tag": "DUG IN: they hold position and trade fire",
-		"favor": ["fortify", "sandbags", "stake_claim", "barrage", "suppressing_fire"]},
-	"ascendancy": {"move": 1.0, "attack": 1.0, "cards": 0.85, "dodge": 0.1, "focus": 0.3, "front": 0.0, "tag": "METHODICAL: they line up on your weakest unit",
+	"terran": {"move": 1.25, "attack": 0.95, "cards": 1.0, "dodge": -0.05, "focus": 0.05, "front": 0.0, "stay": 0.8, "tag": "DUG IN: they hold position and trade fire",
+		"favor": ["fortify", "sandbags", "stake_claim", "barrage", "suppressing_fire", "dig_in"]},
+	"ascendancy": {"move": 1.0, "attack": 1.0, "cards": 0.9, "dodge": 0.05, "focus": 0.15, "front": 0.0, "stay": 0.3, "tag": "METHODICAL: they line up on your weakest unit",
 		"favor": ["target_lock", "containment", "firewall", "issue_protocol"]},
-	"manyworlds": {"move": 0.65, "attack": 1.1, "cards": 0.75, "dodge": 0.15, "focus": 0.0, "front": 0.0, "tag": "RESTLESS: they never stop moving",
-		"favor": ["mire", "mudslide", "flood", "riptide", "undertow_surge"]},
-	"long": {"move": 0.9, "attack": 0.75, "cards": 1.0, "dodge": -0.1, "focus": 0.1, "front": 0.5, "tag": "RECKLESS: they press forward and hit hard",
-		"favor": ["burn_bright", "echo_strike", "supernova", "overclock"]},
+	"manyworlds": {"move": 0.85, "attack": 1.0, "cards": 0.9, "dodge": 0.05, "focus": 0.0, "front": 0.0, "stay": -0.6, "tag": "RESTLESS: they never stop moving",
+		"favor": ["mire", "mudslide", "flood", "riptide", "undertow_surge", "spore_bloom"]},
+	"long": {"move": 0.95, "attack": 0.9, "cards": 1.0, "dodge": -0.05, "focus": 0.05, "front": 0.5, "stay": -0.2, "tag": "RECKLESS: they press forward and hit hard",
+		"favor": ["burn_bright", "echo_strike", "supernova", "medpod"]},
 }
 const BOSS_HP := 1.25          # stage 3 of each sector: the enemy commander's squad
+
+## Enemy tuning per difficulty level (Codex's table). Level 5 (sector 2's commander)
+## is full cadence; it used to take until level 8. New behaviours switch on by level:
+## 0 useful attacks and lanes; 1 dodging, stamina reserve, kit discipline;
+## 2 card combos, Refraction setups, smart cards; 3 a two-chunk reserve.
+const AI_LEVELS := [
+	{"move": [1.2, 1.8], "attack": [2.3, 3.2], "card": [5.0, 7.0], "windup": 0.65, "react": 0.40, "dodge": 0.0, "focus": 0.25},
+	{"move": [1.0, 1.6], "attack": [2.1, 2.9], "card": [4.5, 6.0], "windup": 0.60, "react": 0.35, "dodge": 0.15, "focus": 0.40},
+	{"move": [0.9, 1.4], "attack": [1.9, 2.6], "card": [4.0, 5.5], "windup": 0.55, "react": 0.30, "dodge": 0.25, "focus": 0.55},
+	{"move": [0.8, 1.3], "attack": [1.7, 2.4], "card": [3.5, 5.0], "windup": 0.50, "react": 0.28, "dodge": 0.35, "focus": 0.65},
+	{"move": [0.75, 1.2], "attack": [1.6, 2.2], "card": [3.0, 4.5], "windup": 0.45, "react": 0.25, "dodge": 0.45, "focus": 0.75},
+	{"move": [0.7, 1.1], "attack": [1.5, 2.1], "card": [2.8, 4.0], "windup": 0.45, "react": 0.25, "dodge": 0.50, "focus": 0.80},
+]
 
 ## Enemy AI tuning for a difficulty level (0 = first battle), the enemy's faction
 ## style, and whether it's the sector's commander battle.
 func ai_params(lvl: int, faction := "", boss := false) -> Dictionary:
-	var k := clampf(lvl / 8.0, 0.0, 1.0)      # 0..1 over the first 9 stages
-	var st: Dictionary = AI_STYLES.get(faction, {"move": 1.0, "attack": 1.0, "cards": 1.0, "dodge": 0.0, "focus": 0.0, "front": 0.0, "tag": ""})
-	return {
-		"move_min": lerpf(1.3, 0.7, k) * st["move"], "move_max": lerpf(2.5, 1.3, k) * st["move"],
-		"attack_min": lerpf(2.5, 1.4, k) * st["attack"], "attack_max": lerpf(4.5, 2.4, k) * st["attack"],
-		"telegraph": lerpf(0.6, 0.4, k),
-		"dodge": clampf(lvl * 0.12 + st["dodge"], 0.0, 0.8),          # chance to sidestep an incoming shot
-		"focus": clampf((lvl - 1) * 0.15 + st["focus"], 0.0, 0.9),     # chance to line up on the weakest unit
-		"front": st["front"],                                           # chance to step toward the border
-		"card_min": lerpf(7.0, 3.5, k) * st["cards"], "card_max": lerpf(11.0, 6.0, k) * st["cards"],
-		"smart_cards": lvl >= 3 or boss,                                # play heals when hurt, etc.
+	var row: Dictionary = AI_LEVELS[clampi(lvl, 0, AI_LEVELS.size() - 1)]
+	var st: Dictionary = AI_STYLES.get(faction, {"move": 1.0, "attack": 1.0, "cards": 1.0, "dodge": 0.0, "focus": 0.0, "front": 0.0, "stay": 0.0, "tag": ""})
+	var ai := {
+		"level": lvl,
+		"move_min": row["move"][0] * st["move"], "move_max": row["move"][1] * st["move"],
+		"attack_min": row["attack"][0] * st["attack"], "attack_max": row["attack"][1] * st["attack"],
+		"card_min": row["card"][0] * st["cards"], "card_max": row["card"][1] * st["cards"],
+		"telegraph": row["windup"],
+		"reaction": row["react"],                                       # delay before reacting to a seen shot
+		"dodge": row["dodge"] + (st["dodge"] if lvl >= 1 else 0.0),    # chance to sidestep it
+		"focus": row["focus"] + st["focus"],                            # chance to prefer the weakest target
+		"front": st["front"],
+		"stay": st.get("stay", 0.0),
+		"smart": clampf(0.7 + 0.15 * lvl, 0.0, 1.0),                   # chance a move picks the best tile
+		"aim": 0.85 if lvl <= 0 else 1.0,                               # chance to hold fire with no target
+		"reserve": 0 if lvl <= 0 else (1 if lvl <= 2 else 2),           # stamina chunks kept for dodging
+		"combos": lvl >= 2,
+		"smart_cards": lvl >= 2 or boss,                                # play heals when hurt, etc.
 		"hp_mult": (1.0 + 0.06 * lvl) * (BOSS_HP if boss else 1.0),
 		"tag": st["tag"],
 		"favor": st.get("favor", []),                                  # cards a smart AI reaches for first
 		"boss": boss,
 		"doctrine": faction if boss and DOCTRINES.has(faction) else "",
 	}
+	return clamp_ai(ai)
+
+## Keep tuning inside fair limits after faction and sector modifiers: no near-perfect
+## dodging, no machine-gun attacks or card spam.
+func clamp_ai(ai: Dictionary) -> Dictionary:
+	ai["dodge"] = clampf(float(ai["dodge"]), 0.0, 0.6)
+	ai["focus"] = clampf(float(ai["focus"]), 0.0, 0.9)
+	ai["move_min"] = maxf(float(ai["move_min"]), 0.45)
+	ai["move_max"] = maxf(float(ai["move_max"]), float(ai["move_min"]))
+	ai["attack_min"] = maxf(float(ai["attack_min"]), 1.25)
+	ai["attack_max"] = maxf(float(ai["attack_max"]), float(ai["attack_min"]))
+	ai["card_min"] = maxf(float(ai["card_min"]), 2.5)
+	ai["card_max"] = maxf(float(ai["card_max"]), float(ai["card_min"]))
+	ai["telegraph"] = maxf(float(ai["telegraph"]), 0.45)
+	ai["reaction"] = maxf(float(ai["reaction"]), 0.25)
+	return ai
 
 ## Run lost: roguelike rules, the save is gone.
 func end_run() -> void:

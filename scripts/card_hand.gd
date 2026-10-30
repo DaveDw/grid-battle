@@ -22,7 +22,9 @@ var hand: Array = []
 var discard: Array = []
 var energy: EnergyBar             # to grey out cards the team can't afford
 var armed := -1                   # slot being aimed (tile cards), -1 if none
-var team := 0                     # whose hand (event discounts apply to the player's)
+var team := 0                     # whose hand
+var hand_disc: Array = []         # energy off each card in hand (event discounts, per copy)
+var _disc_pool := {}              # card id -> discounts of the copies not in hand
 var hold := false                 # Conquest rule (see above)
 var draw_time := DRAW_TIME        # seconds per draw (sector modifiers can change it)
 var _draw_t := 0.0
@@ -30,9 +32,11 @@ var _played_fx: Array = []        # [card id, slot, time left]
 var _burn_fx: Array = []          # [card id, slot, time left]
 var _new_fx: Array = []           # [slot, time left] for freshly drawn cards
 
-func setup(cards: Array, team_energy: EnergyBar) -> void:
+## `discounts` (Game.copy_discounts(), player only): id -> one entry per discounted copy.
+func setup(cards: Array, team_energy: EnergyBar, discounts := {}) -> void:
 	deck = cards.duplicate()
 	energy = team_energy
+	_disc_pool = discounts.duplicate(true)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST   # square pixels for the card icons
 	for n in 2:
@@ -45,7 +49,13 @@ func _draw_card_from_deck() -> bool:
 		deck = discard.duplicate()
 		discard.clear()
 		deck.shuffle()
-	hand.append(deck.pop_back())
+	var id: String = deck.pop_back()
+	hand.append(id)
+	# Is this the discounted copy? Copies are interchangeable until drawn, so the odds
+	# are the discounted share of this card's copies outside the hand.
+	var pool: Array = _disc_pool.get(id, [])
+	var outside := deck.count(id) + discard.count(id) + 1
+	hand_disc.append(pool.pop_back() if not pool.is_empty() and randf() * outside < pool.size() else 0.0)
 	_new_fx.append([hand.size() - 1, 0.3])
 	if is_visible_in_tree():
 		Sfx.card_drawn()
@@ -56,7 +66,7 @@ func _cycle() -> void:
 	if hand.size() >= HAND_SIZE:
 		var i := randi() % hand.size()
 		var id: String = hand[i]
-		hand.remove_at(i)
+		_release(i)
 		discard.append(id)
 		_burn_fx.append([id, i, 0.5])
 		if is_visible_in_tree():
@@ -68,7 +78,27 @@ func _cycle() -> void:
 	_draw_card_from_deck()
 
 func can_play(i: int) -> bool:
-	return i < hand.size() and energy.value >= Game.card_cost(hand[i], team)
+	return i < hand.size() and energy.value >= cost_of(i)
+
+## Energy cost of the card in slot `i`, after this copy's discount.
+func cost_of(i: int) -> float:
+	return maxf(Game.card_cost(hand[i]) - float(hand_disc[i]), 0.0)
+
+## Take slot `i` out of the hand; its discount goes back with the copy.
+func _release(i: int) -> void:
+	if float(hand_disc[i]) > 0.0:
+		var pool: Array = _disc_pool.get(hand[i], [])
+		pool.append(hand_disc[i])
+		_disc_pool[hand[i]] = pool
+	hand.remove_at(i)
+	hand_disc.remove_at(i)
+
+## Discard the whole hand (Recompile).
+func discard_hand() -> void:
+	while not hand.is_empty():
+		discard.append(hand[0])
+		_release(0)
+	armed = -1
 
 func is_full() -> bool:
 	return hand.size() >= HAND_SIZE
@@ -86,7 +116,7 @@ func take(i: int) -> String:
 	if i >= hand.size():
 		return ""
 	var id: String = hand[i]
-	hand.remove_at(i)
+	_release(i)
 	discard.append(id)
 	_played_fx.append([id, i, 0.35])
 	if armed == i:
@@ -173,7 +203,7 @@ func _draw() -> void:
 		if art:
 			draw_texture_rect(art, icon, false, Color.WHITE if ok else Color(0.55, 0.55, 0.6))
 		draw_string(cf, r.position + Vector2(2, 10), str(i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(1, 0.85, 0.4))
-		draw_string(cf, r.position + Vector2(6, 56), "%d" % int(Game.card_cost(hand[i], team)), HORIZONTAL_ALIGNMENT_CENTER, 32, 10, Color(0.45, 0.8, 1.0) if ok else Color(0.9, 0.4, 0.4))
+		draw_string(cf, r.position + Vector2(6, 56), "%d" % int(cost_of(i)), HORIZONTAL_ALIGNMENT_CENTER, 32, 10, Color(0.45, 0.8, 1.0) if ok else Color(0.9, 0.4, 0.4))
 		# right column: name and rules text
 		var tx := 44.0
 		var name_size := 8 if c["name"].length() > 14 else 10

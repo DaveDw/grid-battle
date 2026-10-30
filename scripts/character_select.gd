@@ -12,6 +12,7 @@ var _begin: Button
 var _big: FighterSprite
 var _deck: Array = []           # starting deck for the selected leader (sculpted on NG+)
 var _deck_leader := ""
+var _view_btn: Button
 var _ng_pick: OptionButton
 var _squad_sprites: Array = []
 var _bg: Control                # backdrop, tinted to the browsed leader's faction
@@ -315,16 +316,34 @@ func _show_deck() -> void:
 	for n in icons.get_children():
 		n.queue_free()
 	for c in counts:
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 2)
-		row.add_child(Game.card_icon(c, 32))
-		var n := Label.new()
-		n.text = "×%d" % counts[c]
-		n.add_theme_font_override("font", Game.FONT_NUM)
-		n.add_theme_font_size_override("font_size", 8)
-		row.add_child(n)
-		icons.add_child(row)
+		# each icon is a button: hover for the card's text, press to open the Deck screen
+		var b := Button.new()
+		b.flat = true
+		b.text = "×%d" % counts[c]
+		b.add_theme_font_override("font", Game.FONT_NUM)
+		b.add_theme_font_size_override("font_size", 8)
+		b.tooltip_text = "%s  (%d): %s" % [Game.CARDS[c]["name"], int(Game.card_cost(c)), Game.CARDS[c]["text"]]
+		Game.card_button_icon(b, c)
+		b.pressed.connect(_open_deck)
+		icons.add_child(b)
 	_detail["deck_head"].text = "STARTING DECK" + ("  ·  SCULPTED" if deck != Game.starter_deck(id) else "")
+
+## The Deck screen: read every card of the starting deck; on NG+ with a collection,
+## swap collected cards in.
+func _open_deck() -> void:
+	var d := DeckSculpt.new()
+	d.leader_id = _deck_leader
+	d.deck = _deck.duplicate()
+	d.editable = _ng() >= 1 and not Game.profile["collection"].is_empty()
+	if Game.profile["collection"].is_empty():
+		d.reason = "Select a card to read it. Win a run to start a collection: on New Game+ runs you can swap collected cards into your starting deck."
+	elif _ng() < 1:
+		d.reason = "Select a card to read it. Choose a New Game+ level to swap collected cards into your starting deck."
+	add_child(d)
+	d.done.connect(func(new_deck):
+		_deck = new_deck
+		_show_deck()
+		_view_btn.grab_focus())
 
 func _ng() -> int:
 	return _ng_pick.get_selected_id() if _ng_pick and _ng_pick.visible else 0
@@ -352,21 +371,9 @@ func _build_footer() -> void:
 	view.text = "Deck"
 	view.position = Vector2(400, 650)
 	view.custom_minimum_size = Vector2(132, 44)
-	view.pressed.connect(func():
-		var d := DeckSculpt.new()
-		d.leader_id = _deck_leader
-		d.deck = _deck.duplicate()
-		d.editable = _ng() >= 1 and not Game.profile["collection"].is_empty()
-		if Game.profile["collection"].is_empty():
-			d.reason = "Win a run to start a collection. On New Game+ runs you can swap collected cards into your starting deck."
-		elif _ng() < 1:
-			d.reason = "Choose a New Game+ level to swap collected cards into your starting deck."
-		add_child(d)
-		d.done.connect(func(new_deck):
-			_deck = new_deck
-			_show_deck()
-			view.grab_focus()))
+	view.pressed.connect(_open_deck)
 	add_child(view)
+	_view_btn = view
 	# New Game+ level: shown once unlocked; NG+ runs are harder and need more sectors
 	_ng_pick = OptionButton.new()
 	_ng_pick.position = Vector2(548, 650)

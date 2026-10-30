@@ -3,7 +3,8 @@ extends Control
 ## Starting-deck editor for New Game+ runs: pick a card in the starting deck, then a
 ## collected card to swap in. The deck stays the starter deck's size, the leader card
 ## is locked, and each collected card can be used as many times as it's owned.
-## Opened read-only (with `reason`) when sculpting isn't available.
+## Opened read-only (with `reason`) when sculpting isn't available. Every card can be
+## focused or hovered to read it in the info line, editable or not.
 
 signal done(deck: Array)
 
@@ -16,6 +17,7 @@ var _slot := -1
 var _left: VBoxContainer
 var _right: VBoxContainer
 var _hint: Label
+var _info: Label
 var _ok: Button
 var _refocus := -1              # deck index to put focus back on after a rebuild
 
@@ -44,15 +46,23 @@ func _ready() -> void:
 	_hint.custom_minimum_size = Vector2(960, 0)
 	_hint.add_theme_color_override("font_color", Color(0.65, 0.75, 0.9))
 	v.add_child(_hint)
+	_info = Label.new()
+	_info.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_info.custom_minimum_size = Vector2(960, 40)
+	_info.add_theme_font_override("font", Game.FONT_CARD)
+	_info.add_theme_font_size_override("font_size", 10)
+	_info.add_theme_constant_override("line_spacing", 4)
+	_info.add_theme_color_override("font_color", Color(0.9, 0.92, 1.0))
+	v.add_child(_info)
 	var cols := HBoxContainer.new()
 	cols.add_theme_constant_override("separation", 30)
-	cols.custom_minimum_size = Vector2(960, 470)
+	cols.custom_minimum_size = Vector2(960, 430)
 	v.add_child(cols)
 	_left = VBoxContainer.new()
 	_left.custom_minimum_size = Vector2(440, 0)
 	cols.add_child(_left)
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(480, 470)
+	scroll.custom_minimum_size = Vector2(480, 430)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.follow_focus = true      # controller focus scrolls the collection
 	cols.add_child(scroll)
@@ -105,12 +115,13 @@ func _refresh() -> void:
 		var locked := id == lead and not lead_seen
 		if locked:
 			lead_seen = true
-		var b := _card_button(id, ("  ·  leader, locked" if locked else ""))
-		b.disabled = locked or not editable
+		var b := _card_button(id, ("  ·  leader, locked" if locked else ""), editable and not locked)
 		if i == _slot:
 			b.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
 			b.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.3))
 		b.pressed.connect(func():
+			if not editable or locked:
+				return   # read-only: focusing it already shows the card
 			_slot = -1 if _slot == i else i
 			_refocus = i
 			_refresh())
@@ -124,9 +135,11 @@ func _refresh() -> void:
 		_right.add_child(none)
 	for id in owned:
 		var free := _available(id)
-		var b := _card_button(id, "  ·  %d of %d free" % [free, owned[id]])
-		b.disabled = not editable or _slot < 0 or free <= 0
+		var usable := editable and _slot >= 0 and free > 0
+		var b := _card_button(id, "  ·  %d of %d free" % [free, owned[id]], usable)
 		b.pressed.connect(func():
+			if not usable:
+				return
 			_refocus = _slot
 			deck[_slot] = id
 			_slot = -1
@@ -143,12 +156,12 @@ func _restore_focus() -> void:
 	var target: Control = null
 	if _slot >= 0:
 		for b in _right.get_children():
-			if b is Button and not b.disabled and not b.is_queued_for_deletion():
+			if b is Button and b.get_meta("usable", false) and not b.is_queued_for_deletion():
 				target = b
 				break
 	else:
 		var buttons := _left.get_children().filter(func(b): return b is Button and not b.is_queued_for_deletion())
-		if _refocus < buttons.size() and not buttons[_refocus].disabled:
+		if _refocus < buttons.size():
 			target = buttons[_refocus]
 	if target == null:
 		target = _ok
@@ -161,11 +174,19 @@ func _header(box: VBoxContainer, text: String) -> void:
 	l.add_theme_color_override("font_color", Color(0.45, 0.75, 1.0))
 	box.add_child(l)
 
-func _card_button(id: String, suffix: String) -> Button:
+## A card row. Unusable ones (locked, read-only, nothing to swap) stay focusable so
+## the card can still be read; they're just dimmed.
+func _card_button(id: String, suffix: String, usable := true) -> Button:
 	var c: Dictionary = Game.CARDS[id]
 	var b := Button.new()
 	b.text = "%s  (%d)%s" % [c["name"], int(c["cost"]), suffix]
 	b.tooltip_text = c["text"]
+	b.set_meta("usable", usable)
+	if not usable:
+		b.modulate = Color(1, 1, 1, 0.6)
+	var show := func(): _info.text = "%s  (%d):  %s" % [c["name"], int(c["cost"]), c["text"]]
+	b.focus_entered.connect(show)
+	b.mouse_entered.connect(show)
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.custom_minimum_size = Vector2(0, 40)
 	b.add_theme_font_override("font", Game.FONT_CARD)
