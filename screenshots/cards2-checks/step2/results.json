@@ -1,0 +1,86 @@
+[
+  {
+    "check": "import",
+    "pass": true,
+    "exit_code": 0,
+    "assertions": 0,
+    "failures": [],
+    "diagnostics": []
+  },
+  {
+    "check": "smoke",
+    "pass": true,
+    "exit_code": 0,
+    "assertions": 0,
+    "failures": [],
+    "diagnostics": [
+      "ERROR: 1 resources still in use at exit (run with --verbose for details)."
+    ]
+  },
+  {
+    "check": "feedback",
+    "pass": true,
+    "exit_code": 0,
+    "assertions": 14,
+    "failures": [],
+    "diagnostics": [
+      "ERROR: 2 resources still in use at exit (run with --verbose for details)."
+    ]
+  },
+  {
+    "check": "shots",
+    "pass": true,
+    "exit_code": 0,
+    "assertions": 0,
+    "failures": [],
+    "diagnostics": []
+  },
+  {
+    "check": "ai_probe",
+    "pass": true,
+    "exit_code": 0,
+    "assertions": 20,
+    "failures": [],
+    "diagnostics": [
+      "ERROR: 4 resources still in use at exit (run with --verbose for details)."
+    ]
+  },
+  {
+    "check": "rarity",
+    "pass": true,
+    "exit_code": 0,
+    "assertions": 0,
+    "failures": [],
+    "diagnostics": []
+  },
+  {
+    "check": "lane",
+    "pass": true,
+    "exit_code": 0,
+    "assertions": 0,
+    "failures": [],
+    "diagnostics": [
+      "ERROR: 2 resources still in use at exit (run with --verbose for details)."
+    ]
+  },
+  {
+    "check": "lastcard",
+    "pass": true,
+    "exit_code": 0,
+    "assertions": 0,
+    "failures": [],
+    "diagnostics": [
+      "ERROR: 2 resources still in use at exit (run with --verbose for details)."
+    ]
+  },
+  {
+    "check": "cards2",
+    "pass": true,
+    "exit_code": 0,
+    "assertions": 31,
+    "failures": [],
+    "diagnostics": [
+      "ERROR: 2 resources still in use at exit (run with --verbose for details)."
+    ]
+  }
+]

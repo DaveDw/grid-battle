@@ -3,7 +3,7 @@
 # Run from the project root (Git Bash): bash tools/build_release.sh
 set -e
 G=/c/Users/ddwig/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe
-V=0.0.7
+V=0.0.8
 "$G" --headless --path . --import >/dev/null 2>&1
 "$G" --headless --path . --export-release "Windows Alpha" builds/windows/GridBattle-Alpha-$V.exe 2>&1 | grep -iE "^ERROR" || true
 "$G" --headless --path . --export-release "Linux Alpha" builds/linux/GridBattle-Alpha-$V.x86_64 2>&1 | grep -iE "^ERROR" || true

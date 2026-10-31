@@ -1,0 +1,23 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS no shots into an empty lane
+PASS fires once someone is in its row
+PASS Siege Rig holds the mortar when nobody's on the landing tile
+PASS Siege Rig fires when someone is on the landing tile
+PASS Red Giant holds fire at 22% HP
+PASS Red Giant resumes above 35% HP
+PASS Prism Elder starts a two-step Refraction setup toward the targets
+PASS the second step arms Refraction (row 3, ready true)
+PASS no shots while the squad lets its energy refill
+PASS a Containment combo lines up a staggered volley (3 of 3)
+PASS a dodging enemy sidesteps a visible shot
+PASS only after its reaction delay (0.29s)
+PASS and reacts to that shot once
+PASS Medpod goes to the unit it was scored for (the hurt one)
+PASS Flood aims from the ally in the busiest row (row 6)
+PASS Collapse is never played by the last unit standing
+PASS Supernova is held with nobody in the row
+PASS Field Scholar fires a mark burst 1.4s apart (gaps [1.43, 1.43])
+PASS Captain Everafter doesn't reset a waiting Interval Mark
+PASS level 3+: a third ally on the same lane scores lower (1.9 vs 3.9)
+FAILS 0

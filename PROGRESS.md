@@ -140,3 +140,12 @@
 - [x] Card rarity: Common (blue) < Uncommon (green) < Rare (purple) < Legendary (yellow). Starters Common, leader cards Rare, Supernova Legendary; drafts, event cards and enemy decks weighted 100/55/25/8; frames coloured by rarity everywhere. Check: rarity.tscn.
 - [x] Credits: "A game by David Dwight" on every role; third-party font, music and engine creators credited by name.
 - Windows build smoke-tested headless.
+
+## Card set 2 artwork (2026-10-30)
+- [x] Art delivery: 40 native 32px icons, 40 nearest-neighbour 128px exports, four faction sheets, per-icon checks and notes in `art_incoming/cards/set2/`; completed in Terran / Ascendancy / Manyworlds / Long Tomorrow order. Artwork checks 40/40 PASS; no `.gd` or `assets/` edits.
+- Session (Codex, 2026-10-30): followed brief codex-08 using the existing cardkit drawing helper; reviewed all sheets and refined seven ambiguous icons. Temporary-copy Godot import clean after cache generation; runtime exit 0 but **verify not clean** due to a retained `menu.wav` audio resource at shutdown. See `art_incoming/cards/set2/verification.md`; no gameplay integration or gameplay-clean claim.
+
+## Alpha Test Snapshot v0.0.8 (2026-10-30)
+- [x] Card set 2: 40 new cards (10 per faction, 4/3/2/1 by rarity) with icons by Codex; Codex built the game-wide rules and 26 cards, Claude the 14 board-mechanic cards and enemy AI plans for all 40.
+- [x] Game-wide rules: MK-numbered lasting cards (Annex, Deploy Drone at 40, one drone per copy); card moves break locks; pure draw cards speed the draw timer; 1.5 s alternate-fire cooldown; blocked pushes deal 8 and stun 0.5 s.
+- Checks: cards2.tscn 45 PASS (both teams), ai_probe 20, feedback, shots, rarity; board2/lane/lastcard screenshots; ai_sim with new cards in enemy decks, no errors. Windows build smoke-tested.

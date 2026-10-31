@@ -25,6 +25,10 @@ var armed := -1                   # slot being aimed (tile cards), -1 if none
 var team := 0                     # whose hand
 var hand_disc: Array = []         # energy off each card in hand (event discounts, per copy)
 var _disc_pool := {}              # card id -> discounts of the copies not in hand
+var _deck_copies: Array = []      # {id, mk, discount}; shuffled with the public id piles
+var _hand_copies: Array = []
+var _discard_copies: Array = []
+var draw_boost_left := 0.0
 var hold := false                 # Conquest rule (see above)
 var draw_time := DRAW_TIME        # seconds per draw (sector modifiers can change it)
 var _draw_t := 0.0
@@ -35,8 +39,25 @@ var _new_fx: Array = []           # [slot, time left] for freshly drawn cards
 ## `discounts` (Game.copy_discounts(), player only): id -> one entry per discounted copy.
 func setup(cards: Array, team_energy: EnergyBar, discounts := {}) -> void:
 	deck = cards.duplicate()
+	hand.clear()
+	hand_disc.clear()
+	discard.clear()
+	_deck_copies.clear()
+	_hand_copies.clear()
+	_discard_copies.clear()
+	_draw_t = 0.0
+	draw_boost_left = 0.0
 	energy = team_energy
 	_disc_pool = discounts.duplicate(true)
+	var unassigned: Dictionary = discounts.duplicate(true)
+	var counts := {}
+	for id in cards:
+		var copy: int = int(counts.get(id, 0)) + 1
+		counts[id] = copy
+		var pool: Array = unassigned.get(id, [])
+		var remaining: int = cards.count(id) - copy + 1
+		var discount: float = float(pool.pop_back()) if not pool.is_empty() and randf() * remaining < pool.size() else 0.0
+		_deck_copies.append({"id": id, "mk": copy if Game.is_mk_card(id) else 0, "discount": discount})
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST   # square pixels for the card icons
 	for n in 2:
@@ -48,14 +69,19 @@ func _draw_card_from_deck() -> bool:
 			return false
 		deck = discard.duplicate()
 		discard.clear()
-		deck.shuffle()
+		_deck_copies = _discard_copies.duplicate()
+		_discard_copies.clear()
+		_deck_copies.shuffle()
+		deck = _deck_copies.map(func(copy): return copy["id"])
+	_sync_hand_copies()
 	var id: String = deck.pop_back()
+	var copy: Dictionary = _deck_copies.pop_back()
 	hand.append(id)
-	# Is this the discounted copy? Copies are interchangeable until drawn, so the odds
-	# are the discounted share of this card's copies outside the hand.
+	_hand_copies.append(copy)
 	var pool: Array = _disc_pool.get(id, [])
-	var outside := deck.count(id) + discard.count(id) + 1
-	hand_disc.append(pool.pop_back() if not pool.is_empty() and randf() * outside < pool.size() else 0.0)
+	if float(copy["discount"]) > 0.0:
+		pool.erase(copy["discount"])
+	hand_disc.append(copy["discount"])
 	_new_fx.append([hand.size() - 1, 0.3])
 	if is_visible_in_tree():
 		Sfx.card_drawn()
@@ -67,7 +93,6 @@ func _cycle() -> void:
 		var i := randi() % hand.size()
 		var id: String = hand[i]
 		_release(i)
-		discard.append(id)
 		_burn_fx.append([id, i, 0.5])
 		if is_visible_in_tree():
 			Sfx.card_burned()
@@ -78,7 +103,7 @@ func _cycle() -> void:
 	_draw_card_from_deck()
 
 func can_play(i: int) -> bool:
-	return i < hand.size() and energy.value >= cost_of(i)
+	return i >= 0 and i < hand.size() and energy.value >= cost_of(i)
 
 ## Energy cost of the card in slot `i`, after this copy's discount.
 func cost_of(i: int) -> float:
@@ -86,17 +111,34 @@ func cost_of(i: int) -> float:
 
 ## Take slot `i` out of the hand; its discount goes back with the copy.
 func _release(i: int) -> void:
+	_sync_hand_copies()
+	discard.append(hand[i])
+	_discard_copies.append(_hand_copies[i])
 	if float(hand_disc[i]) > 0.0:
 		var pool: Array = _disc_pool.get(hand[i], [])
 		pool.append(hand_disc[i])
 		_disc_pool[hand[i]] = pool
 	hand.remove_at(i)
 	hand_disc.remove_at(i)
+	_hand_copies.remove_at(i)
+
+## Keep diagnostic rigs which replace the public hand compatible with physical copies.
+func _sync_hand_copies() -> void:
+	_hand_copies.resize(hand.size())
+	for i in hand.size():
+		if not _hand_copies[i] is Dictionary or _hand_copies[i].get("id", "") != hand[i]:
+			_hand_copies[i] = {"id": hand[i], "mk": i + 1 if Game.is_mk_card(hand[i]) else 0, "discount": hand_disc[i]}
+
+func copy_mark(i: int) -> int:
+	_sync_hand_copies()
+	return int(_hand_copies[i]["mk"]) if i >= 0 and i < hand.size() else 0
+
+func boost_draw() -> void:
+	draw_boost_left = 6.0
 
 ## Discard the whole hand (Recompile).
 func discard_hand() -> void:
 	while not hand.is_empty():
-		discard.append(hand[0])
 		_release(0)
 	armed = -1
 
@@ -109,15 +151,16 @@ func drawing() -> bool:
 
 ## Seconds until the next draw.
 func time_to_draw() -> float:
-	return draw_time - _draw_t
+	var remaining := maxf(draw_time - _draw_t, 0.0)
+	var fast_time := minf(draw_boost_left, remaining / 1.5)
+	return fast_time + maxf(remaining - fast_time * 1.5, 0.0)
 
 ## Remove card `i` from the hand and return its id ("" if the slot is empty).
 func take(i: int) -> String:
-	if i >= hand.size():
+	if i < 0 or i >= hand.size():
 		return ""
 	var id: String = hand[i]
 	_release(i)
-	discard.append(id)
 	_played_fx.append([id, i, 0.35])
 	if armed == i:
 		armed = -1
@@ -133,8 +176,10 @@ func slot_at(local: Vector2) -> int:
 	return -1
 
 func _process(delta: float) -> void:
+	var boosted := minf(delta, draw_boost_left)
+	draw_boost_left = maxf(draw_boost_left - delta, 0.0)
 	if drawing():
-		_draw_t += delta
+		_draw_t += delta + boosted * 0.5
 		if _draw_t >= draw_time:
 			_draw_t = 0.0
 			if hold:
@@ -205,6 +250,8 @@ func _draw() -> void:
 			draw_texture_rect(art, icon, false, Color.WHITE if ok else Color(0.55, 0.55, 0.6))
 		draw_string(cf, r.position + Vector2(2, 10), str(i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(1, 0.85, 0.4))
 		draw_string(cf, r.position + Vector2(6, 56), "%d" % int(cost_of(i)), HORIZONTAL_ALIGNMENT_CENTER, 32, 10, Color(0.45, 0.8, 1.0) if ok else Color(0.9, 0.4, 0.4))
+		if Game.is_mk_card(hand[i]):
+			draw_string(cf, r.position + Vector2(3, 67), Game.mk_label(copy_mark(i)), HORIZONTAL_ALIGNMENT_LEFT, 40, 6, Color(0.8, 0.95, 1.0))
 		# right column: name and rules text
 		var tx := 44.0
 		var name_size := 8 if c["name"].length() > 14 else 10

@@ -67,6 +67,23 @@ var spared := false             # Burning Stars commander: already shrugged off 
 var dug_until := -1.0           # Dig In: tougher and harder-hitting until then (moving ends it)
 var breach_until := -1.0        # Data Breach: shots cost double until then
 var rooted_until := -1.0        # Flash Forward's time debt: can't move until then
+var stunned_until := -1.0       # a blocked forced move prevents movement and shooting
+var alt_ready_at := -1.0        # a lone leader's alternate fire cooldown
+var charging_alt := false
+var flare_until := -1.0
+var overwatch_until := -1.0     # Overwatch: free shots at enemies entering the row...
+var overwatch_left := 0         # ...this many
+var mirror_until := -1.0        # Mirror Shield: the next shot that hits is reflected
+var smoke_until := -1.0
+var calibrate_left := 0
+var free_shots := 0
+var neural_until := -1.0
+var afterglow_until := -1.0
+var lifeline_until := -1.0
+var red_shift_until := -1.0
+var cinder_until := -1.0
+var heal_locked_until := -1.0
+var barnacle_until := -1.0
 
 var _ai_move := 0.0
 var _ai_attack := 0.0
@@ -134,8 +151,20 @@ func move_to(c: int, r: int) -> void:
 	_move_tween = create_tween()
 	_move_tween.tween_property(self, "position", grid.panel_center(c, r), MOVE_TIME).set_ease(Tween.EASE_OUT)
 	sprite.play_land()
+	if grid.has_method("on_unit_entered"):
+		grid.on_unit_entered(self)   # traps, Event Horizon, Overwatch
 
-func take_damage(amount: int) -> void:
+## Incoming card modifiers are shared by attacks, marks, hazards and direct hits.
+func incoming_amount(amount: float) -> float:
+	if grid.time < flare_until:
+		amount *= 1.25
+	if grid.time < lifeline_until:
+		amount = minf(amount, 15.0)
+	return amount
+
+func take_damage(amount: int, already_modified := false) -> void:
+	if not already_modified:
+		amount = int(round(incoming_amount(amount)))
 	if hp <= 0 or amount <= 0:
 		return
 	hp = maxi(hp - amount, 0)
@@ -149,7 +178,7 @@ func take_damage(amount: int) -> void:
 		sprite.play_hit()
 
 func heal(amount: int) -> void:
-	if hp <= 0 or amount <= 0:
+	if hp <= 0 or amount <= 0 or grid.time < heal_locked_until:
 		return
 	hp = mini(hp + amount, max_hp)
 	hp_changed.emit(self)
@@ -278,6 +307,11 @@ func ai_fire_soon(t: float) -> void:
 	_ai_attack = minf(_ai_attack, t)
 
 func _run_ai(delta: float) -> void:
+	if grid.time < stunned_until:
+		_telegraph = 0.0
+		_ai_charging = 0.0
+		grid.charges.erase(get_instance_id())
+		return
 	if _ai_charging > 0.0:
 		_ai_charging -= delta
 		grid.charge_tick(self, delta)
@@ -319,6 +353,9 @@ func _release(ai: Dictionary) -> void:
 		_ai_attack = maxf(_ai_attack, 0.6)
 		return
 	if (alt_primary if _alt_next else primary) == "charge":
+		if _alt_next and grid.time < alt_ready_at:
+			return
+		charging_alt = _alt_next
 		# a 0.8s beam normally; a longer one when the bar can afford it
 		_ai_charging = 1.2 if grid.team_energy[team].value >= 50.0 else 0.8
 	elif _alt_next:
@@ -431,7 +468,7 @@ func _ai_try_attack(ai: Dictionary) -> void:
 	# fire mode: a lone leader uses its squad's weapon when that's what lands
 	_alt_next = false
 	var lands: bool = grid.ai_shot_lands(self)
-	if alt_primary != "" and grid.ai_alt_lands(self) and (not lands or randf() < 0.5) \
+	if alt_primary != "" and grid.time >= alt_ready_at and grid.ai_alt_lands(self) and (not lands or randf() < 0.5) \
 			and grid.team_energy[team].value >= grid.alt_cost(self):
 		_alt_next = true
 		lands = true

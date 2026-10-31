@@ -6,7 +6,7 @@ extends Node
 const SAVE_DIR := "user://saves/"
 const SLOTS := 3
 const SETTINGS_PATH := "user://settings.cfg"
-const VERSION := "Alpha Test Snapshot v0.0.7"
+const VERSION := "Alpha Test Snapshot v0.0.8"
 
 ## Fonts (user's pick, 2026-10-29). Silkscreen is the project default for general UI
 ## text (project.godot gui/theme/custom_font). Press Start 2P: everything on cards,
@@ -72,7 +72,7 @@ const CARDS := {
 	# leader cards (one per squad, 1 copy in the starter deck)
 	"fortify": {"name": "Fortify", "cost": 20.0, "target": "unit", "text": "Selected unit's tile takes half damage, 10s."},
 	"claim": {"name": "Claim", "cost": 35.0, "target": "none", "text": "Take the enemy front column for 10s."},
-	"deploy_drone": {"name": "Deploy Drone", "cost": 30.0, "target": "unit", "text": "Drone in front of the unit; fires down its row."},
+	"deploy_drone": {"name": "Deploy Drone", "cost": 40.0, "target": "unit", "text": "One lasting drone per MK. Replay moves it."},
 	"issue_protocol": {"name": "Issue Protocol", "cost": 25.0, "target": "none", "text": "Enemy rule for 6s: HALT, SILENCE or FORMATION."},
 	"flood": {"name": "Flood", "cost": 30.0, "target": "unit", "text": "Flood your row on the enemy side for 6s."},
 	"spore_bloom": {"name": "Spore Bloom", "cost": 30.0, "target": "unit", "text": "Spreading spores on the enemy side, 9s."},
@@ -90,10 +90,10 @@ const CARDS := {
 	# draftable faction cards (FACTION_CARDS): won in drafts, never in a starter deck
 	"barrage": {"name": "Artillery Barrage", "cost": 28.0, "target": "tile", "text": "Shells hit the tile and the tiles above and below: 14 each."},
 	"hold_the_line": {"name": "Hold the Line", "cost": 22.0, "target": "none", "text": "Your squad takes 30% less damage for 5s."},
-	"requisition": {"name": "Requisition", "cost": 6.0, "target": "none", "text": "Draw a card now."},
+	"requisition": {"name": "Requisition", "cost": 6.0, "target": "none", "text": "Draw 1. Draws 50% faster for 6s."},
 	"target_lock": {"name": "Target Lock", "cost": 14.0, "target": "tile", "text": "Analyze the enemy on the tile (hits on it refund energy)."},
 	"shield_drone": {"name": "Shield Drone", "cost": 22.0, "target": "unit", "text": "Selected unit gets a 30 HP barrier for 10s."},
-	"recompile": {"name": "Recompile", "cost": 8.0, "target": "none", "text": "Discard your hand and draw 3 fresh cards."},
+	"recompile": {"name": "Recompile", "cost": 8.0, "target": "none", "text": "Replace hand. Draws 50% faster for 6s."},
 	"undertow_surge": {"name": "Undertow Surge", "cost": 24.0, "target": "unit", "text": "Push every enemy in your row back one column."},
 	"regrowth": {"name": "Regrowth", "cost": 24.0, "target": "none", "text": "Your squad heals 4 HP/s for 5s."},
 	"mudslide": {"name": "Mudslide", "cost": 22.0, "target": "tile", "text": "Mud on the tile and the tiles above and below, 8s."},
@@ -111,6 +111,48 @@ const CARDS := {
 	"tide_pool": {"name": "Tide Pool", "cost": 22.0, "target": "tile", "text": "Pool on your ground, 10s: your units standing in it heal 5 HP/s."},
 	"flash_forward": {"name": "Flash Forward", "cost": 10.0, "target": "unit", "text": "Leap up to 2 tiles forward, free. Then the unit can't move for 1.5s."},
 	"collapse": {"name": "Collapse", "cost": 20.0, "target": "unit", "text": "The unit falls; every enemy in its row takes half its remaining HP."},
+	# Card set 2: cards using the existing combat systems.
+	"quick_march": {"name": "Quick March", "cost": 12.0, "target": "none", "text": "Refill 2 squad stamina."},
+	"field_repairs": {"name": "Field Repairs", "cost": 14.0, "target": "unit", "text": "Heal 15; +10 if still for 2s."},
+	"spotter_flare": {"name": "Spotter Flare", "cost": 10.0, "target": "tile", "text": "Enemy takes +25% damage, 4s."},
+	"creeping_barrage": {"name": "Creeping Barrage", "cost": 26.0, "target": "tile", "text": "10 per tile down the column, 0.3s apart."},
+	"smoke_screen": {"name": "Smoke Screen", "cost": 16.0, "target": "unit", "text": "4s: enemy shots in its row deal half damage."},
+	"volley_fire": {"name": "Volley Fire", "cost": 26.0, "target": "none", "text": "Every ally fires its primary, free."},
+	"calibrate": {"name": "Calibrate", "cost": 10.0, "target": "unit", "text": "Next 3 shots deal +3."},
+	"efficiency_pass": {"name": "Efficiency Pass", "cost": 10.0, "target": "none", "text": "Each ally's next shot is free."},
+	"signal_jam": {"name": "Signal Jam", "cost": 16.0, "target": "none", "text": "Enemy can't play cards for 5s."},
+	"neural_link": {"name": "Neural Link", "cost": 22.0, "target": "unit", "text": "6s: each hit lands a full mark."},
+	"quarantine": {"name": "Quarantine", "cost": 28.0, "target": "tile", "text": "Contain a 2x2 enemy area, 3s."},
+	"wave_rider": {"name": "Wave Rider", "cost": 8.0, "target": "unit", "text": "Move up/down up to 2 rows, free. Break locks."},
+	"brine_splash": {"name": "Brine Splash", "cost": 12.0, "target": "unit", "text": "Push first row enemy up/down a row."},
+	"sap_poultice": {"name": "Sap Poultice", "cost": 10.0, "target": "unit", "text": "Heal 12 over 3s. Clear tile fire/spores."},
+	"barnacle_shell": {"name": "Barnacle Shell", "cost": 18.0, "target": "unit", "text": "10 barrier; grows 3/s for 5s."},
+	"tsunami": {"name": "Tsunami", "cost": 32.0, "target": "none", "text": "Push all enemies back a column."},
+	"overgrowth": {"name": "Overgrowth", "cost": 28.0, "target": "tile", "text": "Spore patch; starting enemies rooted 2s."},
+	"spare_parts": {"name": "Spare Parts", "cost": 0.0, "target": "unit", "text": "Pay 10 HP: draw 1. Draws 50% faster, 6s."},
+	"slow_burn": {"name": "Slow Burn", "cost": 12.0, "target": "tile", "text": "Set an enemy tile on fire, 6s."},
+	"afterglow": {"name": "Afterglow", "cost": 10.0, "target": "unit", "text": "6s: heal 3 HP each time it fires."},
+	"lifeline": {"name": "Lifeline", "cost": 10.0, "target": "unit", "text": "6s: each hit deals at most 15."},
+	"red_shift": {"name": "Red Shift", "cost": 18.0, "target": "unit", "text": "6s: shots fly 50% faster and deal +3."},
+	"cinder_trail": {"name": "Cinder Trail", "cost": 20.0, "target": "unit", "text": "6s: its hits set enemy tiles on fire."},
+	"second_wind": {"name": "Second Wind", "cost": 0.0, "target": "unit", "text": "Below 30% HP: heal to 50%. No healing for 15s."},
+	"time_debt": {"name": "Time Debt", "cost": 20.0, "target": "none", "text": "Refill twice as fast for 4s, then no refill for 3s."},
+	"heat_death": {"name": "Heat Death", "cost": 36.0, "target": "none", "text": "All lose 20% current HP. Gain half foes' loss as energy."},
+	# Card set 2: cards with new board mechanics.
+	"razor_wire": {"name": "Razor Wire", "cost": 14.0, "target": "tile", "text": "Wire 8s: an enemy entering takes 10, loses 1 stamina."},
+	"overwatch": {"name": "Overwatch", "cost": 18.0, "target": "unit", "text": "5s: free shot at each enemy entering its row (max 3)."},
+	"annex": {"name": "Annex", "cost": 28.0, "target": "tile", "text": "Claim an enemy tile by your ground until replayed."},
+	"orbital_strike": {"name": "Orbital Strike", "cost": 40.0, "target": "tile", "text": "After 1.5s: 45 to the tile, 15 to each neighbour."},
+	"pulse_mine": {"name": "Pulse Mine", "cost": 12.0, "target": "tile", "text": "Mine 10s: 15 to the first enemy stepping on it."},
+	"holo_decoy": {"name": "Holo Decoy", "cost": 12.0, "target": "tile", "text": "Decoy on your tile 6s: blocks a shot, draws fire."},
+	"mirror_shield": {"name": "Mirror Shield", "cost": 20.0, "target": "unit", "text": "5s: reflects the next shot that hits it."},
+	"phase_shift": {"name": "Phase Shift", "cost": 14.0, "target": "unit", "text": "Swap with your decoy, drone or last ally. Breaks locks."},
+	"perfect_model": {"name": "Perfect Model", "cost": 36.0, "target": "none", "text": "6s: squad shots seek the nearest row and deal +4."},
+	"thornvine": {"name": "Thornvine", "cost": 14.0, "target": "tile", "text": "Thorns 6s: 4/s to an enemy standing there."},
+	"maelstrom": {"name": "Maelstrom", "cost": 24.0, "target": "tile", "text": "4s: each second, adjacent enemies are pulled 1 closer."},
+	"pollen_cloud": {"name": "Pollen Cloud", "cost": 18.0, "target": "tile", "text": "Tile and above/below: enemies deal 30% less, 5s."},
+	"worldshaper": {"name": "Worldshaper", "cost": 40.0, "target": "none", "text": "8s: flood the enemy back column; push them forward."},
+	"event_horizon": {"name": "Event Horizon", "cost": 22.0, "target": "tile", "text": "4s: enemy can't move; enemies stepping beside it are caught."},
 }
 
 ## Each faction's commander (stage 3) fights with a signature doctrine on top of its
@@ -641,6 +683,18 @@ func draft_choices() -> int:
 func card_cost(id: String, _team := 0) -> float:
 	return float(CARDS[id]["cost"])
 
+func is_mk_card(id: String) -> bool:
+	return id in ["deploy_drone", "annex"]
+
+func mk_label(copy: int) -> String:
+	var roman := ""
+	var left := copy
+	for pair in [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]]:
+		while left >= int(pair[0]):
+			roman += pair[1]
+			left -= int(pair[0])
+	return "MK " + roman if copy > 0 else ""
+
 ## Event discounts, one entry per discounted copy: card id -> [energy off, ...].
 ## Never more entries than copies in the deck. (Saves from before 0.0.6 stored one
 ## amount that applied to every copy; it's spread over those copies.)
@@ -1064,6 +1118,14 @@ const RARITY_NAMES := ["Common", "Uncommon", "Rare", "Legendary"]
 const RARITY_COLORS := [Color(0.36, 0.62, 1.0), Color(0.36, 0.86, 0.46), Color(0.72, 0.46, 1.0), Color(1.0, 0.82, 0.26)]
 const RARITY_WEIGHT := [100.0, 55.0, 25.0, 8.0]
 const CARD_RARITY := {
+	"quick_march": 0, "field_repairs": 0, "spotter_flare": 0, "creeping_barrage": 1, "smoke_screen": 1, "volley_fire": 2,
+	"calibrate": 0, "efficiency_pass": 0, "signal_jam": 1, "neural_link": 2, "quarantine": 2,
+	"wave_rider": 0, "brine_splash": 0, "sap_poultice": 0, "barnacle_shell": 1, "tsunami": 2, "overgrowth": 2,
+	"spare_parts": 0, "slow_burn": 0, "afterglow": 0, "lifeline": 0, "red_shift": 1, "cinder_trail": 1, "second_wind": 2, "time_debt": 2, "heat_death": 3,
+	"razor_wire": 0, "overwatch": 1, "annex": 2, "orbital_strike": 3,
+	"pulse_mine": 0, "holo_decoy": 0, "mirror_shield": 1, "phase_shift": 1, "perfect_model": 3,
+	"thornvine": 0, "maelstrom": 1, "pollen_cloud": 1, "worldshaper": 3,
+	"event_horizon": 1,
 	# Terran
 	"requisition": 0, "supply_drop": 0,
 	"barrage": 1, "hold_the_line": 1, "suppressing_fire": 1,
@@ -1126,10 +1188,10 @@ func weighted_card(pool: Array, exclude := []) -> String:
 
 ## Cards a faction offers in drafts beyond its starters and leader cards.
 const FACTION_CARDS := {
-	"terran": ["barrage", "hold_the_line", "requisition", "suppressing_fire", "supply_drop", "dig_in"],
-	"ascendancy": ["target_lock", "shield_drone", "recompile", "firewall", "data_breach"],
-	"manyworlds": ["undertow_surge", "regrowth", "mudslide", "mycelial_link", "tide_pool"],
-	"long": ["last_stand", "burn_bright", "echo_strike", "supernova", "flash_forward", "collapse"],
+	"terran": ["barrage", "hold_the_line", "requisition", "suppressing_fire", "supply_drop", "dig_in", "quick_march", "field_repairs", "spotter_flare", "creeping_barrage", "smoke_screen", "volley_fire", "razor_wire", "overwatch", "annex", "orbital_strike"],
+	"ascendancy": ["target_lock", "shield_drone", "recompile", "firewall", "data_breach", "calibrate", "efficiency_pass", "signal_jam", "neural_link", "quarantine", "pulse_mine", "holo_decoy", "mirror_shield", "phase_shift", "perfect_model"],
+	"manyworlds": ["undertow_surge", "regrowth", "mudslide", "mycelial_link", "tide_pool", "wave_rider", "brine_splash", "sap_poultice", "barnacle_shell", "tsunami", "overgrowth", "thornvine", "maelstrom", "pollen_cloud", "worldshaper"],
+	"long": ["last_stand", "burn_bright", "echo_strike", "supernova", "flash_forward", "collapse", "spare_parts", "slow_burn", "afterglow", "lifeline", "red_shift", "cinder_trail", "second_wind", "time_debt", "heat_death", "event_horizon"],
 }
 
 ## Battle won: record the squad's HP (it carries over within a sector), roll the

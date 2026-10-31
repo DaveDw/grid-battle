@@ -1,0 +1,1441 @@
+{
+  "quick_march": {
+    "faction": "terran",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#39414e",
+      "#66717d",
+      "#a74724",
+      "#c4ced3",
+      "#e8742a",
+      "#ffb65c"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      4,
+      30,
+      28
+    ],
+    "sha256": "ca52a8f2db8c3f2ba62e619a0f5779412a447210dc383f0df36613de5155e5c2",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "field_repairs": {
+    "faction": "terran",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#39414e",
+      "#66717d",
+      "#a74724",
+      "#c4ced3",
+      "#e8742a",
+      "#ffb65c"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      2,
+      31,
+      29
+    ],
+    "sha256": "a69cdffc3d1d4b9488b003572082de5c33ecb51b7b06f381add1641de9c5fac1",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "spotter_flare": {
+    "faction": "terran",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#39414e",
+      "#66717d",
+      "#a74724",
+      "#c4ced3",
+      "#e8742a",
+      "#ffb65c"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      1,
+      31,
+      30
+    ],
+    "sha256": "0ec8a366982c91bb4d6e18b3f662e9a43e67c3b2257e52395e8883db99c2c548",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "razor_wire": {
+    "faction": "terran",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#39414e",
+      "#66717d",
+      "#a74724",
+      "#c4ced3",
+      "#e8742a",
+      "#ffb65c"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      9,
+      30,
+      29
+    ],
+    "sha256": "b62d2cf9ba6892bd275faac5d2cb1e3e48752bc534383ec86d145188800be610",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "creeping_barrage": {
+    "faction": "terran",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#39414e",
+      "#66717d",
+      "#a74724",
+      "#c4ced3",
+      "#e8742a",
+      "#ffb65c"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      1,
+      1,
+      25,
+      30
+    ],
+    "sha256": "417334f498e59374188a96be73bd010dfe54c27332192263d8137ad442ea5ffc",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "overwatch": {
+    "faction": "terran",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#39414e",
+      "#66717d",
+      "#a74724",
+      "#c4ced3",
+      "#e8742a",
+      "#ffb65c"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      1,
+      4,
+      31,
+      28
+    ],
+    "sha256": "837190739f3ec943b08612a2db26a779a79994213428f5b2c843c425b5de8a25",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "smoke_screen": {
+    "faction": "terran",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#39414e",
+      "#66717d",
+      "#a74724",
+      "#c4ced3",
+      "#e8742a",
+      "#ffb65c"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      1,
+      31,
+      31
+    ],
+    "sha256": "da52e55ee38ddade4318791706d5abc090f3cb919da8d91bf6e1436cbbe7b7b7",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "volley_fire": {
+    "faction": "terran",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#39414e",
+      "#66717d",
+      "#a74724",
+      "#c4ced3",
+      "#e8742a",
+      "#ffb65c"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      1,
+      31,
+      30
+    ],
+    "sha256": "e98955d6f7c6c6ecb9e26d00f38cf3fad9f43a8ad5a24e99983b2b8c9fee2eb4",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "annex": {
+    "faction": "terran",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#39414e",
+      "#66717d",
+      "#a74724",
+      "#c4ced3",
+      "#e8742a",
+      "#ffb65c"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      2,
+      31,
+      30
+    ],
+    "sha256": "0779053c6e2bdff28ba259421f816ae1de5eeba6f13bb41625b7454387262d90",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "orbital_strike": {
+    "faction": "terran",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#39414e",
+      "#66717d",
+      "#a74724",
+      "#c4ced3",
+      "#e8742a",
+      "#ffb65c"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      1,
+      31,
+      31
+    ],
+    "sha256": "ce9300134aa71501aa845a751e1b60dcb0afb475b32583e983ae9b1c5d001632",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "calibrate": {
+    "faction": "ascendancy",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#1b8798",
+      "#38d6e8",
+      "#5a6470",
+      "#9aa6b0",
+      "#b4f6ff",
+      "#e8eef2"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      3,
+      4,
+      31,
+      29
+    ],
+    "sha256": "711da6bd01cf087b9cdd53476e2d932b26b5f209ae6cb5c53657590e61054472",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "efficiency_pass": {
+    "faction": "ascendancy",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#1b8798",
+      "#38d6e8",
+      "#5a6470",
+      "#9aa6b0",
+      "#b4f6ff",
+      "#e8eef2"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      3,
+      6,
+      29,
+      26
+    ],
+    "sha256": "177a27ac9db0d515e7b48177fc8353f7dee1fc8a598b649bf57a1b21aabec52e",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "pulse_mine": {
+    "faction": "ascendancy",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#1b8798",
+      "#38d6e8",
+      "#5a6470",
+      "#9aa6b0",
+      "#b4f6ff",
+      "#e8eef2"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      3,
+      4,
+      30,
+      28
+    ],
+    "sha256": "9859359b4927496bacd02adf1e6d00025e4f14dd8d99bd69495fd6a7d5905c6c",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "holo_decoy": {
+    "faction": "ascendancy",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#1b8798",
+      "#38d6e8",
+      "#5a6470",
+      "#9aa6b0",
+      "#b4f6ff",
+      "#e8eef2"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      6,
+      2,
+      27,
+      30
+    ],
+    "sha256": "3ee998ed96ccd72153fccb476eececcd1586616422c530ca19477a4d852f8080",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "signal_jam": {
+    "faction": "ascendancy",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#1b8798",
+      "#38d6e8",
+      "#5a6470",
+      "#9aa6b0",
+      "#b4f6ff",
+      "#e8eef2"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      1,
+      30,
+      31
+    ],
+    "sha256": "03a8d38f2613bae80636c6dd93e8fa0eb9a5b54c419088be6d64136665502195",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "mirror_shield": {
+    "faction": "ascendancy",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#1b8798",
+      "#38d6e8",
+      "#5a6470",
+      "#9aa6b0",
+      "#b4f6ff",
+      "#e8eef2"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      1,
+      2,
+      31,
+      30
+    ],
+    "sha256": "82be2026828a9a605648777f51651895362ffb24cfe613bd4cabe94cdaa04c36",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "phase_shift": {
+    "faction": "ascendancy",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#1b8798",
+      "#38d6e8",
+      "#5a6470",
+      "#9aa6b0",
+      "#b4f6ff",
+      "#e8eef2"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      1,
+      31,
+      31
+    ],
+    "sha256": "0ddad511fac60a2248af8f6d7088cbf6440167e65ea00d14a46b7c0a8c013b90",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "neural_link": {
+    "faction": "ascendancy",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#1b8798",
+      "#38d6e8",
+      "#5a6470",
+      "#9aa6b0",
+      "#b4f6ff",
+      "#e8eef2"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      4,
+      3,
+      30,
+      31
+    ],
+    "sha256": "283faf26d1eb921806f0bec57b8a0eafd06f4974b05a34621dae2a3d513e220b",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "quarantine": {
+    "faction": "ascendancy",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#1b8798",
+      "#38d6e8",
+      "#5a6470",
+      "#9aa6b0",
+      "#b4f6ff",
+      "#e8eef2"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      2,
+      30,
+      30
+    ],
+    "sha256": "9f0369a98d538a478bf9738ed1267312d87f6b26fbce9ba72957347fa8cfc1ee",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "perfect_model": {
+    "faction": "ascendancy",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#1b8798",
+      "#38d6e8",
+      "#5a6470",
+      "#9aa6b0",
+      "#b4f6ff",
+      "#e8eef2"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      1,
+      1,
+      31,
+      30
+    ],
+    "sha256": "64293142434b165e6f35222350677797c3cc8fc76fcc787f0791564059fb22fa",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "wave_rider": {
+    "faction": "manyworlds",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#217a5a",
+      "#3fbf8a",
+      "#553591",
+      "#8a5cd6",
+      "#9cf0c4",
+      "#c7a6ff"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      2,
+      30,
+      30
+    ],
+    "sha256": "e898d66a2c40571cdaeb11719658037b1ab853e616bd225f90349b2cb652c021",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "brine_splash": {
+    "faction": "manyworlds",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#217a5a",
+      "#3fbf8a",
+      "#553591",
+      "#8a5cd6",
+      "#9cf0c4",
+      "#c7a6ff"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      3,
+      31,
+      29
+    ],
+    "sha256": "3f41f5d6663ebebd434a49cb7eb9ed18824e0de593c22966ee2d6ef5dde821e3",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "thornvine": {
+    "faction": "manyworlds",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#217a5a",
+      "#3fbf8a",
+      "#553591",
+      "#8a5cd6",
+      "#9cf0c4",
+      "#c7a6ff"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      1,
+      30,
+      30
+    ],
+    "sha256": "ff48446870d3febbeeefe4410197aae5a15968a64b35be2ae58e9d96ac070887",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "sap_poultice": {
+    "faction": "manyworlds",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#217a5a",
+      "#3fbf8a",
+      "#553591",
+      "#8a5cd6",
+      "#9cf0c4",
+      "#c7a6ff"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      4,
+      3,
+      29,
+      30
+    ],
+    "sha256": "bf6479c27edf5cdc0d90e6aa54380feba18de9b1b6eb888284f6d0a052e0714c",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "maelstrom": {
+    "faction": "manyworlds",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 6,
+    "colours": [
+      "#14161f",
+      "#217a5a",
+      "#3fbf8a",
+      "#8a5cd6",
+      "#9cf0c4",
+      "#c7a6ff"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      1,
+      3,
+      31,
+      30
+    ],
+    "sha256": "14b570291f0f554bd66035aafb0b9131b3ab8f3d10c56b0bf3dd1585992a9fb3",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "pollen_cloud": {
+    "faction": "manyworlds",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#217a5a",
+      "#3fbf8a",
+      "#553591",
+      "#8a5cd6",
+      "#9cf0c4",
+      "#c7a6ff"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      1,
+      30,
+      30
+    ],
+    "sha256": "876aaa7e4e53f6b575f5fe6d15cad7ed35df722891691c293a353fafa17290c5",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "barnacle_shell": {
+    "faction": "manyworlds",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#217a5a",
+      "#3fbf8a",
+      "#553591",
+      "#8a5cd6",
+      "#9cf0c4",
+      "#c7a6ff"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      3,
+      30,
+      31
+    ],
+    "sha256": "44b535472fa23afe206aa36917dc6cccf524f7b95904d26cccb9cf0268f3c53a",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "tsunami": {
+    "faction": "manyworlds",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#217a5a",
+      "#3fbf8a",
+      "#553591",
+      "#8a5cd6",
+      "#9cf0c4",
+      "#c7a6ff"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      1,
+      6,
+      31,
+      31
+    ],
+    "sha256": "ddf09afa7cad8cde39fa1099a99b25a0940d0ffa82a7d16be4fdb96a820c0347",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "overgrowth": {
+    "faction": "manyworlds",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#217a5a",
+      "#3fbf8a",
+      "#553591",
+      "#8a5cd6",
+      "#9cf0c4",
+      "#c7a6ff"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      2,
+      31,
+      31
+    ],
+    "sha256": "86109a349c1c79cb4757a5c77e5742cb31cae60cb99b1816fed3e364d74b6bdb",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "worldshaper": {
+    "faction": "manyworlds",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#217a5a",
+      "#3fbf8a",
+      "#523822",
+      "#8a6440",
+      "#9cf0c4",
+      "#b8935e"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      1,
+      31,
+      31
+    ],
+    "sha256": "818ee4c66a7a3b040d67e2253f96eb82dc06b7495e9968a183df10993d0c23b6",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "spare_parts": {
+    "faction": "long",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#8c2a26",
+      "#9a7226",
+      "#e04a3a",
+      "#e8b84a",
+      "#ff8f6e",
+      "#ffe39a"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      1,
+      2,
+      31,
+      29
+    ],
+    "sha256": "cccfe7c3d688778e7c2dda6ab00eb2794cdf869047b3e53fc3e3cea7159c0dc7",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "slow_burn": {
+    "faction": "long",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#8c2a26",
+      "#9a7226",
+      "#e04a3a",
+      "#e8b84a",
+      "#ff8f6e",
+      "#ffe39a"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      7,
+      30,
+      30
+    ],
+    "sha256": "f78d58eab41c0ce5e4bbdddf21b5a921272552fb9c6f78322e1c9be2a1f28f76",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "afterglow": {
+    "faction": "long",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#8c2a26",
+      "#9a7226",
+      "#e04a3a",
+      "#e8b84a",
+      "#ff8f6e",
+      "#ffe39a"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      2,
+      31,
+      30
+    ],
+    "sha256": "def3a55ed160f9c068afa95ffb0f237cdbd58f64b868143ca13a342aed09fe10",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "lifeline": {
+    "faction": "long",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#8c2a26",
+      "#9a7226",
+      "#e04a3a",
+      "#e8b84a",
+      "#ff8f6e",
+      "#ffe39a"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      2,
+      31,
+      31
+    ],
+    "sha256": "d6dfbd470586f412732d8588a476292386e18a0541b35e4e56b9804026dfc4c2",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "red_shift": {
+    "faction": "long",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#8c2a26",
+      "#9a7226",
+      "#e04a3a",
+      "#e8b84a",
+      "#ff8f6e",
+      "#ffe39a"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      1,
+      2,
+      31,
+      30
+    ],
+    "sha256": "1d56d2fce60948ba482d7b0441b8a9e5179d2688f6c122148907f069c41f7dd8",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "cinder_trail": {
+    "faction": "long",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#8c2a26",
+      "#9a7226",
+      "#e04a3a",
+      "#e8b84a",
+      "#ff8f6e",
+      "#ffe39a"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      1,
+      2,
+      31,
+      31
+    ],
+    "sha256": "2cf636d24eac1f0d470f8e9605baa652f18f4a757a23b60027aaeeea402bedd4",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "event_horizon": {
+    "faction": "long",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#3b2170",
+      "#6e40b8",
+      "#9a7226",
+      "#a983ea",
+      "#e8b84a",
+      "#ffe39a"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      2,
+      30,
+      30
+    ],
+    "sha256": "d3691b4a8517873601d6b4762b23dc4bfee87322d16e9d5b1a3afaa9e4fa627c",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "second_wind": {
+    "faction": "long",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#8c2a26",
+      "#9a7226",
+      "#e04a3a",
+      "#e8b84a",
+      "#ff8f6e",
+      "#ffe39a"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      2,
+      2,
+      31,
+      30
+    ],
+    "sha256": "02b656b233c1d31d992c75aaf679b5f0dbbe7d69cd600d4ca3a9efe87ebcccc4",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "time_debt": {
+    "faction": "long",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#3b2170",
+      "#6e40b8",
+      "#9a7226",
+      "#a983ea",
+      "#e8b84a",
+      "#ffe39a"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      3,
+      2,
+      31,
+      30
+    ],
+    "sha256": "d6c5bc613455a48353561e0f2d332d06ae9b314f552c55b39d63ce053a6faace",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  },
+  "heat_death": {
+    "faction": "long",
+    "size": [
+      32,
+      32
+    ],
+    "colour_count": 7,
+    "colours": [
+      "#14161f",
+      "#8c2a26",
+      "#9a7226",
+      "#e04a3a",
+      "#e8b84a",
+      "#ff8f6e",
+      "#ffe39a"
+    ],
+    "alpha_values": [
+      0,
+      255
+    ],
+    "alpha_only_0_255": true,
+    "palette_valid": true,
+    "outline_1px_valid": true,
+    "border_clear": true,
+    "nearest_neighbor_4x": true,
+    "content_bbox": [
+      3,
+      3,
+      30,
+      29
+    ],
+    "sha256": "9e818b147f95dbec9e6a947c32f10fd8eb53ac8ddf3e5fcc8257348765f62b87",
+    "pass": true,
+    "identical_to_existing": [],
+    "identical_existing_silhouette": []
+  }
+}

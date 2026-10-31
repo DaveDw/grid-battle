@@ -1,0 +1,34 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS RULE MK copies: both teams, independent lasting drones, stable marks and discounts on reshuffle
+PASS RULE card movement: both teams escape fields, roots and mud without stamina
+PASS RULE draw boost: Requisition/Recompile draw at 1.5x for exactly 6s, both teams
+PASS RULE alternate fire: 1.5s cooldown, charge release, energy protection and HUD hint
+PASS RULE blocked push: 8 HP, 0.5s stun, movement/fire blocked then restored, both teams
+PASS CARD quick_march: main effect and limits, both teams
+PASS CARD field_repairs: main effect and limits, both teams
+PASS CARD spotter_flare: main effect and limits, both teams
+PASS CARD creeping_barrage: main effect and limits, both teams
+PASS CARD smoke_screen: main effect and limits, both teams
+PASS CARD volley_fire: main effect and limits, both teams
+PASS CARD calibrate: main effect and limits, both teams
+PASS CARD efficiency_pass: main effect and limits, both teams
+PASS CARD signal_jam: main effect and limits, both teams
+PASS CARD neural_link: main effect and limits, both teams
+PASS CARD quarantine: main effect and limits, both teams
+PASS CARD wave_rider: main effect and limits, both teams
+PASS CARD brine_splash: main effect and limits, both teams
+PASS CARD sap_poultice: main effect and limits, both teams
+PASS CARD barnacle_shell: main effect and limits, both teams
+PASS CARD tsunami: main effect and limits, both teams
+PASS CARD overgrowth: main effect and limits, both teams
+PASS CARD spare_parts: main effect and limits, both teams
+PASS CARD slow_burn: main effect and limits, both teams
+PASS CARD afterglow: main effect and limits, both teams
+PASS CARD lifeline: main effect and limits, both teams
+PASS CARD red_shift: main effect and limits, both teams
+PASS CARD cinder_trail: main effect and limits, both teams
+PASS CARD second_wind: main effect and limits, both teams
+PASS CARD time_debt: main effect and limits, both teams
+PASS CARD heat_death: main effect and limits, both teams
+FAILS 0

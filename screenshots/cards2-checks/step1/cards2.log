@@ -1,0 +1,8 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS RULE MK copies: both teams, independent lasting drones, stable marks and discounts on reshuffle
+PASS RULE card movement: both teams escape fields, roots and mud without stamina
+PASS RULE draw boost: Requisition/Recompile draw at 1.5x for exactly 6s, both teams
+PASS RULE alternate fire: 1.5s cooldown, charge release, energy protection and HUD hint
+PASS RULE blocked push: 8 HP, 0.5s stun, movement/fire blocked then restored, both teams
+FAILS 0

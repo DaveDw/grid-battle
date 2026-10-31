@@ -1,0 +1,19 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 591.86 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 4070 Ti SUPER
+
+PASS the only leader copy is locked
+PASS an extra leader copy can be dropped
+PASS dropping it leaves one, locked again
+PASS a discount covers one copy (of 3)
+PASS a second discount picks another copy
+PASS removing a copy takes an undiscounted one first
+PASS with fewer copies than discounts, the best one stays
+PASS old saves (one amount for all copies) keep it on every copy
+PASS a draft drop can remove an extra leader copy
+PASS a 3-copy hand has exactly one discounted copy [12.0, 7.0, 12.0]
+PASS the discount returns with its copy
+PASS first card drawn is the discounted one about 1 time in 3 (70 / 200)
+first shot at 0.00, last shot at 0.15, battle time now 0.30
+PASS Echo Strike doubles the shots (1 -> 2)
+PASS the echo is free (8 vs 8 energy)
+FAILS 0

@@ -48,6 +48,7 @@ const OVERHEAT_SELF_DMG := 2
 const PROTOCOL_PENALTY := 10
 const DRONE_DMG := 4
 const DRONE_INTERVAL := 1.5
+const ALT_COOLDOWN := 1.5
 const SPORE_DPS := 4
 const MEDPOD_HPS := 6.0
 
@@ -93,13 +94,24 @@ var mires := {}                 # Vector2i -> until
 var crates := {}                # Vector2i -> {team, until} (Supply Drop)
 var pools := {}                 # Vector2i -> {team, until} (Tide Pool)
 var barricades: Array = []      # {team, row, x, hits, until} (Sandbags)
-var drones: Array = [{}, {}]    # per team: {col, row, next}
+var drones: Array = [{}, {}]    # per team: MK number -> {col, row, next, moved_at}
 var protocol := {}              # {team (who must obey), rule, until}
 var void_orb := {}              # {team (who is bound), until}
 var charges := {}               # unit instance id -> energy poured in
 var booms: Array = []           # [pos, radius, time left, colour]
 var ai := {}                    # enemy tuning for this stage (Game.ai_params)
 var guard_until := [-1.0, -1.0] # Hold the Line, per team
+var card_jam_until := [-1.0, -1.0]
+# card set 2 board effects
+var traps := {}                 # Vector2i -> {kind: wire / mine / thorn, team (caster), until, next}
+var strikes: Array = []         # Orbital Strike: {team, tile, at}
+var whirls: Array = []          # Maelstrom: {team, tile, until, next}
+var pollens: Array = []         # Pollen Cloud: {team (caster), col, row, until}; the row and those beside it
+var horizons: Array = []        # Event Horizon: {team (caster), tile, until}
+var flood_cols: Array = []      # Worldshaper: {team (whose side floods), col, until}
+var decoys: Array = [{}, {}]    # Holo Decoy per team: {col, row, until}
+var perfect_until := [-1.0, -1.0]   # Perfect Model per team
+var last_ally_idx := -1         # the player unit controlled before the current one (Phase Shift)
 var _enemy_card_t := 0.0
 var _combo_card := ""          # enemy: follow-up card queued by a combo (AI_COMBOS)
 var _ai_plans := {}            # enemy: card id -> {value, unit, tile} for this decision
@@ -471,10 +483,14 @@ func unit_at(col: int, row: int) -> Unit:
 			return u
 	return null
 
-func drone_at(col: int, row: int) -> bool:
-	for d in drones:
-		if not d.is_empty() and d["col"] == col and d["row"] == row:
-			return true
+func drone_at(col: int, row: int, ignore_team := -1, ignore_copy := -1) -> bool:
+	for team in 2:
+		for copy in drones[team]:
+			if team == ignore_team and int(copy) == ignore_copy:
+				continue
+			var d: Dictionary = drones[team][copy]
+			if d["col"] == col and d["row"] == row:
+				return true
 	return false
 
 ## Does `team` hold tile (c, r) right now? Base columns, then Claim's column, then
@@ -514,6 +530,13 @@ func _connected_ground(team: int) -> Dictionary:
 				queue.append(n)
 	return seen
 
+## Worldshaper: is `col` on `team`'s side flooded?
+func flooded_col(team: int, col: int) -> bool:
+	return flood_cols.any(func(f): return f["team"] == team and f["col"] == col)
+
+func decoy_at(col: int, row: int) -> bool:
+	return decoys.any(func(d): return not d.is_empty() and d["col"] == col and d["row"] == row)
+
 func flooded(team: int, row: int) -> bool:
 	for f in floods:
 		if f["team"] == team and f["row"] == row:
@@ -524,9 +547,9 @@ func flooded(team: int, row: int) -> bool:
 func can_move(u: Unit, col: int, row: int) -> bool:
 	if not in_grid(Vector2i(col, row)):
 		return false
-	if not standable(u.team, col, row) or flooded(u.team, row):
+	if not standable(u.team, col, row) or flooded(u.team, row) or flooded_col(u.team, col):
 		return false
-	return unit_at(col, row) == null and not drone_at(col, row)
+	return unit_at(col, row) == null and not drone_at(col, row) and not decoy_at(col, row)
 
 ## After ground changes hands: anyone left on ground their team no longer holds is
 ## pushed back to the nearest tile they can stand on.
@@ -541,6 +564,8 @@ func active_unit() -> Unit:
 func _set_active(i: int) -> void:
 	if active_idx < player_units.size() and charges.has(player_units[active_idx].get_instance_id()):
 		release_charge(player_units[active_idx])
+	if i != active_idx:
+		last_ally_idx = active_idx
 	active_idx = i
 	for k in player_units.size():
 		player_units[k].set_active(k == i)
@@ -614,7 +639,8 @@ func _player_input(delta: float) -> void:
 	if u.alt_primary == "charge":
 		if Input.is_action_just_pressed("swap_next") and energy.value < 1.0:
 			energy.deny()
-		elif Input.is_action_pressed("swap_next"):
+		elif Input.is_action_pressed("swap_next") and time >= u.alt_ready_at:
+			u.charging_alt = true
 			charge_tick(u, delta)
 		elif charges.has(u.get_instance_id()):
 			release_charge(u)
@@ -649,7 +675,7 @@ func select_card(i: int) -> void:
 		confirm_aim()
 		return
 	var id: String = hand.hand[i]
-	if Game.CARDS[id]["target"] != "tile":
+	if Game.CARDS[id]["target"] != "tile" and id != "wave_rider":
 		cancel_aim()
 		play_card(0, i)
 		return
@@ -676,6 +702,8 @@ func cancel_aim() -> void:
 ## row; other tile cards -> the nearest enemy (by row).
 func _default_aim(id: String) -> Vector2i:
 	var u := active_unit()
+	if id == "wave_rider":
+		return _wave_destination(u)
 	if id in OWN_GROUND_CARDS:
 		return Vector2i(u.col, u.row)
 	if id == "stake_claim":
@@ -753,7 +781,7 @@ func _tile_at(screen: Vector2) -> Vector2i:
 func try_move(u: Unit, dir: Vector2i) -> bool:
 	var c := u.col + dir.x
 	var r := u.row + dir.y
-	if not u.is_alive() or not can_move(u, c, r):
+	if not u.is_alive() or time < u.stunned_until or not can_move(u, c, r):
 		return false
 	var here := Vector2i(u.col, u.row)
 	if time < u.rooted_until:
@@ -812,9 +840,10 @@ func _void_drag(mover: Unit) -> void:
 					seen[n] = true
 					queue.append(n)
 		if goal.x >= 0:
-			v.move_to(goal.x, goal.y)
-			v.forced_at = time
+			force_move(v, goal)
 			dragged += 1
+		else:
+			_blocked_push(v)
 	team_stamina[mover.team].force_spend(dragged)
 
 func _cheb(a: Unit, b: Unit) -> int:
@@ -837,12 +866,49 @@ func _push_to_nearest(u: Unit, prefer_rows := false) -> void:
 					best_d = d
 					best = Vector2i(c, r)
 	if best.x >= 0:
-		u.move_to(best.x, best.y)
-		u.forced_at = time
+		force_move(u, best)
+	else:
+		_blocked_push(u)
+
+## All forced moves use the same collision penalty, without paying voluntary stamina.
+func force_move(u: Unit, tile: Vector2i) -> bool:
+	if not u.is_alive():
+		return false
+	if tile == Vector2i(u.col, u.row) or not can_move(u, tile.x, tile.y):
+		_blocked_push(u)
+		return false
+	u.move_to(tile.x, tile.y)
+	u.forced_at = time
+	u.last_moved_at = time
+	u.dug_until = -1.0
+	return true
+
+func _blocked_push(u: Unit) -> void:
+	u.stunned_until = maxf(u.stunned_until, time + 0.5)
+	u._telegraph = 0.0
+	u._ai_charging = 0.0
+	charges.erase(u.get_instance_id())
+	u.take_damage(8)
+	_popup(u.position + Vector2(0, -u.sprite.height * 0.6), "8 / STUN", Color(1.0, 0.7, 0.3))
+
+## Card movement bypasses tile locks and mud costs, never ownership or occupancy.
+func break_movement_locks(u: Unit) -> void:
+	u.rooted_until = -1.0
+
+func card_move(u: Unit, tile: Vector2i) -> bool:
+	if not u.is_alive() or not can_move(u, tile.x, tile.y):
+		return false
+	break_movement_locks(u)
+	u.move_to(tile.x, tile.y)
+	u.last_moved_at = time
+	u.dug_until = -1.0
+	return true
 
 # --- primary fire --------------------------------------------------------------------
 
 func primary_cost(u: Unit) -> float:
+	if u.free_shots > 0:
+		return 0.0
 	var cost: float
 	match u.primary:
 		"mortar": cost = MORTAR_COST
@@ -860,7 +926,7 @@ func primary_cost(u: Unit) -> float:
 	return cost * 0.5 if time < u.overclock_until else cost
 
 func is_jammed(u: Unit) -> bool:
-	return time >= u.overclock_until and time < u.jam_until
+	return time < u.stunned_until or (time >= u.overclock_until and time < u.jam_until)
 
 func can_afford_primary(u: Unit) -> bool:
 	return not is_jammed(u) and team_energy[u.team].value >= primary_cost(u)
@@ -877,6 +943,7 @@ func fire_primary(u: Unit, free := false) -> bool:
 	var dir := 1 if u.team == 0 else -1
 	var muzzle := u.position + u.sprite.muzzle_point()
 	var dmg: int = Game.ROLES[u.role]["shot_dmg"]
+	var first_shot := shots.size()
 	match u.primary:
 		"mortar":
 			var tc := clampi(u.col + MORTAR_RANGE * dir, 0, COLS - 1)
@@ -915,13 +982,14 @@ func fire_primary(u: Unit, free := false) -> bool:
 				shots.append(g)
 		_:
 			shots.append(_bullet(u, muzzle, u.row, dmg))
+	_prepare_new_shots(u, first_shot)
 	_on_fired(u)
 	u.sprite.play_attack()
 	return true
 
 ## A lone leader's alternate fire: its squad's primary, with that unit's shot numbers.
 func fire_alt(u: Unit) -> bool:
-	if u.alt_primary == "" or u.alt_primary == "charge":
+	if u.alt_primary == "" or u.alt_primary == "charge" or time < u.alt_ready_at:
 		return false
 	var keep := [u.primary, u.role]
 	u.primary = u.alt_primary
@@ -929,6 +997,8 @@ func fire_alt(u: Unit) -> bool:
 	var ok := fire_primary(u)
 	u.primary = keep[0]
 	u.role = keep[1]
+	if ok:
+		u.alt_ready_at = time + ALT_COOLDOWN
 	return ok
 
 ## Energy one alternate shot costs.
@@ -945,14 +1015,42 @@ func alt_cost(u: Unit) -> float:
 func _on_fired(u: Unit) -> void:
 	Sfx.unit_fire(u)
 	u.last_fired_at = time
+	u.calibrate_left = maxi(u.calibrate_left - 1, 0)
+	u.free_shots = maxi(u.free_shots - 1, 0)
 	if _protocol_on(u.team) and protocol["rule"] == "SILENCE":
 		_break_protocol(u)
 	if u.passive == "overheat":
 		u.take_damage(OVERHEAT_SELF_DMG)
 	if u.primary == "ember":
 		u.take_damage(EMBER_SELF_DMG)
+	if time < u.afterglow_until:
+		u.heal(3)
 	if time < u.echo_until and not u.echoing:
 		_echo(u)
+
+## Snapshot outgoing modifiers once per shot; all primary types use this pipeline.
+func _prepare_new_shots(u: Unit, first: int) -> void:
+	for i in range(first, shots.size()):
+		var s: Dictionary = shots[i]
+		s["primary"] = true
+		s["bonus"] = (3 if u.calibrate_left > 0 else 0) + (3 if time < u.red_shift_until else 0)
+		s["dmg"] += s["bonus"]
+		s["cinder"] = time < u.cinder_until
+		s["neural"] = time < u.neural_until
+		if time < u.red_shift_until:
+			if s["kind"] == "mortar":
+				s["rate"] = 1.5
+			else:
+				s["speed"] *= 1.5
+
+func fire_free_primary(u: Unit) -> bool:
+	if not u.is_alive() or is_jammed(u):
+		return false
+	if u.primary != "charge":
+		return fire_primary(u, true)
+	charges[u.get_instance_id()] = maxf(float(charges.get(u.get_instance_id(), 0.0)), CHARGE_RATE * 0.8)
+	release_charge(u)
+	return true
 
 ## Echo Strike: a free copy of the shot just fired, a beat later.
 func _echo(u: Unit) -> void:
@@ -969,9 +1067,20 @@ func _echo(u: Unit) -> void:
 
 func _bullet(src: Unit, from: Vector2, row: int, dmg: int) -> Dictionary:
 	var yb := panel_center(0, row).y
-	return {"kind": "bullet", "team": src.team if src else 0, "src": src, "x": from.x, "yb": yb, "ty": yb,
+	var s := {"kind": "bullet", "team": src.team if src else 0, "src": src, "x": from.x, "yb": yb, "ty": yb,
 		"yo": from.y - panel_center(0, row).y, "dir": 1 if (src == null or src.team == 0) else -1,
 		"dmg": dmg, "speed": SHOT_SPEED, "size": 1.0, "id": _next_shot_id()}
+	# Perfect Model: +4, and the shot curves into the nearest row with a target
+	if src and time < perfect_until[src.team]:
+		s["dmg"] = dmg + 4
+		if not _row_has_target(src.team, row):
+			var best := -1
+			for f in units_of(1 - src.team):
+				if f.is_alive() and (best < 0 or absi(f.row - row) < absi(best - row)):
+					best = f.row
+			if best >= 0:
+				s["ty"] = panel_center(0, best).y
+	return s
 
 func _next_shot_id() -> int:
 	_shot_id += 1
@@ -986,24 +1095,29 @@ func _row_has_target(team: int, row: int) -> bool:
 ## Charge Beam: pour energy in while the button is held (Overclock doubles what each
 ## point of energy is worth; a jammed unit can't charge).
 func charge_tick(u: Unit, delta: float) -> void:
-	if is_jammed(u):
+	if not u.is_alive() or is_jammed(u) or (u.charging_alt and time < u.alt_ready_at):
 		return
-	var got: float = team_energy[u.team].drain(CHARGE_RATE * delta)
+	var got: float = CHARGE_RATE * delta if u.free_shots > 0 else team_energy[u.team].drain(CHARGE_RATE * delta)
 	if time < u.overclock_until:
 		got *= 2.0
 	var id := u.get_instance_id()
-	charges[id] = charges.get(id, 0.0) + got
+	charges[id] = minf(float(charges.get(id, 0.0)) + got, 100.0) if u.free_shots > 0 else float(charges.get(id, 0.0)) + got
 
 func release_charge(u: Unit) -> void:
 	var id := u.get_instance_id()
 	var amt: float = charges.get(id, 0.0)
 	charges.erase(id)
-	if amt < 2.0 or not u.is_alive():
+	var alt := u.charging_alt
+	u.charging_alt = false
+	if amt < 2.0 or not u.is_alive() or is_jammed(u) or (alt and time < u.alt_ready_at):
 		return
+	if alt:
+		u.alt_ready_at = time + ALT_COOLDOWN
 	var s := _bullet(u, u.position + u.sprite.muzzle_point(), u.row, int(round(4 + amt * CHARGE_DMG_PER)))
 	s["size"] = 1.0 + amt / 22.0
 	s["speed"] = SHOT_SPEED * 0.8
 	shots.append(s)
+	_prepare_new_shots(u, shots.size() - 1)
 	u.last_charge = amt
 	_on_fired(u)
 	u.sprite.play_attack()
@@ -1021,13 +1135,13 @@ func _update_shots(delta: float) -> void:
 		var s: Dictionary = shots[i]
 		var done := false
 		if s["kind"] == "mortar":
-			s["t"] += delta
+			s["t"] += delta * float(s.get("rate", 1.0))
 			if s["t"] >= MORTAR_UP + MORTAR_HANG + MORTAR_DOWN:
 				var t := unit_at(s["tc"], s["tr"])
 				var p := panel_center(s["tc"], s["tr"])
 				booms.append([p, 34.0, 0.35, Color(1.0, 0.7, 0.3)])
 				if t and t.team != s["team"]:
-					damage(t, s["dmg"], s["src"])
+					damage(t, s["dmg"], s["src"], s)
 					_shake = 0.15
 				Sfx.shell_land()
 				done = true
@@ -1042,7 +1156,7 @@ func _update_shots(delta: float) -> void:
 					if row + dr >= 0 and row + dr < rows:
 						var b: Dictionary = s.duplicate()
 						b["ty"] = panel_center(0, row + dr).y
-						b["dmg"] = REFRACT_SPLIT_DMG
+						b["dmg"] = REFRACT_SPLIT_DMG + int(s.get("bonus", 0))
 						b["size"] = 0.9
 						spawned.append(b)
 			# Sandbags soak enemy shots in their row
@@ -1076,12 +1190,10 @@ func _update_shots(delta: float) -> void:
 
 func _bullet_hit(s: Dictionary, t: Unit) -> void:
 	var src = s["src"] if s["src"] and is_instance_valid(s["src"]) else null
-	damage(t, s["dmg"], src)
+	damage(t, s["dmg"], src, s)
 	if s.get("push", false) and t.is_alive():
 		var c: int = t.col + s["dir"]
-		if can_move(t, c, t.row):
-			t.move_to(c, t.row)
-			t.forced_at = time
+		force_move(t, Vector2i(c, t.row))
 	if s.get("ember", false):
 		fires[Vector2i(t.col, t.row)] = {"until": time + EMBER_TIME, "next": time + 1.0}
 	if src and src.passive == "steady_aim":
@@ -1093,10 +1205,21 @@ func _bullet_hit(s: Dictionary, t: Unit) -> void:
 # --- damage --------------------------------------------------------------------------
 
 ## All attack damage goes through here so passives, tiles and marks apply.
-func damage(t: Unit, amount: int, src) -> void:
+func damage(t: Unit, amount: int, src, shot: Dictionary = {}) -> void:
 	if not t.is_alive():
 		return
 	var a := float(amount)
+	# Mirror Shield: the next shot that hits is sent back down the row instead
+	if not shot.is_empty() and time < t.mirror_until:
+		t.mirror_until = -1.0
+		shots.append(_bullet(t, t.position + t.sprite.muzzle_point(), t.row, amount))
+		booms.append([t.position + Vector2(0, -t.sprite.height * 0.5), 26.0, 0.3, Color(0.6, 0.95, 1.0)])
+		return
+	if not shot.is_empty() and int(shot.get("team", -1)) != t.team and units_of(t.team).any(func(u): return u.is_alive() and u.row == t.row and time < u.smoke_until):
+		a *= 0.5
+	# Pollen Cloud: a shooter standing in the cloud deals 30% less
+	if src is Unit and is_instance_valid(src) and pollens.any(func(p): return p["team"] != src.team and src.col == p["col"] and absi(src.row - p["row"]) <= 1):
+		a *= 0.7
 	if src:
 		if src.passive == "overheat":
 			a *= 1.5
@@ -1110,6 +1233,7 @@ func damage(t: Unit, amount: int, src) -> void:
 		a *= 0.6   # Dig In
 	if src and time < src.dug_until:
 		a *= 1.25
+	a = t.incoming_amount(a)
 	if t.barrier > 0.0 and time < t.barrier_until:
 		var soak := minf(t.barrier, a)
 		t.barrier -= soak
@@ -1146,26 +1270,29 @@ func damage(t: Unit, amount: int, src) -> void:
 				_popup(u.position + Vector2(0, -u.sprite.height * 0.6), str(share), Color(0.5, 1.0, 0.6))
 		a = share
 	var hp_before := t.hp
-	t.take_damage(int(round(a)))
+	t.take_damage(int(round(a)), true)
+	if shot.get("cinder", false):
+		fires[Vector2i(t.col, t.row)] = {"until": time + EMBER_TIME, "next": time + 1.0}
 	Game.stat("dealt" if t.team == 1 else "taken", hp_before - t.hp)   # no overkill
 	if t.is_alive() and a >= 1.0:
 		Sfx.unit_hit(t)
 	_popup(t.position + Vector2(0, -t.sprite.height * 0.6), str(int(round(a))), Color(1.0, 0.9, 0.5) if t.team == 1 else Color(1.0, 0.5, 0.45))
-	if src and (src.passive == "analysis" or src.passive == "interval_mark") and t.is_alive():
-		_count_mark_hit(src, t)
+	if src and (src.passive in ["analysis", "interval_mark"] or shot.get("neural", false)) and t.is_alive():
+		_count_mark_hit(src, t, shot.get("neural", false))
 
 ## Three hits from the same marker within MARK_WINDOW marks the target.
-func _count_mark_hit(src: Unit, t: Unit) -> void:
+func _count_mark_hit(src: Unit, t: Unit, full := false) -> void:
 	var id := src.get_instance_id()
 	var hits: Array = t.mark_hits.get(id, [])
-	hits.append(time)
+	for n in (MARK_HITS if full else 1):
+		hits.append(time)
 	hits = hits.filter(func(h): return time - h <= MARK_WINDOW)
 	t.mark_hits[id] = hits
 	t.pip_count = hits.size()
-	t.pip_color = Color(0.3, 0.95, 0.9) if src.passive == "analysis" else Color(0.75, 0.45, 1.0)
+	t.pip_color = Color(0.75, 0.45, 1.0) if src.passive == "interval_mark" else Color(0.3, 0.95, 0.9)
 	t.pip_until = time + MARK_WINDOW
 	if hits.size() >= MARK_HITS:
-		var kind := "analysis" if src.passive == "analysis" else "interval"
+		var kind := "interval" if src.passive == "interval_mark" else "analysis"
 		t.marks[kind] = {"until": time + MARK_TIME, "team": src.team, "accum": 0.0}
 		t.mark_hits[id] = []
 		t.pip_count = 0
@@ -1203,12 +1330,16 @@ func _update_units(delta: float) -> void:
 		if u.passive == "shield_up" and not u.shield_up and time - u.last_hit_at >= 6.0:
 			u.shield_up = true
 			u.shield_hits.clear()
-		if time < u.heal_until:
+		if time - delta < u.heal_until:
 			var id := u.get_instance_id()
-			_heal_acc[id] = _heal_acc.get(id, 0.0) + u.heal_rate * delta
-			if _heal_acc[id] >= 1.0:
-				u.heal(int(_heal_acc[id]))
-				_heal_acc[id] -= int(_heal_acc[id])
+			var healing_delta := clampf(u.heal_until - (time - delta), 0.0, delta)
+			_heal_acc[id] = _heal_acc.get(id, 0.0) + u.heal_rate * healing_delta
+			var gained := int(floor(float(_heal_acc[id]) + 0.00001))
+			if gained > 0:
+				u.heal(gained)
+				_heal_acc[id] -= gained
+		if time - delta < u.barnacle_until:
+			u.barrier += 3.0 * clampf(u.barnacle_until - (time - delta), 0.0, delta)
 		if u.passive == "hit_and_run" and team_stamina[u.team].is_full():
 			u.free_moves_used = 0
 		for kind in u.marks.keys():
@@ -1231,6 +1362,7 @@ func _update_units(delta: float) -> void:
 # --- board effects -------------------------------------------------------------------
 
 func _update_board(_delta: float) -> void:
+	_update_set2_board()
 	for k in fortified.keys():
 		if fortified[k] <= time:
 			fortified.erase(k)
@@ -1299,8 +1431,9 @@ func _update_board(_delta: float) -> void:
 	if not void_orb.is_empty() and time >= void_orb["until"]:
 		void_orb = {}
 	for team in 2:
-		var d: Dictionary = drones[team]
-		if not d.is_empty() and time >= d["next"]:
+		for d: Dictionary in drones[team].values():
+			if time < d["next"]:
+				continue
 			d["next"] = time + DRONE_INTERVAL
 			var p := panel_center(d["col"], d["row"]) + Vector2(0, -22)
 			var s := _bullet(null, p, d["row"], DRONE_DMG)
@@ -1333,15 +1466,176 @@ func _break_protocol(u: Unit) -> void:
 
 # --- cards ---------------------------------------------------------------------------
 
+# --- card set 2: board effects ---------------------------------------------------------
+
+## Called by Unit.move_to whenever a unit arrives on a tile.
+func on_unit_entered(u: Unit) -> void:
+	var t := Vector2i(u.col, u.row)
+	if traps.has(t) and traps[t]["team"] != u.team:
+		match traps[t]["kind"]:
+			"wire":
+				damage(u, 10, null)
+				team_stamina[u.team].try_spend()
+			"mine":
+				damage(u, 15, null)
+				booms.append([u.position, 30.0, 0.35, Color(0.4, 0.95, 1.0)])
+				traps.erase(t)
+	# Event Horizon: an enemy that steps next to it is caught until it ends
+	for h in horizons:
+		if h["team"] != u.team and maxi(absi(u.col - h["tile"].x), absi(u.row - h["tile"].y)) <= 1:
+			u.rooted_until = maxf(u.rooted_until, h["until"])
+	# Overwatch: a free shot at an enemy stepping into the watched row
+	if u.prev_row != u.row:
+		for w in units_of(1 - u.team):
+			if w.is_alive() and time < w.overwatch_until and w.overwatch_left > 0 and w.row == u.row:
+				w.overwatch_left -= 1
+				fire_free_primary(w)
+
+func _update_set2_board() -> void:
+	for k in traps.keys():
+		var tp: Dictionary = traps[k]
+		if time >= tp["until"]:
+			traps.erase(k)
+		elif tp["kind"] == "thorn" and time >= tp["next"]:
+			tp["next"] += 1.0
+			var v := unit_at(k.x, k.y)
+			if v and v.team != tp["team"]:
+				damage(v, 4, null)
+	for s in strikes.duplicate():
+		if time >= s["at"]:
+			strikes.erase(s)
+			_orbital_hit(s)
+	for w in whirls.duplicate():
+		if time >= w["until"]:
+			whirls.erase(w)
+		elif time >= w["next"]:
+			w["next"] += 1.0
+			_whirl_pull(w)
+	pollens = pollens.filter(func(p): return time < p["until"])
+	horizons = horizons.filter(func(h): return time < h["until"])
+	flood_cols = flood_cols.filter(func(f): return time < f["until"])
+	for team in 2:
+		if not decoys[team].is_empty() and (time >= decoys[team]["until"] \
+				or not barricades.any(func(b): return b.get("decoy", false) and b["team"] == team and b["hits"] > 0)):
+			_remove_decoy(team)
+	# Annex: a claim cut off from its ground reverts
+	var cut := false
+	for k in stakes.keys():
+		if stakes[k].has("annex") and not _connected_ground(stakes[k]["team"]).has(k):
+			stakes.erase(k)
+			cut = true
+	if cut:
+		_settle_ground()
+
+func _remove_decoy(team: int) -> void:
+	decoys[team] = {}
+	barricades = barricades.filter(func(b): return not (b.get("decoy", false) and b["team"] == team))
+
+func _orbital_hit(s: Dictionary) -> void:
+	var t: Vector2i = s["tile"]
+	for u in units_of(1 - s["team"]):
+		if not u.is_alive():
+			continue
+		var d := absi(u.col - t.x) + absi(u.row - t.y)
+		if d == 0:
+			damage(u, 45, null)
+		elif d == 1:
+			damage(u, 15, null)
+	booms.append([panel_center(t.x, t.y), 60.0, 0.5, Color(1.0, 0.6, 0.25)])
+	_shake = 0.3
+	Sfx.shell_land()
+
+## Maelstrom pulse: every enemy next to the whirlpool is pulled one tile closer.
+func _whirl_pull(w: Dictionary) -> void:
+	var c: Vector2i = w["tile"]
+	for u in units_of(1 - w["team"]):
+		if not u.is_alive():
+			continue
+		var d := Vector2i(u.col, u.row) - c
+		if d == Vector2i.ZERO or maxi(absi(d.x), absi(d.y)) != 1:
+			continue
+		var step := Vector2i(-signi(d.x), 0) if d.x != 0 else Vector2i(0, -signi(d.y))
+		force_move(u, Vector2i(u.col, u.row) + step)
+
+## Phase Shift partner, in priority: the team's Holo Decoy, its drone that moved least
+## recently, then the ally last controlled (the enemy: any other ally). {} if none.
+func phase_partner(team: int, sel: Unit) -> Dictionary:
+	if not decoys[team].is_empty():
+		return {"kind": "decoy", "tile": Vector2i(decoys[team]["col"], decoys[team]["row"])}
+	var best = null
+	for copy in drones[team]:
+		var d: Dictionary = drones[team][copy]
+		if best == null or float(d.get("moved_at", 0.0)) < float(drones[team][best].get("moved_at", 0.0)):
+			best = copy
+	if best != null:
+		var d: Dictionary = drones[team][best]
+		return {"kind": "drone", "copy": best, "tile": Vector2i(d["col"], d["row"])}
+	var ally: Unit = null
+	if team == 0 and last_ally_idx >= 0 and last_ally_idx < player_units.size():
+		ally = player_units[last_ally_idx]
+	if ally == null or ally == sel or not ally.is_alive():
+		ally = null
+		for o in units_of(team):
+			if o != sel and o.is_alive():
+				ally = o
+				break
+	if ally:
+		return {"kind": "ally", "unit": ally, "tile": Vector2i(ally.col, ally.row)}
+	return {}
+
+func _phase_shift(team: int, sel: Unit) -> void:
+	var p := phase_partner(team, sel)
+	if p.is_empty():
+		return
+	var here := Vector2i(sel.col, sel.row)
+	var there: Vector2i = p["tile"]
+	break_movement_locks(sel)
+	match p["kind"]:
+		"decoy":
+			decoys[team]["col"] = here.x
+			decoys[team]["row"] = here.y
+			for b in barricades:
+				if b.get("decoy", false) and b["team"] == team:
+					b["row"] = here.y
+					b["x"] = panel_center(here.x, here.y).x
+		"drone":
+			drones[team][p["copy"]]["col"] = here.x
+			drones[team][p["copy"]]["row"] = here.y
+			drones[team][p["copy"]]["moved_at"] = time
+		"ally":
+			var a: Unit = p["unit"]
+			a.col = -9   # step aside so neither move sees the other's tile as taken
+			a.move_to(here.x, here.y)
+	sel.move_to(there.x, there.y)
+	sel.last_moved_at = time
+	booms.append([sel.position, 22.0, 0.3, Color(0.5, 0.9, 1.0)])
+
 ## Can `team` aim tile card `id` at `t`?
 func valid_tile(team: int, id: String, t: Vector2i) -> bool:
 	if not in_grid(t):
 		return false
+	if id == "wave_rider":
+		var u := active_unit()
+		return t.x == u.col and absi(t.y - u.row) in [1, 2] and can_move(u, t.x, t.y)
+	if id in ["quarantine", "overgrowth"]:
+		return holds(1 - team, t.x, t.y) and _quad_tiles(1 - team, t).size() == 4
+	if id in ["slow_burn", "creeping_barrage", "razor_wire", "pulse_mine", "thornvine", "maelstrom", "pollen_cloud", "orbital_strike"]:
+		return holds(1 - team, t.x, t.y)
+	if id == "annex":
+		if not holds(1 - team, t.x, t.y) or stakes.has(t):
+			return false
+		var ground := _connected_ground(team)
+		return [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT].any(func(d): return ground.has(t + d))
+	if id == "holo_decoy":
+		return holds(team, t.x, t.y) and unit_at(t.x, t.y) == null and not drone_at(t.x, t.y) and not decoy_at(t.x, t.y)
+	if id == "event_horizon":
+		var v := unit_at(t.x, t.y)
+		return v != null and v.team != team
 	if id == "stake_claim":
 		return holds(1 - team, t.x, t.y)
 	if id in OWN_GROUND_CARDS:
 		return holds(team, t.x, t.y)
-	if id == "data_breach":
+	if id in ["data_breach", "spotter_flare"]:
 		var u := unit_at(t.x, t.y)
 		return u != null and u.team != team
 	return true
@@ -1349,15 +1643,69 @@ func valid_tile(team: int, id: String, t: Vector2i) -> bool:
 ## Tile cards that must land on the caster's own ground.
 const OWN_GROUND_CARDS := ["supply_drop", "tide_pool"]
 
+func _wave_destination(u: Unit, aimed := Vector2i(-1, -1)) -> Vector2i:
+	if aimed.x >= 0:
+		return aimed if aimed.x == u.col and absi(aimed.y - u.row) in [1, 2] and can_move(u, aimed.x, aimed.y) else Vector2i(-1, -1)
+	for dr in [-2, 2, -1, 1]:
+		if can_move(u, u.col, u.row + dr):
+			return Vector2i(u.col, u.row + dr)
+	return Vector2i(-1, -1)
+
+## A full 2x2 area on the requested side; edge aims slide the square inward.
+func _quad_tiles(team: int, aimed: Vector2i) -> Array:
+	for dx in [0, -1]:
+		for dy in [0, -1]:
+			var tiles: Array = []
+			for x in 2:
+				for y in 2:
+					var tile := aimed + Vector2i(dx + x, dy + y)
+					if in_grid(tile) and holds(team, tile.x, tile.y):
+						tiles.append(tile)
+			if tiles.size() == 4:
+				return tiles
+	return []
+
+func _first_row_enemy(u: Unit) -> Unit:
+	var nearest: Unit = null
+	var dir := 1 if u.team == 0 else -1
+	for foe in units_of(1 - u.team):
+		if foe.is_alive() and foe.row == u.row and (foe.col - u.col) * dir > 0:
+			if nearest == null or absi(foe.col - u.col) < absi(nearest.col - u.col):
+				nearest = foe
+	return nearest
+
+func _push_vertical(u: Unit) -> bool:
+	for dr in [-1, 1]:
+		if can_move(u, u.col, u.row + dr):
+			return force_move(u, Vector2i(u.col, u.row + dr))
+	return force_move(u, Vector2i(u.col, u.row - 1))
+
 ## Play card `i` from `team`'s hand. Unit cards act on the controlled unit (the AI
 ## picks one); tile cards need `tile` (the AI picks its own).
 func play_card(team: int, i: int, tile := Vector2i(-1, -1)) -> bool:
 	var h: CardHand = hands[team]
-	if i >= h.hand.size():
+	if i < 0 or i >= h.hand.size() or time < card_jam_until[team]:
 		return false
 	var id: String = h.hand[i]
 	var card: Dictionary = Game.CARDS[id]
 	var plan: Dictionary = _ai_plans.get(id, {}) if team == 1 else {}
+	var sel: Unit = active_unit()
+	if team == 1:
+		var pu = plan.get("unit")
+		sel = pu if pu is Unit and is_instance_valid(pu) and pu.is_alive() else _ai_card_unit(id)
+	if not sel or not sel.is_alive():
+		return false
+	if id == "second_wind" and (sel.hp >= sel.max_hp * 0.3 or time < sel.heal_locked_until):
+		return false
+	if id == "phase_shift" and phase_partner(team, sel).is_empty():
+		if team == 0:
+			energy.deny()
+		return false
+	if id == "wave_rider":
+		tile = plan.get("tile", tile)
+		tile = _wave_destination(sel, tile)
+		if tile.x < 0:
+			return false
 	if card["target"] == "tile":
 		if team == 1:
 			tile = plan.get("tile", _ai_tile(id))
@@ -1368,24 +1716,153 @@ func play_card(team: int, i: int, tile := Vector2i(-1, -1)) -> bool:
 	var paid := h.cost_of(i)
 	if not team_energy[team].try_spend(paid):
 		return false
+	var copy := h.copy_mark(i)
 	h.take(i)
-	last_cards[team].show_card(id, paid)
-	var sel: Unit = active_unit()
-	if team == 1:
-		var pu = plan.get("unit")
-		sel = pu if pu is Unit and is_instance_valid(pu) and pu.is_alive() else _ai_card_unit(id)
+	last_cards[team].show_card(id, paid, copy)
 	var aim_row: int = sel.row   # row cards (Flood, Spore Bloom) aim from the chosen unit, as for the player
-	_apply_card(team, id, sel, aim_row, tile)
+	_apply_card(team, id, sel, aim_row, tile, maxi(copy, 1))
 	Sfx.card(id, team)
 	if team == 0:
 		Game.stat("cards")
 	_announce(team, card["name"])
 	return true
 
-func _apply_card(team: int, id: String, sel: Unit, aim_row: int, tile: Vector2i) -> void:
+func _apply_card(team: int, id: String, sel: Unit, aim_row: int, tile: Vector2i, copy := 1) -> void:
 	var foe := 1 - team
 	var dir := 1 if team == 0 else -1
 	match id:
+		"quick_march":
+			team_stamina[team].refund(2)
+		"field_repairs":
+			sel.heal(25 if time - sel.last_moved_at >= 2.0 else 15)
+		"spotter_flare":
+			unit_at(tile.x, tile.y).flare_until = time + 4.0
+		"creeping_barrage":
+			for r in rows:
+				shots.append({"kind": "mortar", "team": team, "src": sel, "from": sel.position + Vector2(0, -sel.sprite.height),
+					"tc": tile.x, "tr": r, "t": -0.3 * r, "dmg": 10})
+		"smoke_screen":
+			sel.smoke_until = time + 4.0
+		"volley_fire":
+			for u in units_of(team):
+				fire_free_primary(u)
+		"calibrate":
+			sel.calibrate_left = 3
+		"efficiency_pass":
+			for u in units_of(team):
+				if u.is_alive():
+					u.free_shots = 1
+		"signal_jam":
+			card_jam_until[foe] = time + 5.0
+		"neural_link":
+			sel.neural_until = time + 6.0
+		"quarantine":
+			for t: Vector2i in _quad_tiles(foe, tile):
+				fields[t] = {"team": team, "until": time + 3.0}
+		"wave_rider":
+			card_move(sel, _wave_destination(sel, tile))
+		"brine_splash":
+			var target := _first_row_enemy(sel)
+			if target:
+				_push_vertical(target)
+		"sap_poultice":
+			sel.heal_rate = 4.0
+			sel.heal_until = time + 3.0
+			var here := Vector2i(sel.col, sel.row)
+			fires.erase(here)
+			if not spores.is_empty():
+				spores["tiles"].erase(here)
+		"barnacle_shell":
+			sel.barrier = 10.0
+			sel.barrier_until = INF
+			sel.barnacle_until = time + 5.0
+		"tsunami":
+			var targets := units_of(foe).filter(func(u): return u.is_alive())
+			targets.sort_custom(func(a, b): return a.col > b.col if team == 0 else a.col < b.col)
+			for u: Unit in targets:
+				force_move(u, Vector2i(u.col + dir, u.row))
+		"overgrowth":
+			var tiles := {}
+			for t: Vector2i in _quad_tiles(foe, tile):
+				tiles[t] = true
+				var u := unit_at(t.x, t.y)
+				if u and u.team == foe:
+					u.rooted_until = maxf(u.rooted_until, time + 2.0)
+			spores = {"team": foe, "tiles": tiles, "until": time + 9.0, "next_spread": time + 3.0, "next_tick": time + 1.0, "root_until": time + 2.0}
+		"spare_parts":
+			sel.take_damage(10, true)
+			hands[team].boost_draw()
+			if not hands[team].is_full():
+				hands[team]._draw_card_from_deck()
+		"slow_burn":
+			fires[tile] = {"until": time + 6.0, "next": time + 1.0}
+		"afterglow":
+			sel.afterglow_until = time + 6.0
+		"lifeline":
+			sel.lifeline_until = time + 6.0
+		"red_shift":
+			sel.red_shift_until = time + 6.0
+		"cinder_trail":
+			sel.cinder_until = time + 6.0
+		"second_wind":
+			sel.heal(int(sel.max_hp * 0.5) - sel.hp)
+			sel.heal_locked_until = time + 15.0
+		"time_debt":
+			team_energy[team].refill_clock.trigger()
+			team_stamina[team].refill_clock.trigger()
+		"razor_wire":
+			traps[tile] = {"kind": "wire", "team": team, "until": time + 8.0, "next": INF}
+		"pulse_mine":
+			traps[tile] = {"kind": "mine", "team": team, "until": time + 10.0, "next": INF}
+		"thornvine":
+			traps[tile] = {"kind": "thorn", "team": team, "until": time + 6.0, "next": time + 1.0}
+		"overwatch":
+			sel.overwatch_until = time + 5.0
+			sel.overwatch_left = 3
+		"annex":
+			for k in stakes.keys():   # replaying this copy moves its claim
+				if stakes[k].get("annex", -1) == copy and stakes[k]["team"] == team:
+					stakes.erase(k)
+			stakes[tile] = {"team": team, "until": INF, "annex": copy}
+			_settle_ground()
+		"orbital_strike":
+			strikes.append({"team": team, "tile": tile, "at": time + 1.5})
+		"holo_decoy":
+			_remove_decoy(team)
+			decoys[team] = {"col": tile.x, "row": tile.y, "until": time + 6.0}
+			barricades.append({"team": team, "row": tile.y, "x": panel_center(tile.x, tile.y).x, "hits": 1, "until": time + 6.0, "decoy": true})
+		"mirror_shield":
+			sel.mirror_until = time + 5.0
+		"phase_shift":
+			_phase_shift(team, sel)
+		"perfect_model":
+			perfect_until[team] = time + 6.0
+		"maelstrom":
+			whirls.append({"team": team, "tile": tile, "until": time + 4.0, "next": time + 1.0})
+		"pollen_cloud":
+			pollens.append({"team": team, "col": tile.x, "row": tile.y, "until": time + 5.0})
+		"worldshaper":
+			var back := COLS - 1 if foe == 1 else 0
+			var fwd := -1 if foe == 1 else 1
+			flood_cols.append({"team": foe, "col": back, "until": time + 8.0})
+			for u in units_of(foe):
+				if u.is_alive() and u.col == back:
+					force_move(u, Vector2i(back + fwd, u.row))
+		"event_horizon":
+			horizons.append({"team": team, "tile": tile, "until": time + 4.0})
+			var held := unit_at(tile.x, tile.y)
+			if held:
+				held.rooted_until = maxf(held.rooted_until, time + 4.0)
+		"heat_death":
+			var lost := 0
+			for u in player_units + enemy_units:
+				if not u.is_alive():
+					continue
+				var amount := int(round(u.hp * 0.2))
+				u.take_damage(amount, true)
+				if u.team == foe:
+					lost += amount
+			team_energy[team].refund(lost * 0.5)
 		"fortify":
 			fortified[Vector2i(sel.col, sel.row)] = time + 10.0
 		"claim":
@@ -1399,13 +1876,12 @@ func _apply_card(team: int, id: String, sel: Unit, aim_row: int, tile: Vector2i)
 			for c in COLS:
 				for r in rows:
 					tries.append(Vector2i(c, r))
-			drones[team] = {}
 			for t in tries:
-				if in_grid(t) and holds(team, t.x, t.y) and unit_at(t.x, t.y) == null and not drone_at(t.x, t.y):
+				if in_grid(t) and standable(team, t.x, t.y) and unit_at(t.x, t.y) == null and not drone_at(t.x, t.y, team, copy):
 					spot = t
 					break
 			if spot.x >= 0:
-				drones[team] = {"col": spot.x, "row": spot.y, "next": time + 0.5}
+				drones[team][copy] = {"col": spot.x, "row": spot.y, "next": time + 0.5, "moved_at": time}
 		"issue_protocol":
 			protocol = {"team": foe, "rule": ["HALT", "SILENCE", "FORMATION"][randi() % 3], "until": time + 6.0}
 			_announce(team, "PROTOCOL: " + protocol["rule"])
@@ -1449,9 +1925,8 @@ func _apply_card(team: int, id: String, sel: Unit, aim_row: int, tile: Vector2i)
 			for u in units_of(foe):
 				if u.is_alive() and u.row == sel.row and (target == null or absi(u.col - sel.col) < absi(target.col - sel.col)):
 					target = u
-			if target and can_move(target, target.col - dir, target.row):
-				target.move_to(target.col - dir, target.row)
-				target.forced_at = time
+			if target:
+				force_move(target, Vector2i(target.col - dir, target.row))
 				booms.append([target.position, 26.0, 0.3, Color(0.4, 0.7, 1.0)])
 		"mire":
 			mires[tile] = time + MIRE_TIME
@@ -1481,6 +1956,7 @@ func _apply_card(team: int, id: String, sel: Unit, aim_row: int, tile: Vector2i)
 		"hold_the_line":
 			guard_until[team] = time + 5.0
 		"requisition":
+			hands[team].boost_draw()
 			if not hands[team].is_full():
 				hands[team]._draw_card_from_deck()
 		"target_lock":
@@ -1493,14 +1969,14 @@ func _apply_card(team: int, id: String, sel: Unit, aim_row: int, tile: Vector2i)
 			sel.barrier_until = time + 10.0
 		"recompile":
 			var h: CardHand = hands[team]
+			h.boost_draw()
 			h.discard_hand()
 			for n in CardHand.HAND_SIZE:
 				h._draw_card_from_deck()
 		"undertow_surge":
 			for u in units_of(foe):
-				if u.is_alive() and u.row == sel.row and can_move(u, u.col + dir, u.row):
-					u.move_to(u.col + dir, u.row)
-					u.forced_at = time
+				if u.is_alive() and u.row == sel.row:
+					force_move(u, Vector2i(u.col + dir, u.row))
 					booms.append([u.position, 24.0, 0.3, Color(0.3, 0.6, 1.0)])
 		"regrowth":
 			for u in units_of(team):
@@ -1543,10 +2019,11 @@ func _apply_card(team: int, id: String, sel: Unit, aim_row: int, tile: Vector2i)
 		"tide_pool":
 			pools[tile] = {"team": team, "until": time + 10.0}
 		"flash_forward":
+			break_movement_locks(sel)
 			for step in [2, 1]:
 				if can_move(sel, sel.col + dir * step, sel.row):   # a leap: it can pass over a unit
 					booms.append([sel.position, 26.0, 0.3, Color(1.0, 0.75, 0.3)])
-					sel.move_to(sel.col + dir * step, sel.row)
+					card_move(sel, Vector2i(sel.col + dir * step, sel.row))
 					booms.append([panel_center(sel.col, sel.row), 26.0, 0.3, Color(1.0, 0.75, 0.3)])
 					break
 			sel.rooted_until = time + 1.5
@@ -1910,7 +2387,8 @@ func _ai_card_plan(id: String) -> Dictionary:
 			var bonus := 0.5 if id == "spore_bloom" and foes.any(func(f): return mires.has(Vector2i(f.col, f.row))) else 0.0
 			return {"value": 1.5 + bonus, "unit": u}
 		"deploy_drone":
-			if not drones[1].is_empty():
+			var slot: int = hands[1].hand.find(id)
+			if slot >= 0 and drones[1].has(hands[1].copy_mark(slot)):
 				return hold
 			for u in own:
 				if _foes_in_row(u) > 0:
@@ -1961,9 +2439,176 @@ func _ai_card_plan(id: String) -> Dictionary:
 				return hold
 			var n := foes.filter(func(f): return f.col == t.x and absi(f.row - t.y) <= 1).size()
 			return {"value": 1.5 if n >= 2 or id == "barrage" else 0.8, "tile": t}
-		"stake_claim":
-			var t := _ai_tile(id)
-			return {"value": 1.0, "tile": t} if t.x >= 0 else hold
+		"stake_claim", "annex":
+			var t := _ai_tile("stake_claim")
+			return {"value": 1.0 if id == "stake_claim" else 1.2, "tile": t} if t.x >= 0 and valid_tile(1, id, t) else hold
+		# --- card set 2
+		"quick_march":
+			return {"value": 1.0} if team_stamina[1].value <= 2.0 else hold
+		"field_repairs":
+			return {"value": 2.0, "unit": by_hurt[0]} if frac.call(by_hurt[0]) < 0.7 else hold
+		"spotter_flare", "slow_burn", "thornvine":
+			for f in foes:
+				var t := Vector2i(f.col, f.row)
+				if id == "slow_burn" and fires.has(t):
+					continue
+				if id == "thornvine" and traps.has(t):
+					continue
+				var pinned: bool = time < f.rooted_until or fields.has(t) or mires.has(t)
+				if shooters.any(func(u): return u.row == f.row) or pinned:
+					return {"value": 1.5 if pinned else 1.1, "tile": t}
+			return hold
+		"razor_wire", "pulse_mine":
+			for f in foes:
+				for d in [Vector2i.UP, Vector2i.DOWN]:
+					var t: Vector2i = Vector2i(f.col, f.row) + d
+					if in_grid(t) and holds(0, t.x, t.y) and unit_at(t.x, t.y) == null and not traps.has(t):
+						return {"value": 0.9, "tile": t}
+			return hold
+		"creeping_barrage", "orbital_strike":
+			var best := Vector2i(-1, -1)
+			var best_v := 0.0
+			for f in foes:
+				var t := Vector2i(f.col, 0 if id == "creeping_barrage" else f.row)
+				var v := 0.0
+				for g in foes:
+					if id == "creeping_barrage" and g.col == f.col:
+						v += 1.0
+					elif id == "orbital_strike" and absi(g.col - f.col) + absi(g.row - f.row) <= 1:
+						v += 1.0 if g == f else 0.5
+				if time < f.rooted_until or fields.has(Vector2i(f.col, f.row)) or mires.has(Vector2i(f.col, f.row)):
+					v += 1.0   # it can't dodge
+				if v > best_v:
+					best_v = v
+					best = t
+			if best.x < 0 or best_v < 1.0:
+				return hold
+			return {"value": (1.0 if id == "creeping_barrage" else 1.2) + 0.5 * best_v, "tile": best}
+		"overwatch", "calibrate", "neural_link", "red_shift", "cinder_trail":
+			for u in shooters:
+				if id == "overwatch" and u.overwatch_until > time:
+					continue
+				return {"value": 1.2, "unit": u}
+			return hold
+		"smoke_screen", "lifeline", "mirror_shield", "barnacle_shell":
+			for u in by_hurt:
+				if pressured.call(u):
+					return {"value": 1.5 + (0.3 if id == "mirror_shield" else 0.0), "unit": u}
+			return hold
+		"volley_fire":
+			return {"value": 2.0} if shooters.size() >= 2 else hold
+		"efficiency_pass":
+			return {"value": 1.0} if shooters.size() >= 2 and energy_now < 50.0 else hold
+		"signal_jam":
+			return {"value": 1.3} if hands[0].hand.size() > 0 and card_jam_until[0] < time else hold
+		"holo_decoy":
+			if not decoys[1].is_empty():
+				return hold
+			for u in by_hurt:
+				if pressured.call(u):
+					for c in range(PLAYER_MAX_COL + 1, COLS):
+						var t := Vector2i(c, u.row)
+						if c != u.col and valid_tile(1, id, t) and absi(c - u.col) <= 2:
+							return {"value": 1.2, "tile": t}
+			return hold
+		"phase_shift":
+			for u in by_hurt:
+				if pressured.call(u) and not phase_partner(1, u).is_empty():
+					return {"value": 1.2, "unit": u}
+			return hold
+		"perfect_model":
+			return {"value": 2.0} if own.size() >= 2 and energy_now >= 40.0 and perfect_until[1] < time else hold
+		"quarantine", "overgrowth":
+			if id == "overgrowth" and not spores.is_empty():
+				return hold
+			var best := Vector2i(-1, -1)
+			var best_n := 0
+			for f in foes:
+				var t := Vector2i(f.col, f.row)
+				if not valid_tile(1, id, t):
+					continue
+				var quad: Array = _quad_tiles(0, t)
+				var n := foes.filter(func(g): return quad.has(Vector2i(g.col, g.row))).size()
+				if n > best_n:
+					best_n = n
+					best = t
+			return {"value": 1.0 + 0.4 * best_n, "tile": best} if best.x >= 0 and best_n >= 1 else hold
+		"wave_rider":
+			for u in by_hurt:
+				if pressured.call(u):
+					for dy in [-2, 2, -1, 1]:
+						var t := Vector2i(u.col, u.row + dy)
+						if in_grid(t) and can_move(u, t.x, t.y) and incoming_threat(u, 1.0).is_empty() == false:
+							return {"value": 1.2, "unit": u, "tile": t}
+			return hold
+		"brine_splash":
+			for u in own:
+				if _foes_in_row(u) > 0:
+					return {"value": 1.5 if own.any(func(a): return a.passive == "ambush") else 0.8, "unit": u}
+			return hold
+		"sap_poultice":
+			for u in by_hurt:
+				var t := Vector2i(u.col, u.row)
+				if frac.call(u) < 0.6 or fires.has(t) or (not spores.is_empty() and spores["team"] == 1 and spores["tiles"].has(t)):
+					return {"value": 1.5, "unit": u}
+			return hold
+		"maelstrom":
+			var best := Vector2i(-1, -1)
+			var best_n := 1
+			for c in range(0, PLAYER_MAX_COL + 1):
+				for r in rows:
+					var n := foes.filter(func(f): return maxi(absi(f.col - c), absi(f.row - r)) == 1).size()
+					if n > best_n:
+						best_n = n
+						best = Vector2i(c, r)
+			return {"value": 1.0 + 0.4 * best_n, "tile": best} if best.x >= 0 else hold
+		"pollen_cloud":
+			var best := Vector2i(-1, -1)
+			var best_n := 0
+			for f in foes:
+				var n := foes.filter(func(g): return g.col == f.col and absi(g.row - f.row) <= 1).size()
+				if n > best_n:
+					best_n = n
+					best = Vector2i(f.col, f.row)
+			return {"value": 1.0 + 0.4 * best_n, "tile": best} if best.x >= 0 else hold
+		"tsunami":
+			return {"value": 1.8} if foes.size() >= 2 else hold
+		"worldshaper":
+			if flood_cols.any(func(f): return f["team"] == 0):
+				return hold
+			return {"value": 2.0 if foes.any(func(f): return f.col == 0) else 1.0}
+		"spare_parts":
+			if hands[1].is_full():
+				return hold
+			for u in own:
+				if float(u.hp - 10) / u.max_hp > 0.4:
+					return {"value": 1.0, "unit": u}
+			return hold
+		"afterglow":
+			for u in shooters:
+				if frac.call(u) < 0.8:
+					return {"value": 1.2, "unit": u}
+			return hold
+		"event_horizon":
+			for f in foes:
+				var near := foes.filter(func(g): return g != f and maxi(absi(g.col - f.col), absi(g.row - f.row)) <= 2).size()
+				return {"value": 1.0 + 0.6 * near, "tile": Vector2i(f.col, f.row)}
+			return hold
+		"second_wind":
+			for u in by_hurt:
+				if frac.call(u) < 0.3 and time >= u.heal_locked_until:
+					return {"value": 4.0, "unit": u}
+			return hold
+		"time_debt":
+			return {"value": 1.2} if energy_now < 40.0 else hold
+		"heat_death":
+			var foe_hp := 0
+			var own_hp := 0
+			for f in foes:
+				foe_hp += f.hp
+			for u in own:
+				own_hp += u.hp
+			return {"value": 2.0} if foe_hp > own_hp * 1.2 else hold
 	return {"value": 1.0}
 
 ## Enemy AI: is a player shot about to hit `u`? (for dodging)
@@ -1984,7 +2629,8 @@ func ai_shot_lands(u: Unit, col := -1, row := -1) -> bool:
 	col = u.col if col < 0 else col
 	row = u.row if row < 0 else row
 	var foes := units_of(1 - u.team).filter(func(f): return f.is_alive())
-	var in_row := func(r: int) -> bool: return foes.any(func(f): return f.row == r)
+	var dec: Dictionary = decoys[1 - u.team]
+	var in_row := func(r: int) -> bool: return foes.any(func(f): return f.row == r) or (not dec.is_empty() and dec["row"] == r)
 	match u.primary:
 		"mortar":
 			var tc := clampi(col + MORTAR_RANGE * (1 if u.team == 0 else -1), 0, COLS - 1)
@@ -2064,6 +2710,12 @@ func ai_tile_score(u: Unit, col: int, row: int) -> float:
 		score -= 4.0
 	if mires.has(t):
 		score -= 1.5          # leaving it later costs double stamina
+	if traps.has(t) and traps[t]["team"] != u.team:
+		score -= 3.0
+	if strikes.any(func(s): return s["team"] != u.team and absi(s["tile"].x - col) + absi(s["tile"].y - row) <= 1):
+		score -= 6.0
+	if whirls.any(func(w): return w["team"] != u.team and maxi(absi(w["tile"].x - col), absi(w["tile"].y - row)) <= 1):
+		score -= 1.5
 	if fortified.has(t):
 		score += 1.5
 	if pools.has(t) and pools[t]["team"] == u.team and u.hp < u.max_hp:
@@ -2167,6 +2819,7 @@ func _update_hud() -> void:
 			txt = txt.trim_suffix("Shot") + "Heavy Shot"
 		if u.alt_primary != "charge":
 			txt += "  ·  %d energy" % int(alt_cost(u))
+		txt += "  ·  %.1fs" % (u.alt_ready_at - time) if time < u.alt_ready_at else "  ·  READY"
 	if u.passive != "":
 		txt += "\nPassive: %s" % Game.PASSIVE_NAMES[u.passive]
 	if aim_slot >= 0:
@@ -2309,6 +2962,8 @@ func _draw() -> void:
 			draw_set_transform(Vector2.ZERO)
 	# Sandbags: stacked bags across the row, one layer per hit left
 	for bar in barricades:
+		if bar.get("decoy", false):
+			continue   # a Holo Decoy draws itself (_draw_set2)
 		var cy := panel_center(0, bar["row"]).y
 		for h in bar["hits"]:
 			draw_rect(Rect2(bar["x"] - 7, cy + 12 - h * 13, 14, 11), Color(0.75, 0.65, 0.42))
@@ -2322,12 +2977,13 @@ func _draw() -> void:
 		var x0 := GRID_X + (0.0 if protocol["team"] == 0 else 3 * PANEL_W)
 		draw_string(font, Vector2(x0 + 6, grid_y + rows * PANEL_H + 4), "PROTOCOL %s  %.1fs" % [protocol["rule"], protocol["until"] - time], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(1.0, 0.45, 0.45))
 	for team in 2:
-		var d: Dictionary = drones[team]
-		if not d.is_empty():
+		for copy in drones[team]:
+			var d: Dictionary = drones[team][copy]
 			var p := panel_center(d["col"], d["row"]) + Vector2(0, -22 + sin(time * 4.0) * 3.0)
 			draw_circle(p, 11.0, Color(0.92, 0.94, 0.97))
 			draw_circle(p + Vector2(4.0 if team == 0 else -4.0, 0), 4.5, Color(0.3, 0.9, 1.0))
 			draw_arc(p, 11.0, 0, TAU, 20, Color(0.2, 0.25, 0.3), 1.5)
+			draw_string(Game.FONT_CARD, p + Vector2(-20, -16), Game.mk_label(int(copy)), HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(0.7, 0.95, 1.0))
 	# Parallax afterimage: faint copy on the tile it last stood on
 	for u in player_units + enemy_units:
 		if u.is_alive() and "afterimage" in [u.primary, u.alt_primary] and (u.prev_col != u.col or u.prev_row != u.row):
@@ -2340,6 +2996,7 @@ func _draw() -> void:
 				draw_set_transform(Vector2(base.x * 2.0, 0), 0.0, Vector2(-1, 1))
 			draw_texture_rect(tex, rect, false, Color(0.6, 0.6, 1.0, 0.25))
 			draw_set_transform(Vector2.ZERO)
+	_draw_set2()
 	_draw_lane_marks()
 	for b in booms:
 		var k: float = clampf(b[2] / 0.4, 0.0, 1.0)   # 1 at the start, 0 when gone
@@ -2489,6 +3146,67 @@ func _draw_air() -> void:
 		L.draw_set_transform(pos, ang, Vector2(2.0, 2.0))
 		L.draw_texture(tex, Vector2(-8, -8))
 		L.draw_set_transform(Vector2.ZERO)
+
+## Card set 2 board effects: traps, strike warnings, whirlpools, pollen, Event Horizon,
+## the flooded back column, Holo Decoys and Annex marks.
+func _draw_set2() -> void:
+	var font := Game.FONT_CARD
+	for k in traps:
+		var tp: Dictionary = traps[k]
+		var tr := _tile_rect(k.x, k.y)
+		var c := tr.get_center()
+		match tp["kind"]:
+			"wire":
+				var y := tr.position.y + tr.size.y * 0.7
+				for i in 6:
+					var x0 := tr.position.x + 10 + i * (tr.size.x - 20) / 6.0
+					draw_line(Vector2(x0, y - 5), Vector2(x0 + (tr.size.x - 20) / 12.0, y + 5), Color(0.78, 0.8, 0.85), 1.5)
+					draw_line(Vector2(x0 + (tr.size.x - 20) / 12.0, y + 5), Vector2(x0 + (tr.size.x - 20) / 6.0, y - 5), Color(0.78, 0.8, 0.85), 1.5)
+			"mine":
+				draw_circle(c + Vector2(0, 10), 7.0, Color(0.2, 0.25, 0.32))
+				draw_circle(c + Vector2(0, 10), 3.0, Color(0.4, 0.95, 1.0, 0.5 + 0.5 * sin(time * 8.0)))
+			"thorn":
+				for i in 7:
+					var x := tr.position.x + 12 + i * (tr.size.x - 24) / 6.0
+					draw_line(Vector2(x, tr.end.y - 6), Vector2(x + 3, tr.end.y - 18), Color(0.3, 0.8, 0.45), 2.0)
+	for s in strikes:
+		var c := panel_center(s["tile"].x, s["tile"].y)
+		var k: float = clampf((s["at"] - time) / 1.5, 0.0, 1.0)
+		draw_arc(c, 14.0 + 30.0 * k, 0, TAU, 32, Color(1.0, 0.35, 0.25, 0.9), 2.5)
+		draw_line(c - Vector2(20, 0), c + Vector2(20, 0), Color(1.0, 0.35, 0.25, 0.8), 2.0)
+		draw_line(c - Vector2(0, 20), c + Vector2(0, 20), Color(1.0, 0.35, 0.25, 0.8), 2.0)
+	for w in whirls:
+		var c := panel_center(w["tile"].x, w["tile"].y)
+		for i in 3:
+			draw_arc(c, 8.0 + i * 9.0, time * 4.0 + i, time * 4.0 + i + PI * 1.2, 16, Color(0.3, 0.8, 0.85, 0.8), 2.0)
+	for p in pollens:
+		for dr in [-1, 0, 1]:
+			var r: int = p["row"] + dr
+			if r < 0 or r >= rows:
+				continue
+			var tr := _tile_rect(p["col"], r)
+			for i in 6:
+				var q := tr.position + Vector2(fmod(i * 37.0 + time * 9.0, tr.size.x), fmod(i * 23.0 + time * 5.0, tr.size.y))
+				draw_circle(q, 2.5, Color(0.75, 0.55, 1.0, 0.6))
+	for h in horizons:
+		var c := panel_center(h["tile"].x, h["tile"].y)
+		draw_arc(c, PANEL_W * 0.75, 0, TAU, 40, Color(0.55, 0.3, 1.0, 0.7), 2.0)
+		draw_circle(c, 6.0 + 2.0 * sin(time * 6.0), Color(0.1, 0.05, 0.2))
+	for f in flood_cols:
+		for r in rows:
+			_draw_flood(_tile_rect(f["col"], r), 1.0, f["col"])
+	for team in 2:
+		var d: Dictionary = decoys[team]
+		if d.is_empty():
+			continue
+		var c := panel_center(d["col"], d["row"])
+		var col := Color(0.4, 0.95, 1.0, 0.35 + 0.15 * sin(time * 10.0))
+		draw_colored_polygon(PackedVector2Array([c + Vector2(0, -34), c + Vector2(16, -8), c + Vector2(0, 16), c + Vector2(-16, -8)]), col)
+		draw_string(font, c + Vector2(-20, 26), "DECOY", HORIZONTAL_ALIGNMENT_CENTER, 40, 8, Color(0.6, 1.0, 1.0))
+	for k in stakes:
+		if stakes[k].has("annex"):
+			var tr := _tile_rect(k.x, k.y)
+			draw_string(font, tr.position + Vector2(4, 12), Game.mk_label(int(stakes[k]["annex"])), HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(1.0, 0.85, 0.35))
 
 ## Under the units (the battlefield's own _draw): each bullet lights the tile it's
 ## crossing in its team's colour and casts a shadow on its own row's floor, so it's clear

@@ -14,6 +14,7 @@ const EDGE_COLOR := Color(0.6, 1.0, 0.8, 0.5)
 
 var value := float(SEGMENTS)    # in segments; fractional part is the one refilling
 var refill_time := REFILL_TIME  # sector modifiers can change it
+var refill_clock := RefillClock.new()
 var _shards: Array = []         # {pos, vel, rot, spin, life, size, color}
 var _pops: Array = []           # [segment index, time left] glow when a segment completes
 var _shake := 0.0
@@ -80,9 +81,10 @@ func _break_segment(i: int) -> void:
 		})
 
 func _process(delta: float) -> void:
+	var refill_delta := refill_clock.tick(delta)
 	if value < SEGMENTS:
 		var before := int(value)
-		value = minf(value + delta / refill_time, SEGMENTS)
+		value = minf(value + refill_delta / refill_time, SEGMENTS)
 		if int(value) > before:
 			_pops.append([before, 0.25])
 	for s in _shards:

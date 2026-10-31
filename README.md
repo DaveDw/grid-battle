@@ -6,7 +6,7 @@
 
 *Four factions · eight leaders · 24 units · 38 cards · one shared grid, and the line down the middle is for sale.*
 
-![Version](https://img.shields.io/badge/version-Alpha%20Test%20Snapshot%20v0.0.7-orange)
+![Version](https://img.shields.io/badge/version-Alpha%20Test%20Snapshot%20v0.0.8-orange)
 ![Engine](https://img.shields.io/badge/engine-Godot%204.7-478cbf?logo=godotengine&logoColor=white)
 ![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS-555)
 ![Status](https://img.shields.io/badge/status-alpha-red)
@@ -216,7 +216,7 @@ Each faction fields two leaders. A leader always brings the same heavy and light
 
 ![All 38 card icons](docs/screenshots/cards.png)
 
-There are **38 cards**: each squad's signature card, two starter cards per faction, and draftable cards that only appear as rewards. Every card has its own 32 px pixel icon and a rarity shown by its frame colour: **Common** (blue), **Uncommon** (green), **Rare** (purple) and **Legendary** (yellow). Starter cards are Common and leader cards Rare; rarer cards turn up less often in drafts and events.
+There are **78 cards**: each squad's signature card, two starter cards per faction, and draftable cards that only appear as rewards. Every card has its own 32 px pixel icon and a rarity shown by its frame colour: **Common** (blue), **Uncommon** (green), **Rare** (purple) and **Legendary** (yellow). Starter cards are Common and leader cards Rare; rarer cards turn up less often in drafts and events.
 
 <details>
 <summary><b>Full card list</b></summary>
@@ -372,7 +372,7 @@ On Windows you can also double-click `Play Grid Battle.bat`; edit the Godot path
 **Exporting.** `export_presets.cfg` defines three presets: *Windows Alpha*, *Linux Alpha* and *macOS Alpha*.
 
 ```bash
-godot --headless --path . --export-release "Linux Alpha" builds/linux/GridBattle-Alpha-0.0.7.x86_64
+godot --headless --path . --export-release "Linux Alpha" builds/linux/GridBattle-Alpha-0.0.8.x86_64
 ```
 
 Or run `bash tools/build_release.sh` (Git Bash on Windows), which exports all three and packs the archives into `builds/release/`. Set the Godot path (`G`) and version (`V`) at the top of the script first.

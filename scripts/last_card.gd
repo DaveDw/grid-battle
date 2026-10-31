@@ -61,10 +61,10 @@ func _label(px: int, c: Color) -> Label:
 	return l
 
 ## A new card from this side: fill in and flash.
-func show_card(id: String, cost: float) -> void:
+func show_card(id: String, cost: float, copy := 0) -> void:
 	var c: Dictionary = Game.CARDS[id]
 	_icon.texture = Game.card_art(id)
-	_name.text = c["name"]
+	_name.text = c["name"] + (" " + Game.mk_label(copy) if copy > 0 else "")
 	_name.add_theme_color_override("font_color", Game.rarity_color(id))
 	_cost.text = "%d energy" % int(cost)
 	_text.text = c["text"].replace("/", "/" + char(0x2060))

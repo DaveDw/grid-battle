@@ -14,6 +14,7 @@ const EMPTY_COLOR := Color(0.08, 0.11, 0.18)
 
 var value := MAX
 var recharge_delay := RECHARGE_DELAY
+var refill_clock := RefillClock.new()
 var _ghost := MAX               # trails behind value after a spend
 var _ghost_hold := 0.0
 var _delay := 0.0
@@ -71,11 +72,12 @@ func _bar_rect() -> Rect2:
 	return Rect2(0, 16, size.x, size.y - 16)
 
 func _process(delta: float) -> void:
+	var refill_delta := refill_clock.tick(delta)
 	_t += delta
 	if _delay > 0.0:
 		_delay -= delta
 	elif value < MAX:
-		value = minf(value + RECHARGE_RATE * delta, MAX)
+		value = minf(value + RECHARGE_RATE * refill_delta, MAX)
 	if _ghost_hold > 0.0:
 		_ghost_hold -= delta
 	else:
